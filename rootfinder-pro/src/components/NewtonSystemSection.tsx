@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, ChevronRight, Download, FunctionSquare, History, LineChart, Pencil, RefreshCw, Sigma, Sparkles, Target, Trash2, ZoomIn, ZoomOut } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ChevronRight, Download, FunctionSquare, History, Pencil, Sigma, Sparkles, Target, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { GeoGebraGraph } from '@/components/GeoGebraGraph';
 import { ConvergenceChart } from '@/components/shared/ConvergenceChart';
 import { LOAD_SYSTEM_HISTORY_EVENT, SYSTEM_HISTORY_KEY, SYSTEM_HISTORY_UPDATED_EVENT } from '@/lib/historyKeys';
 import { MathEvaluator } from '@/lib/mathEvaluator';
@@ -122,7 +121,6 @@ export function NewtonSystemSection() {
   const [historyLabel, setHistoryLabel] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState('');
-  const [graphZoom, setGraphZoom] = useState(1);
   const [expandedIteration, setExpandedIteration] = useState<number | null>(0);
 
   useEffect(() => {
@@ -182,50 +180,6 @@ export function NewtonSystemSection() {
     }
   }, [functions, initialValues, variables]);
 
-  const systemGraph = useMemo(() => {
-    const points = result?.iterations
-      .map((item) => item.vector ?? [])
-      .filter((item) => item.length >= 2)
-      .map((item, index) => ({ x: item[0], y: item[1], label: `I${index + 1}` })) ?? [];
-    const solution = solutionValues(result);
-
-    if (solution.length >= 2) {
-      points.push({ x: solution[0], y: solution[1], label: 'Sol' });
-    }
-
-    if (points.length === 0) {
-      return null;
-    }
-
-    const xs = points.map((point) => point.x);
-    const ys = points.map((point) => point.y);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-    const minY = Math.min(...ys);
-    const maxY = Math.max(...ys);
-    const marginX = Math.max((maxX - minX) * 0.18, 0.5);
-    const marginY = Math.max((maxY - minY) * 0.18, 0.5);
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-    const spanX = Math.max((maxX - minX + marginX * 2) / graphZoom, 0.05);
-    const spanY = Math.max((maxY - minY + marginY * 2) / graphZoom, 0.05);
-    const pointList = points.map((point) => `(${point.x},${point.y})`).join(',');
-
-    return {
-      points,
-      commands: [
-        `sysPts={${pointList}}`,
-        'sysPath=Polyline(sysPts)',
-        'SetColor(sysPath,16,185,129)',
-        'SetLineThickness(sysPath,6)',
-      ],
-      xMin: centerX - spanX / 2,
-      xMax: centerX + spanX / 2,
-      yMin: centerY - spanY / 2,
-      yMax: centerY + spanY / 2,
-    };
-  }, [graphZoom, result]);
-
   const iterationSummary = useMemo(() => {
     return result?.iterations.map((iteration) => ({
       iteration: iteration.iteration,
@@ -239,13 +193,6 @@ export function NewtonSystemSection() {
       residual: residualNorm(iteration.fValues),
     })) ?? [];
   }, [result]);
-
-  const zoomSystemGraph = (direction: 'in' | 'out') => {
-    setGraphZoom((current) => {
-      const next = direction === 'in' ? current * 1.25 : current / 1.25;
-      return Math.min(Math.max(next, 0.2), 80);
-    });
-  };
 
   const applyDimension = () => {
     const nextDimension = Number(dimensionText);
@@ -281,7 +228,6 @@ export function NewtonSystemSection() {
     setFunctions(nextState.functions);
     setInitialValues(nextState.initialValues);
     setResult(null);
-    setGraphZoom(1);
     toast.success(`Ejemplo ${example.label} cargado`);
   };
 
@@ -321,7 +267,6 @@ export function NewtonSystemSection() {
         ...current,
       ].slice(0, 15));
       setHistoryLabel('');
-      setGraphZoom(1);
       calculation.converged ? toast.success('Sistema resuelto con Newton-Raphson') : toast.warning(calculation.message);
     } catch (error: any) {
       toast.error('Error matematico: ' + error.message);
@@ -346,8 +291,6 @@ export function NewtonSystemSection() {
     setTol(item.params.tol?.toString() ?? '');
     setMaxIter(item.params.maxIter?.toString() ?? '');
     setResult(item);
-    setGraphZoom(1);
-
     if (requestedDimension > MAX_DIMENSION) {
       toast.warning(`El historial fue ajustado a ${MAX_DIMENSION} ecuaciones como maximo`);
     } else {
@@ -705,54 +648,6 @@ export function NewtonSystemSection() {
             </CardContent>
           </Card>
 
-          <Card className="border-primary/10 bg-card/55 backdrop-blur-sm">
-            <CardHeader>
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <LineChart className="h-4 w-4 text-primary" />
-                  <div>
-                    <CardTitle className="text-lg text-primary">Grafica de iteracion</CardTitle>
-                    <CardDescription>Proyeccion sobre las dos primeras variables.</CardDescription>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="icon" onClick={() => zoomSystemGraph('in')} title="Acercar grafica" aria-label="Acercar grafica">
-                    <ZoomIn className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="icon" onClick={() => zoomSystemGraph('out')} title="Alejar grafica" aria-label="Alejar grafica">
-                    <ZoomOut className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="icon" onClick={() => setGraphZoom(1)} title="Restablecer vista" aria-label="Restablecer vista">
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {systemGraph ? (
-                <GeoGebraGraph
-                  expressions={[]}
-                  commands={systemGraph.commands}
-                  points={systemGraph.points}
-                  xMin={systemGraph.xMin}
-                  xMax={systemGraph.xMax}
-                  yMin={systemGraph.yMin}
-                  yMax={systemGraph.yMax}
-                  heightClassName="h-[28rem] lg:h-[36rem]"
-                  showAlgebraInput={false}
-                  fallback={
-                    <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
-                      Cargando proyeccion del sistema en GeoGebra...
-                    </div>
-                  }
-                />
-              ) : (
-                <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-primary/20 bg-black px-6 text-center text-sm text-muted-foreground lg:min-h-[36rem]">
-                  Calcula el sistema para ver la proyeccion en las dos primeras variables.
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
       </div>
 
