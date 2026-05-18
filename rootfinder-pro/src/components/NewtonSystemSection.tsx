@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, Download, FunctionSquare, History, LineChart, Pencil, RefreshCw, Sigma, Trash2, ZoomIn, ZoomOut } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ChevronRight, Download, FunctionSquare, History, LineChart, Pencil, RefreshCw, Sigma, Sparkles, Target, Trash2, ZoomIn, ZoomOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,10 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { GeoGebraGraph } from '@/components/GeoGebraGraph';
+import { ConvergenceChart } from '@/components/shared/ConvergenceChart';
 import { LOAD_SYSTEM_HISTORY_EVENT, SYSTEM_HISTORY_KEY, SYSTEM_HISTORY_UPDATED_EVENT } from '@/lib/historyKeys';
 import { MathEvaluator } from '@/lib/mathEvaluator';
 import { NumericalMethods } from '@/lib/numericalMethods';
-import { GeoGebraGraph } from '@/components/GeoGebraGraph';
+import { cn } from '@/lib/utils';
 import { SystemCalculationResult } from '@/types';
 
 type SystemHistoryItem = SystemCalculationResult & {
@@ -20,15 +22,40 @@ type SystemHistoryItem = SystemCalculationResult & {
   label?: string;
 };
 
+const MIN_DIMENSION = 2;
+const MAX_DIMENSION = 6;
+
 const variableName = (index: number) => {
-  const names = ['x', 'y', 'z', 'w'];
+  const names = ['x', 'y', 'z', 'w', 'u', 'v'];
   return names[index] ?? `x${index + 1}`;
 };
 
 const defaultFunction = (index: number, n: number) => {
   if (n === 2) return ['x^2 + y^2 - 4', 'x - y - 1'][index] ?? '';
+  if (n === 3) return ['x + y + z - 3', 'x^2 + y^2 + z^2 - 5', 'x - z'][index] ?? '';
   return `${variableName(index)} - ${index + 1}`;
 };
+
+const EXAMPLES = [
+  {
+    label: 'Sistema 2x2',
+    dimension: 2,
+    functions: ['x^2 + y^2 - 4', 'x - y - 1'],
+    initialValues: ['1.5', '0.5'],
+  },
+  {
+    label: 'Sistema 3x3',
+    dimension: 3,
+    functions: ['x + y + z - 3', 'x^2 + y^2 + z^2 - 5', 'x - z'],
+    initialValues: ['1.2', '1', '0.8'],
+  },
+  {
+    label: 'Sistema 4x4',
+    dimension: 4,
+    functions: ['x + y - 2', 'z + w - 2', 'x^2 + z^2 - 2', 'y^2 + w^2 - 2'],
+    initialValues: ['1', '1', '1', '1'],
+  },
+];
 
 const formatNumber = (value: number) => {
   if (!Number.isFinite(value)) return 'N/A';
@@ -38,6 +65,49 @@ const formatNumber = (value: number) => {
 };
 
 const solutionValues = (result: SystemCalculationResult | null) => result?.solution?.values ?? [];
+
+const residualNorm = (values?: number[]) => {
+  if (!values?.length) return null;
+  return Math.sqrt(values.reduce((sum, value) => sum + value ** 2, 0));
+};
+
+const buildDimensionState = (
+  nextDimension: number,
+  currentVariables: string[],
+  currentFunctions: string[],
+  currentInitialValues: string[],
+) => ({
+  variables: Array.from({ length: nextDimension }, (_, index) => currentVariables[index] ?? variableName(index)),
+  functions: Array.from({ length: nextDimension }, (_, index) => currentFunctions[index] ?? defaultFunction(index, nextDimension)),
+  initialValues: Array.from({ length: nextDimension }, (_, index) => currentInitialValues[index] ?? '1'),
+});
+
+const clampDimension = (value: number) => Math.min(Math.max(value, MIN_DIMENSION), MAX_DIMENSION);
+
+const estimateConvergenceLabel = (result: SystemCalculationResult | null) => {
+  const values = result?.iterations
+    .map((iteration) => iteration.ea)
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value) && value > 0) ?? [];
+
+  if (values.length < 3) return 'Insuficiente';
+
+  const rates: number[] = [];
+  for (let index = 2; index < values.length; index += 1) {
+    const current = values[index];
+    const previous = values[index - 1];
+    const beforePrevious = values[index - 2];
+    if (current > 0 && previous > 0 && beforePrevious > 0 && previous !== beforePrevious) {
+      const ratio = Math.log(current / previous) / Math.log(previous / beforePrevious);
+      if (Number.isFinite(ratio)) rates.push(ratio);
+    }
+  }
+
+  if (!rates.length) return 'No definida';
+  const average = rates.reduce((sum, value) => sum + value, 0) / rates.length;
+  if (average > 1.8) return 'Cuadratica';
+  if (average > 1.1) return 'Superlineal';
+  return 'Lineal';
+};
 
 export function NewtonSystemSection() {
   const [dimensionText, setDimensionText] = useState('2');
@@ -53,6 +123,7 @@ export function NewtonSystemSection() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState('');
   const [graphZoom, setGraphZoom] = useState(1);
+  const [expandedIteration, setExpandedIteration] = useState<number | null>(0);
 
   useEffect(() => {
     try {
@@ -83,6 +154,10 @@ export function NewtonSystemSection() {
     }
   }, [history]);
 
+  useEffect(() => {
+    setExpandedIteration(result?.iterations.length ? 0 : null);
+  }, [result]);
+
   const preview = useMemo(() => {
     const parsedValues = initialValues.map((value) => parseFloat(value));
     if (functions.some((fn) => !fn.trim()) || parsedValues.some(Number.isNaN)) return null;
@@ -96,28 +171,16 @@ export function NewtonSystemSection() {
       return {
         fValues: functions.map((fn) => MathEvaluator.evaluateWithScope(fn, scope)),
         derivatives: functions.map((fn) =>
-          variables.map((variable) => MathEvaluator.getPartialDerivativeExpression(fn, variable))
+          variables.map((variable) => MathEvaluator.getPartialDerivativeExpression(fn, variable)),
         ),
         jacobian: functions.map((fn) =>
-          variables.map((variable) => MathEvaluator.partialDerivative(fn, variable, scope))
+          variables.map((variable) => MathEvaluator.partialDerivative(fn, variable, scope)),
         ),
       };
     } catch {
       return null;
     }
   }, [functions, initialValues, variables]);
-
-  const tableColumns = useMemo(() => {
-    if (!result?.iterations.length) return [];
-    return [
-      'iteration',
-      ...result.variables,
-      ...result.variables.map((variable) => `d${variable}`),
-      ...result.variables.map((variable) => `${variable}Next`),
-      'ea',
-      'er',
-    ];
-  }, [result]);
 
   const systemGraph = useMemo(() => {
     const points = result?.iterations
@@ -163,6 +226,20 @@ export function NewtonSystemSection() {
     };
   }, [graphZoom, result]);
 
+  const iterationSummary = useMemo(() => {
+    return result?.iterations.map((iteration) => ({
+      iteration: iteration.iteration,
+      vector: iteration.vector ?? [],
+      nextVector: iteration.nextVector ?? [],
+      delta: iteration.delta ?? [],
+      fValues: iteration.fValues ?? [],
+      jacobian: iteration.jacobian ?? [],
+      ea: iteration.ea,
+      er: iteration.er,
+      residual: residualNorm(iteration.fValues),
+    })) ?? [];
+  }, [result]);
+
   const zoomSystemGraph = (direction: 'in' | 'out') => {
     setGraphZoom((current) => {
       const next = direction === 'in' ? current * 1.25 : current / 1.25;
@@ -172,17 +249,40 @@ export function NewtonSystemSection() {
 
   const applyDimension = () => {
     const nextDimension = Number(dimensionText);
-    if (!Number.isInteger(nextDimension) || nextDimension < 2) {
-      toast.error('El tamano del sistema debe ser un entero mayor o igual a 2');
+    if (!Number.isInteger(nextDimension)) {
+      toast.error('El numero de ecuaciones debe ser un entero');
+      return;
+    }
+    if (nextDimension < MIN_DIMENSION) {
+      toast.error('El sistema debe tener al menos 2 ecuaciones');
+      return;
+    }
+    if (nextDimension > MAX_DIMENSION) {
+      setDimensionText(String(MAX_DIMENSION));
+      toast.error(`El maximo permitido es ${MAX_DIMENSION} ecuaciones`);
       return;
     }
 
-    const nextVariables = Array.from({ length: nextDimension }, (_, index) => variables[index] ?? variableName(index));
+    const nextState = buildDimensionState(nextDimension, variables, functions, initialValues);
     setDimension(nextDimension);
-    setVariables(nextVariables);
-    setFunctions(Array.from({ length: nextDimension }, (_, index) => functions[index] ?? defaultFunction(index, nextDimension)));
-    setInitialValues(Array.from({ length: nextDimension }, (_, index) => initialValues[index] ?? '1'));
+    setVariables(nextState.variables);
+    setFunctions(nextState.functions);
+    setInitialValues(nextState.initialValues);
     setResult(null);
+  };
+
+  const applyExample = (example: typeof EXAMPLES[number]) => {
+    const nextDimension = clampDimension(example.dimension);
+    const nextState = buildDimensionState(nextDimension, example.functions.map((_, index) => variableName(index)), example.functions, example.initialValues);
+
+    setDimension(nextDimension);
+    setDimensionText(String(nextDimension));
+    setVariables(nextState.variables);
+    setFunctions(nextState.functions);
+    setInitialValues(nextState.initialValues);
+    setResult(null);
+    setGraphZoom(1);
+    toast.success(`Ejemplo ${example.label} cargado`);
   };
 
   const updateFunction = (index: number, value: string) => {
@@ -194,6 +294,10 @@ export function NewtonSystemSection() {
   };
 
   const handleCalculate = () => {
+    if (dimension > MAX_DIMENSION) {
+      toast.error(`El maximo permitido es ${MAX_DIMENSION} ecuaciones`);
+      return;
+    }
     if (functions.some((fn) => !fn.trim())) return toast.error('Debes ingresar todas las ecuaciones del sistema');
 
     const parsedValues = initialValues.map((value) => parseFloat(value));
@@ -217,6 +321,7 @@ export function NewtonSystemSection() {
         ...current,
       ].slice(0, 15));
       setHistoryLabel('');
+      setGraphZoom(1);
       calculation.converged ? toast.success('Sistema resuelto con Newton-Raphson') : toast.warning(calculation.message);
     } catch (error: any) {
       toast.error('Error matematico: ' + error.message);
@@ -224,20 +329,30 @@ export function NewtonSystemSection() {
   };
 
   const loadCalculation = (item: SystemHistoryItem) => {
-    const loadedFunctions = item.functions ?? [item.functionF1, item.functionF2].filter(Boolean);
-    const loadedVariables = item.variables ?? ['x', 'y'];
-    const loadedInitialValues = item.params.initialValues ?? [item.params.x0, item.params.y0].filter((value: unknown) => value !== undefined);
-    const nextDimension = Math.max(loadedFunctions.length, loadedVariables.length, loadedInitialValues.length, 2);
+    const loadedFunctions = (item.functions ?? [item.functionF1, item.functionF2].filter(Boolean)).slice(0, MAX_DIMENSION);
+    const loadedVariables = (item.variables ?? ['x', 'y']).slice(0, MAX_DIMENSION);
+    const loadedInitialValues = (item.params.initialValues ?? [item.params.x0, item.params.y0].filter((value: unknown) => value !== undefined))
+      .slice(0, MAX_DIMENSION)
+      .map((value: unknown) => value?.toString() ?? '1');
+    const requestedDimension = Math.max(loadedFunctions.length, loadedVariables.length, loadedInitialValues.length, MIN_DIMENSION);
+    const nextDimension = clampDimension(requestedDimension);
+    const nextState = buildDimensionState(nextDimension, loadedVariables, loadedFunctions, loadedInitialValues);
 
     setDimension(nextDimension);
     setDimensionText(String(nextDimension));
-    setVariables(Array.from({ length: nextDimension }, (_, index) => loadedVariables[index] ?? variableName(index)));
-    setFunctions(Array.from({ length: nextDimension }, (_, index) => loadedFunctions[index] ?? defaultFunction(index, nextDimension)));
-    setInitialValues(Array.from({ length: nextDimension }, (_, index) => loadedInitialValues[index]?.toString() ?? '1'));
+    setVariables(nextState.variables);
+    setFunctions(nextState.functions);
+    setInitialValues(nextState.initialValues);
     setTol(item.params.tol?.toString() ?? '');
     setMaxIter(item.params.maxIter?.toString() ?? '');
     setResult(item);
-    toast.success('Calculo del sistema cargado del historial');
+    setGraphZoom(1);
+
+    if (requestedDimension > MAX_DIMENSION) {
+      toast.warning(`El historial fue ajustado a ${MAX_DIMENSION} ecuaciones como maximo`);
+    } else {
+      toast.success('Calculo del sistema cargado del historial');
+    }
   };
 
   const handleClearHistory = () => {
@@ -275,169 +390,309 @@ export function NewtonSystemSection() {
   };
 
   const solution = solutionValues(result);
+  const finalResidual = result?.iterations.length ? residualNorm(result.iterations[result.iterations.length - 1]?.fValues) : null;
+  const convergenceLabel = estimateConvergenceLabel(result);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      <div className="grid gap-6 xl:grid-cols-[1.45fr_0.95fr]">
-        <Card className="border-primary/10 bg-card/60 backdrop-blur-sm shadow-2xl">
-          <CardHeader className="border-b border-primary/10 bg-linear-to-r from-primary/10 via-transparent to-transparent">
-            <CardTitle className="text-3xl font-black tracking-tight text-primary">
-              Newton-Raphson para Sistemas
-            </CardTitle>
-            <CardDescription className="max-w-3xl text-base">
-              Resuelve sistemas no lineales cuadrados n x n con Jacobiana dinamica y pivoteo parcial.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-8 p-6">
-            <div className="grid gap-4 md:grid-cols-[1fr_auto]">
-              <div className="space-y-3">
-                <Label htmlFor="dimension-system" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">
-                  Numero de ecuaciones y variables
-                </Label>
-                <Input
-                  id="dimension-system"
-                  type="number"
-                  min={2}
-                  step={1}
-                  value={dimensionText}
-                  onChange={(event) => setDimensionText(event.target.value)}
-                  className="h-12 bg-background/50 border-primary/20"
-                />
-              </div>
-              <Button type="button" onClick={applyDimension} className="self-end h-12 px-6">
-                Aplicar tamano
-              </Button>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              {functions.map((fn, index) => (
-                <div className="space-y-3" key={index}>
-                  <Label htmlFor={`f-system-${index}`} className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">
-                    {`Ecuacion F${index + 1}(${variables.join(', ')})`}
-                  </Label>
-                  <Input
-                    id={`f-system-${index}`}
-                    value={fn}
-                    onChange={(event) => updateFunction(index, event.target.value)}
-                    className="h-12 bg-background/50 border-primary/20 font-mono text-base"
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {variables.map((variable, index) => (
-                <div className="space-y-3" key={variable}>
-                  <Label htmlFor={`initial-system-${variable}`} className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">
-                    {`${variable}0`}
-                  </Label>
-                  <Input
-                    id={`initial-system-${variable}`}
-                    type="number"
-                    step="any"
-                    value={initialValues[index]}
-                    onChange={(event) => updateInitialValue(index, event.target.value)}
-                    className="h-12 bg-background/50 border-primary/20"
-                  />
-                </div>
-              ))}
-              <div className="space-y-3">
-                <Label htmlFor="tol-system" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Tolerancia</Label>
-                <Input id="tol-system" type="number" step="any" value={tol} onChange={(event) => setTol(event.target.value)} className="h-12 bg-background/50 border-primary/20" />
-              </div>
-              <div className="space-y-3">
-                <Label htmlFor="iter-system" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Iteraciones max</Label>
-                <Input id="iter-system" type="number" value={maxIter} onChange={(event) => setMaxIter(event.target.value)} className="h-12 bg-background/50 border-primary/20" />
-              </div>
-            </div>
-
+    <div className="mx-auto max-w-7xl space-y-6">
+      <Card className="overflow-hidden border-primary/10 bg-card/60 shadow-2xl backdrop-blur-sm">
+        <CardHeader className="border-b border-primary/10 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.2),transparent_42%),linear-gradient(135deg,rgba(15,23,42,0.95),rgba(15,23,42,0.72))]">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="space-y-3">
-              <Label htmlFor="label-system" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Etiqueta del registro</Label>
-              <Input id="label-system" value={historyLabel} onChange={(event) => setHistoryLabel(event.target.value)} placeholder="Ej: sistema 5x5" className="h-12 bg-background/50 border-primary/20" />
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-3">
-              <div className="rounded-2xl border border-primary/10 bg-background/35 p-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">Paso 1</p>
-                <p className="mt-3 text-lg font-bold">Evalua F(Xk)</p>
-                <p className="mt-2 text-sm text-muted-foreground">Calcula el vector residual de las {dimension} ecuaciones.</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className="bg-primary/15 text-primary hover:bg-primary/15">Newton Multivariable</Badge>
+                <Badge variant="outline" className="border-primary/20 text-primary/80">Maximo 6 ecuaciones</Badge>
               </div>
-              <div className="rounded-2xl border border-primary/10 bg-background/35 p-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">Paso 2</p>
-                <p className="mt-3 text-lg font-bold">Construye J(Xk)</p>
-                <p className="mt-2 text-sm text-muted-foreground">Evalua todas las derivadas parciales para la matriz {dimension} x {dimension}.</p>
-              </div>
-              <div className="rounded-2xl border border-primary/10 bg-background/35 p-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">Paso 3</p>
-                <p className="mt-3 text-lg font-bold">Resuelve la correccion</p>
-                <p className="mt-2 text-sm text-muted-foreground">Usa eliminacion gaussiana con pivoteo para validar Jacobiana invertible.</p>
+              <div>
+                <CardTitle className="text-3xl font-black tracking-tight text-primary">
+                  Newton-Raphson para Ecuaciones No Lineales
+                </CardTitle>
+                <CardDescription className="mt-2 max-w-3xl text-base">
+                  Reorganicé esta vista para que se acerque al archivo de referencia, pero conservando el diseño y los componentes de nuestra app.
+                </CardDescription>
               </div>
             </div>
 
-            <Button onClick={handleCalculate} className="w-full py-8 text-xl font-bold shadow-xl hover:scale-[1.01] transition-transform bg-primary hover:bg-primary/85 text-primary-foreground">
-              Calcular Sistema {dimension}x{dimension}
-            </Button>
-          </CardContent>
-        </Card>
+            <div className="grid min-w-[260px] gap-3 sm:grid-cols-3 lg:w-[340px] lg:grid-cols-1">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Sistema</p>
+                <p className="mt-2 text-2xl font-black text-white">{dimension} x {dimension}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Variables</p>
+                <p className="mt-2 font-mono text-sm text-white">{variables.join(', ')}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Metodo</p>
+                <p className="mt-2 text-sm font-semibold text-white">Jacobiana dinamica + pivoteo parcial</p>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
 
+      <div className="grid gap-6 xl:grid-cols-[1.3fr_0.95fr]">
         <div className="space-y-6">
-          <Card className="border-primary/10 bg-card/55 backdrop-blur-sm">
+          <Card className="border-primary/10 bg-card/60 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-lg text-primary">Vista Inicial</CardTitle>
-              <CardDescription>Estado del sistema en el punto de arranque.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-2xl border border-primary/10 bg-background/30 p-4">
-                <p className="text-[10px] uppercase font-bold tracking-[0.25em] text-primary/60">Vector Inicial</p>
-                <p className="mt-2 font-mono text-sm">X0 = ({initialValues.join(', ')})</p>
-              </div>
-              <div className="rounded-2xl border border-primary/10 bg-background/30 p-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <FunctionSquare className="h-4 w-4 text-primary" />
-                  <p className="text-sm font-semibold">Sistema</p>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <CardTitle className="text-xl text-primary">Configuracion del sistema</CardTitle>
+                  <CardDescription>Define dimension, ecuaciones, aproximaciones iniciales y parametros del metodo.</CardDescription>
                 </div>
-                {functions.map((fn, index) => (
-                  <p className="font-mono text-xs break-words [overflow-wrap:anywhere]" key={index}>
-                    F{index + 1} = {fn || 'N/D'}
+                <div className="flex flex-wrap gap-2">
+                  {EXAMPLES.map((example) => (
+                    <Button
+                      key={example.label}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => applyExample(example)}
+                      className="border-primary/20 bg-background/40 hover:bg-primary/10"
+                    >
+                      {example.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              <div className="grid gap-4 md:grid-cols-[1fr_auto]">
+                <div className="space-y-3">
+                  <Label htmlFor="dimension-system" className="text-[12px] font-bold uppercase tracking-widest text-primary/70">
+                    Numero de ecuaciones
+                  </Label>
+                  <Input
+                    id="dimension-system"
+                    type="number"
+                    min={MIN_DIMENSION}
+                    max={MAX_DIMENSION}
+                    step={1}
+                    value={dimensionText}
+                    onChange={(event) => setDimensionText(event.target.value)}
+                    className="h-12 border-primary/20 bg-background/50"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    El sistema admite entre {MIN_DIMENSION} y {MAX_DIMENSION} ecuaciones no lineales.
                   </p>
+                </div>
+                <Button type="button" onClick={applyDimension} className="h-12 self-end px-6">
+                  Aplicar tamano
+                </Button>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {functions.map((fn, index) => (
+                  <div key={index} className="rounded-2xl border border-primary/10 bg-background/35 p-4">
+                    <Label htmlFor={`f-system-${index}`} className="text-[12px] font-bold uppercase tracking-widest text-primary/70">
+                      {`Ecuacion F${index + 1}(${variables.join(', ')})`}
+                    </Label>
+                    <Input
+                      id={`f-system-${index}`}
+                      value={fn}
+                      onChange={(event) => updateFunction(index, event.target.value)}
+                      className="mt-3 h-12 border-primary/20 bg-background/60 font-mono text-base"
+                    />
+                  </div>
                 ))}
               </div>
+
+              <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+                <div className="space-y-4 rounded-3xl border border-primary/10 bg-background/30 p-5">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-primary" />
+                    <p className="text-sm font-semibold text-primary">Vector inicial y control</p>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {variables.map((variable, index) => (
+                      <div className="space-y-2" key={variable}>
+                        <Label htmlFor={`initial-system-${variable}`} className="text-[11px] font-bold uppercase tracking-widest text-primary/70">
+                          {`${variable}0`}
+                        </Label>
+                        <Input
+                          id={`initial-system-${variable}`}
+                          type="number"
+                          step="any"
+                          value={initialValues[index]}
+                          onChange={(event) => updateInitialValue(index, event.target.value)}
+                          className="h-11 border-primary/20 bg-background/60"
+                        />
+                      </div>
+                    ))}
+                    <div className="space-y-2">
+                      <Label htmlFor="tol-system" className="text-[11px] font-bold uppercase tracking-widest text-primary/70">
+                        Tolerancia
+                      </Label>
+                      <Input
+                        id="tol-system"
+                        type="number"
+                        step="any"
+                        value={tol}
+                        onChange={(event) => setTol(event.target.value)}
+                        className="h-11 border-primary/20 bg-background/60"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="iter-system" className="text-[11px] font-bold uppercase tracking-widest text-primary/70">
+                        Iteraciones max
+                      </Label>
+                      <Input
+                        id="iter-system"
+                        type="number"
+                        value={maxIter}
+                        onChange={(event) => setMaxIter(event.target.value)}
+                        className="h-11 border-primary/20 bg-background/60"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 rounded-3xl border border-primary/10 bg-[linear-gradient(135deg,rgba(16,185,129,0.1),rgba(15,23,42,0.35))] p-5">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <p className="text-sm font-semibold text-primary">Flujo del metodo</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="rounded-2xl border border-primary/10 bg-background/35 p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Paso 1</p>
+                      <p className="mt-2 font-semibold">Evalua F(Xk)</p>
+                      <p className="mt-1 text-sm text-muted-foreground">Calcula el vector residual con las {dimension} ecuaciones ingresadas.</p>
+                    </div>
+                    <div className="rounded-2xl border border-primary/10 bg-background/35 p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Paso 2</p>
+                      <p className="mt-2 font-semibold">Construye J(Xk)</p>
+                      <p className="mt-1 text-sm text-muted-foreground">Deriva respecto a {variables.join(', ')} y forma la matriz {dimension} x {dimension}.</p>
+                    </div>
+                    <div className="rounded-2xl border border-primary/10 bg-background/35 p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Paso 3</p>
+                      <p className="mt-2 font-semibold">Corrige el vector</p>
+                      <p className="mt-1 text-sm text-muted-foreground">Resuelve J(Xk) ΔX = -F(Xk) para obtener X(k+1).</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label htmlFor="label-system" className="text-[12px] font-bold uppercase tracking-widest text-primary/70">
+                  Etiqueta del registro
+                </Label>
+                <Input
+                  id="label-system"
+                  value={historyLabel}
+                  onChange={(event) => setHistoryLabel(event.target.value)}
+                  placeholder="Ej: sistema 5x5"
+                  className="h-12 border-primary/20 bg-background/50"
+                />
+              </div>
+
+              <Button onClick={handleCalculate} className="w-full bg-primary py-8 text-xl font-bold text-primary-foreground shadow-xl transition-transform hover:scale-[1.01] hover:bg-primary/85">
+                Calcular Sistema {dimension}x{dimension}
+              </Button>
             </CardContent>
           </Card>
 
           <Card className="border-primary/10 bg-card/55 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-lg text-primary">Jacobiana en el Arranque</CardTitle>
-              <CardDescription>Matriz evaluada con el punto inicial actual.</CardDescription>
+              <CardTitle className="text-primary">Vista inicial del sistema</CardTitle>
+              <CardDescription>Equivale a la zona de entrada del archivo de referencia, integrada a nuestro layout.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-primary/10 bg-background/30 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Vector inicial</p>
+                  <p className="mt-3 font-mono text-sm">X0 = ({initialValues.join(', ')})</p>
+                </div>
+                <div className="rounded-2xl border border-primary/10 bg-background/30 p-4">
+                  <div className="flex items-center gap-2">
+                    <FunctionSquare className="h-4 w-4 text-primary" />
+                    <p className="text-sm font-semibold">Sistema</p>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    {functions.map((fn, index) => (
+                      <p key={index} className="font-mono text-xs break-words [overflow-wrap:anywhere]">
+                        F{index + 1} = {fn || 'N/D'}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-primary/10 bg-background/25 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-primary">Formula base</p>
+                    <p className="text-xs text-muted-foreground">Actualizacion iterativa para sistemas no lineales.</p>
+                  </div>
+                  <Badge variant="outline" className="border-primary/20 text-primary/70">n x n</Badge>
+                </div>
+                <div className="mt-4 rounded-2xl border border-primary/10 bg-slate-950/80 p-4 font-mono text-sm text-slate-100">
+                  X(k+1) = X(k) + ΔX
+                  <br />
+                  J(Xk) · ΔX = -F(Xk)
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-primary/10 bg-background/40 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Dimension</p>
+                    <p className="mt-2 text-lg font-bold">{dimension}</p>
+                  </div>
+                  <div className="rounded-2xl border border-primary/10 bg-background/40 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Tolerancia</p>
+                    <p className="mt-2 font-mono text-sm">{tol}</p>
+                  </div>
+                  <div className="rounded-2xl border border-primary/10 bg-background/40 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Max iter</p>
+                    <p className="mt-2 font-mono text-sm">{maxIter}</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card className="border-primary/10 bg-card/55 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-primary">Jacobiana en el arranque</CardTitle>
+              <CardDescription>Matriz visual y derivadas parciales evaluadas con el punto inicial actual.</CardDescription>
             </CardHeader>
             <CardContent>
               {preview ? (
                 <div className="space-y-4">
-                  <ScrollArea className="max-h-[360px] rounded-xl border border-primary/10 bg-background/30">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead></TableHead>
-                          {variables.map((variable) => <TableHead key={variable}>d/d{variable}</TableHead>)}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {preview.jacobian.map((row, rowIndex) => (
-                          <TableRow key={rowIndex}>
-                            <TableCell className="font-mono text-xs">F{rowIndex + 1}</TableCell>
-                            {row.map((value, colIndex) => (
-                              <TableCell className="font-mono text-xs" key={colIndex}>{formatNumber(value)}</TableCell>
-                            ))}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </ScrollArea>
+                  <div className="overflow-x-auto rounded-3xl border border-primary/10 bg-slate-950/80 p-4">
+                    <div className="grid min-w-max gap-2" style={{ gridTemplateColumns: `120px repeat(${variables.length}, minmax(128px, 1fr))` }}>
+                      <div className="rounded-xl border border-primary/10 bg-primary/10 p-3 text-center text-xs font-bold uppercase tracking-widest text-primary/70">
+                        J(X0)
+                      </div>
+                      {variables.map((variable) => (
+                        <div key={variable} className="rounded-xl border border-primary/10 bg-primary/10 p-3 text-center text-xs font-bold uppercase tracking-widest text-primary/70">
+                          d/d{variable}
+                        </div>
+                      ))}
+                      {preview.derivatives.map((row, rowIndex) => (
+                        <div key={`row-${rowIndex}`} className="contents">
+                          <div className="rounded-xl border border-primary/10 bg-white/5 p-3 text-center font-mono text-xs text-slate-200">
+                            F{rowIndex + 1}
+                          </div>
+                          {row.map((expression, colIndex) => (
+                            <div key={`${rowIndex}-${colIndex}`} className="rounded-xl border border-primary/10 bg-white/5 p-3">
+                              <p className="font-mono text-[11px] text-slate-100 break-words [overflow-wrap:anywhere]">
+                                {expression}
+                              </p>
+                              <p className="mt-2 font-mono text-[11px] text-primary">
+                                {formatNumber(preview.jacobian[rowIndex][colIndex])}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="grid gap-3 sm:grid-cols-2">
                     {preview.fValues.map((value, index) => (
-                      <div className="rounded-xl border border-primary/10 bg-primary/5 p-4" key={index}>
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">F{index + 1}(X0)</p>
-                        <p className="mt-2 font-mono text-sm">{formatNumber(value)}</p>
+                      <div key={index} className="rounded-2xl border border-primary/10 bg-primary/5 p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">F{index + 1}(X0)</p>
+                        <p className="mt-2 font-mono text-sm text-primary">{formatNumber(value)}</p>
                       </div>
                     ))}
                   </div>
@@ -456,7 +711,7 @@ export function NewtonSystemSection() {
                 <div className="flex items-center gap-3">
                   <LineChart className="h-4 w-4 text-primary" />
                   <div>
-                    <CardTitle className="text-lg text-primary">Grafica de Iteracion</CardTitle>
+                    <CardTitle className="text-lg text-primary">Grafica de iteracion</CardTitle>
                     <CardDescription>Proyeccion sobre las dos primeras variables.</CardDescription>
                   </div>
                 </div>
@@ -487,13 +742,13 @@ export function NewtonSystemSection() {
                   showAlgebraInput={false}
                   fallback={
                     <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
-                      Cargando proyección del sistema en GeoGebra...
+                      Cargando proyeccion del sistema en GeoGebra...
                     </div>
                   }
                 />
               ) : (
                 <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-primary/20 bg-black px-6 text-center text-sm text-muted-foreground lg:min-h-[36rem]">
-                  Calcula el sistema para ver la proyección en las dos primeras variables.
+                  Calcula el sistema para ver la proyeccion en las dos primeras variables.
                 </div>
               )}
             </CardContent>
@@ -507,75 +762,203 @@ export function NewtonSystemSection() {
             <CardHeader>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <CardTitle className="text-primary">Resultado del Sistema</CardTitle>
-                  <CardDescription>Resumen del vector aproximado y del estado de convergencia.</CardDescription>
+                  <CardTitle className="text-primary">Resultado del sistema</CardTitle>
+                  <CardDescription>Resumen de convergencia, solucion aproximada y lectura rapida del proceso.</CardDescription>
                 </div>
-                <Badge variant={result.converged ? 'default' : 'destructive'} className="text-sm px-3 py-1 bg-primary text-primary-foreground">
+                <Badge variant={result.converged ? 'default' : 'destructive'} className="bg-primary px-3 py-1 text-sm text-primary-foreground">
                   {result.converged ? 'Convergente' : 'No convergente'}
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {result.variables.map((variable, index) => (
-                  <div className="rounded-xl border border-primary/10 bg-background/50 p-4" key={variable}>
-                    <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">{variable}*</p>
-                    <p className="mt-2 font-mono text-xl font-bold text-primary">{solution[index] !== undefined ? formatNumber(solution[index]) : 'N/A'}</p>
-                  </div>
-                ))}
-                <div className="rounded-xl border border-primary/10 bg-background/50 p-4">
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Error Final</p>
-                  <p className="mt-2 font-mono text-xl font-bold text-secondary">{result.error !== null ? result.error.toExponential(4) : 'N/A'}</p>
+            <CardContent className="space-y-5">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+                <div className="rounded-2xl border border-primary/10 bg-background/40 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Iteraciones</p>
+                  <p className="mt-2 text-2xl font-black text-primary">{result.iterations.length}</p>
                 </div>
-                <div className="rounded-xl border border-primary/10 bg-background/50 p-4">
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Estado</p>
+                <div className="rounded-2xl border border-primary/10 bg-background/40 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Error final</p>
+                  <p className="mt-2 font-mono text-sm text-secondary">{result.error !== null ? result.error.toExponential(4) : 'N/A'}</p>
+                </div>
+                <div className="rounded-2xl border border-primary/10 bg-background/40 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">||F|| final</p>
+                  <p className="mt-2 font-mono text-sm text-primary">{finalResidual !== null ? finalResidual.toExponential(4) : 'N/A'}</p>
+                </div>
+                <div className="rounded-2xl border border-primary/10 bg-background/40 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Convergencia</p>
+                  <p className="mt-2 text-sm font-semibold">{convergenceLabel}</p>
+                </div>
+                <div className="rounded-2xl border border-primary/10 bg-background/40 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary/70">Estado</p>
                   <div className="mt-2 flex items-center gap-2">
                     {result.converged ? <CheckCircle2 className="h-5 w-5 text-primary" /> : <AlertCircle className="h-5 w-5 text-destructive" />}
                     <span className="text-xs font-medium leading-tight">{result.message}</span>
                   </div>
                 </div>
               </div>
+
+              <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+                <div className="rounded-3xl border border-primary/10 bg-background/30 p-5">
+                  <div className="flex items-center gap-2">
+                    <Sigma className="h-4 w-4 text-primary" />
+                    <p className="text-sm font-semibold text-primary">Solucion aproximada</p>
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {result.variables.map((variable, index) => (
+                      <div key={variable} className="rounded-2xl border border-primary/10 bg-background/50 p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{variable}*</p>
+                        <p className="mt-2 font-mono text-lg font-bold text-primary">
+                          {solution[index] !== undefined ? formatNumber(solution[index]) : 'N/A'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <ConvergenceChart
+                  iterations={result.iterations.map((iteration) => ({
+                    iteration: iteration.iteration,
+                    ea: iteration.ea,
+                  }))}
+                  className="h-full"
+                />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="border-primary/10 bg-card/50 backdrop-blur-sm">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Sigma className="h-5 w-5 text-primary" />
-                <div>
-                  <CardTitle className="text-primary">Flujo de Iteraciones</CardTitle>
-                  <CardDescription>Secuencia completa de Newton-Raphson para el sistema.</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[520px] rounded-xl border border-primary/10 bg-background/30">
-                <Table>
-                  <TableHeader className="sticky top-0 bg-white/95 z-10 border-b border-primary/20 backdrop-blur-sm">
-                    <TableRow>
-                      {tableColumns.map((column) => (
-                        <TableHead key={column} className="uppercase text-[10px] font-bold tracking-widest text-primary/70">{column}</TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {result.iterations.map((iteration, index) => (
-                      <TableRow key={index} className="hover:bg-primary/5 transition-colors">
-                        {tableColumns.map((column) => {
-                          const value = iteration[column];
-                          return (
-                            <TableCell key={column} className="font-mono text-xs py-3">
-                              {typeof value === 'number' ? (column === 'iteration' ? String(value) : formatNumber(value)) : String(value ?? '')}
-                            </TableCell>
-                          );
-                        })}
+          <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+            <Card className="border-primary/10 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-primary">Tabla de iteraciones</CardTitle>
+                <CardDescription>Vista resumida del proceso con norma residual y correccion por paso.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[540px] rounded-xl border border-primary/10 bg-background/30">
+                  <Table className="min-w-[860px]">
+                    <TableHeader className="sticky top-0 z-10 border-b border-primary/20 bg-white/95 backdrop-blur-sm">
+                      <TableRow>
+                        <TableHead className="uppercase text-[10px] font-bold tracking-widest text-primary/70">Iter</TableHead>
+                        <TableHead className="uppercase text-[10px] font-bold tracking-widest text-primary/70">X(k)</TableHead>
+                        <TableHead className="uppercase text-[10px] font-bold tracking-widest text-primary/70">||F(Xk)||</TableHead>
+                        <TableHead className="uppercase text-[10px] font-bold tracking-widest text-primary/70">||ΔX||∞</TableHead>
+                        <TableHead className="uppercase text-[10px] font-bold tracking-widest text-primary/70">Error Relativo</TableHead>
+                        <TableHead className="uppercase text-[10px] font-bold tracking-widest text-primary/70">X(k+1)</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            </CardContent>
-          </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {iterationSummary.map((iteration) => (
+                        <TableRow key={iteration.iteration} className="transition-colors hover:bg-primary/5">
+                          <TableCell className="py-3 font-mono text-xs">{iteration.iteration}</TableCell>
+                          <TableCell className="py-3 font-mono text-xs break-words [overflow-wrap:anywhere]">
+                            [{iteration.vector.map(formatNumber).join(', ')}]
+                          </TableCell>
+                          <TableCell className="py-3 font-mono text-xs">
+                            {iteration.residual !== null ? iteration.residual.toExponential(4) : 'N/A'}
+                          </TableCell>
+                          <TableCell className="py-3 font-mono text-xs">{iteration.ea.toExponential(4)}</TableCell>
+                          <TableCell className="py-3 font-mono text-xs">{iteration.er}</TableCell>
+                          <TableCell className="py-3 font-mono text-xs break-words [overflow-wrap:anywhere]">
+                            [{iteration.nextVector.map(formatNumber).join(', ')}]
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+
+            <Card className="border-primary/10 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-primary">Detalle por iteracion</CardTitle>
+                <CardDescription>Bloques expandibles inspirados en la vista detallada del archivo HTML.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[540px] pr-4">
+                  <div className="space-y-3">
+                    {iterationSummary.map((iteration, index) => {
+                      const isOpen = expandedIteration === index;
+
+                      return (
+                        <div key={iteration.iteration} className="rounded-3xl border border-primary/10 bg-background/30">
+                          <button
+                            type="button"
+                            onClick={() => setExpandedIteration(isOpen ? null : index)}
+                            className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                          >
+                            <div>
+                              <p className="text-sm font-semibold text-primary">Iteracion {iteration.iteration}</p>
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                ||F|| = {iteration.residual !== null ? iteration.residual.toExponential(4) : 'N/A'} · ||ΔX||∞ = {iteration.ea.toExponential(4)}
+                              </p>
+                            </div>
+                            <ChevronRight className={cn('h-4 w-4 text-primary transition-transform', isOpen && 'rotate-90')} />
+                          </button>
+
+                          {isOpen && (
+                            <div className="space-y-4 border-t border-primary/10 px-5 py-4">
+                              <div className="grid gap-3 sm:grid-cols-3">
+                                <div className="rounded-2xl border border-primary/10 bg-background/50 p-4">
+                                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">X(k)</p>
+                                  <p className="mt-2 font-mono text-xs break-words [overflow-wrap:anywhere]">
+                                    [{iteration.vector.map(formatNumber).join(', ')}]
+                                  </p>
+                                </div>
+                                <div className="rounded-2xl border border-primary/10 bg-background/50 p-4">
+                                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">F(Xk)</p>
+                                  <p className="mt-2 font-mono text-xs break-words [overflow-wrap:anywhere]">
+                                    [{iteration.fValues.map(formatNumber).join(', ')}]
+                                  </p>
+                                </div>
+                                <div className="rounded-2xl border border-primary/10 bg-background/50 p-4">
+                                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">ΔX</p>
+                                  <p className="mt-2 font-mono text-xs break-words [overflow-wrap:anywhere]">
+                                    [{iteration.delta.map(formatNumber).join(', ')}]
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="overflow-x-auto rounded-2xl border border-primary/10 bg-slate-950/85 p-4">
+                                <div className="grid min-w-max gap-2" style={{ gridTemplateColumns: `76px repeat(${variables.length}, minmax(104px, 1fr))` }}>
+                                  <div className="rounded-xl border border-primary/10 bg-primary/10 p-2 text-center text-[10px] font-bold uppercase tracking-widest text-primary/70">
+                                    J
+                                  </div>
+                                  {variables.map((variable) => (
+                                    <div key={`${iteration.iteration}-${variable}`} className="rounded-xl border border-primary/10 bg-primary/10 p-2 text-center text-[10px] font-bold uppercase tracking-widest text-primary/70">
+                                      d/d{variable}
+                                    </div>
+                                  ))}
+                                  {iteration.jacobian.map((row, rowIndex) => (
+                                    <div key={`${iteration.iteration}-row-${rowIndex}`} className="contents">
+                                      <div className="rounded-xl border border-primary/10 bg-white/5 p-2 text-center font-mono text-[11px] text-slate-200">
+                                        F{rowIndex + 1}
+                                      </div>
+                                      {row.map((value, colIndex) => (
+                                        <div key={`${iteration.iteration}-${rowIndex}-${colIndex}`} className="rounded-xl border border-primary/10 bg-white/5 p-2 text-center font-mono text-[11px] text-primary">
+                                          {formatNumber(value)}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="rounded-2xl border border-primary/10 bg-background/50 p-4">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">X(k+1)</p>
+                                <p className="mt-2 font-mono text-xs break-words [overflow-wrap:anywhere]">
+                                  [{iteration.nextVector.map(formatNumber).join(', ')}]
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
         </>
       )}
 
@@ -585,7 +968,7 @@ export function NewtonSystemSection() {
             <div className="flex items-center gap-3">
               <History className="h-5 w-5 text-primary" />
               <div>
-                <CardTitle className="text-primary">Historial del Sistema</CardTitle>
+                <CardTitle className="text-primary">Historial del sistema</CardTitle>
                 <CardDescription>Ultimos calculos guardados localmente en este navegador.</CardDescription>
               </div>
             </div>
@@ -614,13 +997,20 @@ export function NewtonSystemSection() {
                       <p className="text-xs font-bold uppercase tracking-widest text-primary/60">{new Date(item.timestamp).toLocaleString()}</p>
                       {editingId === item.id ? (
                         <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <Input value={editingValue} onChange={(event) => setEditingValue(event.target.value)} className="h-9 w-[220px] bg-background/50 border-primary/20" placeholder="Etiqueta del registro" />
-                          <Button size="sm" onClick={() => {
-                            setHistory((current) => current.map((entry) => (entry.id === item.id ? { ...entry, label: editingValue.trim() } : entry)));
-                            setEditingId(null);
-                            setEditingValue('');
-                          }}>Guardar</Button>
-                          <Button size="sm" variant="outline" onClick={() => { setEditingId(null); setEditingValue(''); }}>Cancelar</Button>
+                          <Input value={editingValue} onChange={(event) => setEditingValue(event.target.value)} className="h-9 w-[220px] border-primary/20 bg-background/50" placeholder="Etiqueta del registro" />
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setHistory((current) => current.map((entry) => (entry.id === item.id ? { ...entry, label: editingValue.trim() } : entry)));
+                              setEditingId(null);
+                              setEditingValue('');
+                            }}
+                          >
+                            Guardar
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => { setEditingId(null); setEditingValue(''); }}>
+                            Cancelar
+                          </Button>
                         </div>
                       ) : (
                         <>
@@ -635,7 +1025,7 @@ export function NewtonSystemSection() {
                   </div>
                   <div className="grid gap-2 md:grid-cols-2">
                     {(item.functions ?? [item.functionF1, item.functionF2]).map((fn, index) => (
-                      <p className="font-mono text-xs break-words [overflow-wrap:anywhere]" key={index}>F{index + 1} = {fn}</p>
+                      <p key={index} className="font-mono text-xs break-words [overflow-wrap:anywhere]">F{index + 1} = {fn}</p>
                     ))}
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -647,10 +1037,15 @@ export function NewtonSystemSection() {
                       <Pencil className="mr-2 h-4 w-4" />
                       Editar
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => {
-                      setHistory((current) => current.filter((entry) => entry.id !== item.id));
-                      toast.success('Registro eliminado');
-                    }} className="border-destructive/20 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setHistory((current) => current.filter((entry) => entry.id !== item.id));
+                        toast.success('Registro eliminado');
+                      }}
+                      className="border-destructive/20 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    >
                       <Trash2 className="mr-2 h-4 w-4" />
                       Eliminar
                     </Button>
