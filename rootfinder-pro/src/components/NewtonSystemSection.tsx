@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, ChevronRight, Download, FunctionSquare, History, Pencil, Sigma, Sparkles, Target, Trash2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ChevronRight, Download, FunctionSquare, History, LineChart, Pencil, Sigma, Sparkles, Target, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { GeoGebraGraph } from '@/components/GeoGebraGraph';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -193,6 +194,42 @@ export function NewtonSystemSection() {
       residual: residualNorm(iteration.fValues),
     })) ?? [];
   }, [result]);
+
+  const systemGraph = useMemo(() => {
+    if (dimension !== 2 || !result) return null;
+
+    const points = result.iterations
+      .map((item, index) => {
+        const vector = item.vector ?? [];
+        if (vector.length < 2) return null;
+        return { x: vector[0], y: vector[1], label: `I${index + 1}` };
+      })
+      .filter((point): point is { x: number; y: number; label: string } => point !== null);
+
+    const solution = solutionValues(result);
+    if (solution.length >= 2) {
+      points.push({ x: solution[0], y: solution[1], label: 'Sol' });
+    }
+
+    if (points.length === 0) return null;
+
+    const xs = points.map((point) => point.x);
+    const ys = points.map((point) => point.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const marginX = Math.max((maxX - minX) * 0.25, 0.5);
+    const marginY = Math.max((maxY - minY) * 0.25, 0.5);
+
+    return {
+      points,
+      xMin: minX - marginX,
+      xMax: maxX + marginX,
+      yMin: minY - marginY,
+      yMax: maxY + marginY,
+    };
+  }, [dimension, result]);
 
   const applyDimension = () => {
     const nextDimension = Number(dimensionText);
@@ -643,6 +680,47 @@ export function NewtonSystemSection() {
               ) : (
                 <div className="rounded-2xl border border-dashed border-primary/15 bg-background/30 p-4 text-sm text-muted-foreground">
                   Ajusta ecuaciones y valores iniciales para mostrar la Jacobiana.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/10 bg-card/55 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <LineChart className="h-4 w-4 text-primary" />
+                <div>
+                  <CardTitle className="text-primary">Grafica de GeoGebra</CardTitle>
+                  <CardDescription>
+                    La visualizacion se activa solo en sistemas 2x2, donde la trayectoria de Newton-Raphson puede leerse bien en el plano.
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {dimension !== 2 ? (
+                <div className="rounded-2xl border border-dashed border-primary/15 bg-background/30 p-4 text-sm text-muted-foreground">
+                  Para sistemas de 3 o mas variables no muestro esta grafica, porque una vista plana deja de representar bien el metodo y ya implicaria una visualizacion 3D aparte.
+                </div>
+              ) : systemGraph ? (
+                <GeoGebraGraph
+                  expressions={[]}
+                  points={systemGraph.points}
+                  xMin={systemGraph.xMin}
+                  xMax={systemGraph.xMax}
+                  yMin={systemGraph.yMin}
+                  yMax={systemGraph.yMax}
+                  heightClassName="h-[24rem] lg:h-[28rem]"
+                  showAlgebraInput={false}
+                  fallback={
+                    <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
+                      Cargando visualizacion del recorrido iterativo...
+                    </div>
+                  }
+                />
+              ) : (
+                <div className="rounded-2xl border border-dashed border-primary/15 bg-background/30 p-4 text-sm text-muted-foreground">
+                  Resuelve primero un sistema 2x2 para mostrar el recorrido iterativo en GeoGebra.
                 </div>
               )}
             </CardContent>
