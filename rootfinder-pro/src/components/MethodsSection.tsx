@@ -34,6 +34,7 @@ interface MethodsSectionProps {
 }
 
 type FixedPointMode = 'automatic' | 'manual';
+type RichardsonFormula = 'central' | 'forward' | 'backward';
 
 export function MethodsSection({
   f, a, b,
@@ -50,6 +51,10 @@ export function MethodsSection({
   const [manualCandidatesText, setManualCandidatesText] = useState('');
   const [selectedManualExpression, setSelectedManualExpression] = useState('');
   const [selectedAutoExpression, setSelectedAutoExpression] = useState('');
+  const [richardsonH, setRichardsonH] = useState('0.5');
+  const [richardsonLevels, setRichardsonLevels] = useState('5');
+  const [richardsonDerivative, setRichardsonDerivative] = useState<'1' | '2'>('1');
+  const [richardsonFormula, setRichardsonFormula] = useState<RichardsonFormula>('central');
 
   const parsedA = a.trim() === '' ? NaN : parseFloat(a);
   const parsedB = b.trim() === '' ? NaN : parseFloat(b);
@@ -160,11 +165,21 @@ export function MethodsSection({
 
     const t = parseFloat(tol);
     const m = parseInt(maxIter);
+<<<<<<< Updated upstream
     const valA = parseFloat(a);
     const valB = parseFloat(b);
     const valX0 = parseFloat(x0);
     const valX1 = parseFloat(x1);
     const valG1 = parseFloat(g1);
+=======
+    const valA = parseNumericInput(a);
+    const valB = parseNumericInput(b);
+    const valX0 = parseNumericInput(x0);
+    const valX1 = parseNumericInput(x1);
+    const valG1 = parseNumericInput(g1);
+    const valRichardsonH = parseNumericInput(richardsonH);
+    const valRichardsonLevels = parseInt(richardsonLevels);
+>>>>>>> Stashed changes
 
     if (isNaN(t) || t <= 0) return toast.error('La tolerancia debe ser un número positivo');
     if (isNaN(m) || m <= 0) return toast.error('El número máximo de iteraciones debe ser un entero positivo');
@@ -209,6 +224,25 @@ export function MethodsSection({
             activeFixedPointSelection.derivativeAtPoint
           );
           break;
+        case 'richardson':
+          if (isNaN(valX0)) return toast.error('Punto x0 invalido');
+          if (isNaN(valRichardsonH) || valRichardsonH <= 0) return toast.error('El paso h inicial debe ser positivo');
+          if (isNaN(valRichardsonLevels) || valRichardsonLevels <= 0) return toast.error('Los niveles deben ser un entero positivo');
+
+          result = NumericalMethods.richardson(
+            f,
+            valX0,
+            valRichardsonH,
+            valRichardsonLevels,
+            richardsonDerivative === '1' ? 1 : 2,
+            richardsonFormula,
+            t
+          );
+          break;
+        case 'romberg':
+          if (isNaN(valA) || isNaN(valB)) return toast.error('Limites A y B invalidos');
+          result = NumericalMethods.romberg(f, valA, valB, t, m);
+          break;
         default:
           return;
       }
@@ -229,7 +263,9 @@ export function MethodsSection({
     'false-position': 'Regla Falsa (Cerrado)',
     'newton-raphson': 'Newton-Raphson (Abierto)',
     'secant': 'Secante (Abierto)',
-    'fixed-point': 'Punto Fijo (Abierto)'
+    'fixed-point': 'Punto Fijo (Abierto)',
+    'richardson': 'Extrapolacion de Richardson',
+    'romberg': 'Integracion de Romberg'
   };
 
   const methodHints: Record<MethodType, string> = {
@@ -238,6 +274,8 @@ export function MethodsSection({
     'newton-raphson': 'Muy rápido si el punto inicial es bueno y f\'(x) no se anula.',
     'secant': 'Evita derivadas explícitas usando dos aproximaciones iniciales.',
     'fixed-point': 'Requiere una transformación g(x) con |g\'(x)| < 1 cerca de la raíz.',
+    'richardson': 'Refina diferencias finitas reduciendo h y cancelando el error dominante.',
+    'romberg': 'Integra con trapecios compuestos y una matriz triangular de extrapolacion.',
   };
 
   const renderCandidateCard = (candidate: FixedPointCandidate, selected: boolean, mode: 'automatic' | 'manual') => (
@@ -311,6 +349,8 @@ export function MethodsSection({
                       <SelectItem value="newton-raphson">Newton-Raphson (Abierto)</SelectItem>
                       <SelectItem value="secant">Secante (Abierto)</SelectItem>
                       <SelectItem value="fixed-point">Punto Fijo (Abierto)</SelectItem>
+                      <SelectItem value="richardson">Extrapolacion de Richardson</SelectItem>
+                      <SelectItem value="romberg">Integracion de Romberg</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -329,7 +369,9 @@ export function MethodsSection({
                     />
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="maxIter" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Iteraciones Máx</Label>
+                    <Label htmlFor="maxIter" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">
+                      {method === 'romberg' ? 'Niveles máximos' : 'Iteraciones Máx'}
+                    </Label>
                     <Input
                       id="maxIter"
                       type="number"
@@ -343,11 +385,11 @@ export function MethodsSection({
               </div>
 
               <div className="space-y-6">
-                {(method === 'newton-raphson' || method === 'secant' || method === 'fixed-point') ? (
+                {(method === 'newton-raphson' || method === 'secant' || method === 'fixed-point' || method === 'richardson') ? (
                   <div className="grid gap-3">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="x0" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">
-                        {method === 'secant' ? 'x0 (Inicial)' : 'x0 (Punto Inicial)'}
+                        {method === 'richardson' ? 'x0 (Punto de derivada)' : method === 'secant' ? 'x0 (Inicial)' : 'x0 (Punto Inicial)'}
                       </Label>
                       <Button
                         variant="ghost"
@@ -391,6 +433,90 @@ export function MethodsSection({
                       onChange={(e) => setX1(e.target.value)}
                       className="h-12 bg-background/50 border-primary/20 text-lg"
                     />
+                  </div>
+                )}
+
+                {method === 'richardson' && (
+                  <div className="rounded-3xl border border-primary/15 bg-background/35 p-5 space-y-5">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">Extrapolacion de Richardson</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Reduce el paso h a la mitad y combina aproximaciones para cancelar el error dominante.
+                      </p>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="grid gap-3">
+                        <Label htmlFor="richardson-h" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Paso h inicial</Label>
+                        <Input
+                          id="richardson-h"
+                          type="number"
+                          step="any"
+                          value={richardsonH}
+                          onChange={(event) => setRichardsonH(event.target.value)}
+                          className="h-12 bg-background/50 border-primary/20 text-lg"
+                        />
+                      </div>
+                      <div className="grid gap-3">
+                        <Label htmlFor="richardson-levels" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Niveles</Label>
+                        <Input
+                          id="richardson-levels"
+                          type="number"
+                          min="1"
+                          max="8"
+                          value={richardsonLevels}
+                          onChange={(event) => setRichardsonLevels(event.target.value)}
+                          className="h-12 bg-background/50 border-primary/20 text-lg"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="grid gap-3">
+                        <Label className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Derivada</Label>
+                        <Select value={richardsonDerivative} onValueChange={(value) => setRichardsonDerivative(value as '1' | '2')}>
+                          <SelectTrigger className="h-12 bg-background/50 border-primary/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1">Primera derivada</SelectItem>
+                            <SelectItem value="2">Segunda derivada</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-3">
+                        <Label className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Formula base</Label>
+                        <Select
+                          value={richardsonDerivative === '2' ? 'central' : richardsonFormula}
+                          onValueChange={(value) => setRichardsonFormula(value as RichardsonFormula)}
+                        >
+                          <SelectTrigger className="h-12 bg-background/50 border-primary/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="central">Central O(h^2)</SelectItem>
+                            <SelectItem value="forward">Hacia adelante O(h)</SelectItem>
+                            <SelectItem value="backward">Hacia atras O(h)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-primary/10 bg-primary/5 p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/60">Criterio</p>
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        La tolerancia compara diagonales consecutivas de la matriz R y usa la ultima diagonal como resultado.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {method === 'romberg' && (
+                  <div className="rounded-3xl border border-primary/15 bg-background/35 p-5">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">Integracion de Romberg</p>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                      La primera columna aplica trapecio compuesto con n = 1, 2, 4, 8... y las columnas siguientes aplican extrapolacion con factor 4^k.
+                    </p>
                   </div>
                 )}
 
@@ -535,7 +661,7 @@ export function MethodsSection({
               onClick={handleCalculate}
               className="w-full py-8 text-xl font-bold shadow-xl hover:scale-[1.01] transition-transform bg-primary hover:bg-primary/85 text-primary-foreground"
             >
-              Calcular Raíz
+              {method === 'richardson' ? 'Calcular Derivada' : method === 'romberg' ? 'Calcular Integral' : 'Calcular Raíz'}
             </Button>
           </CardContent>
         </Card>

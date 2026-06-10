@@ -1,0 +1,22 @@
+[
+  {
+    "id": "bcb394cc-f68c-499b-a892-7b75fc2127e7",
+    "userId": "0bdd336c-a9e8-48a6-8af9-2283d61dfb40",
+    "refreshTokenHash": "dab698996c5805134d304598553f491de6f7da125153101252d843171cfc6c16",
+    "expiresAt": 1779288208639,
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.119.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "createdAt": 1778683408661,
+    "updatedAt": 1778683408661
+  },
+  {
+    "id": "ac3b8581-4078-4b32-98bc-ce59a9879404",
+    "userId": "52669275-66d9-4000-ac0c-971c9abcedd6",
+    "refreshTokenHash": "6a232403958c50c921973cdeb826681094298cbb3be2f7dbe78fef141fe58edb",
+    "expiresAt": 1781703355826,
+    "ipAddress": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+    "createdAt": 1781098555863,
+    "updatedAt": 1781098555863
+  }
+]

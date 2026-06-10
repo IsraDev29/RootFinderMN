@@ -1,4 +1,20 @@
+<<<<<<< Updated upstream
 export type MethodType = 'bisection' | 'false-position' | 'newton-raphson' | 'secant' | 'fixed-point';
+=======
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
+
+export type MethodType =
+  | 'bisection'
+  | 'false-position'
+  | 'newton-raphson'
+  | 'secant'
+  | 'fixed-point'
+  | 'richardson'
+  | 'romberg';
+export type PolynomialMethodType = 'horner' | 'bairstow' | 'muller';
+export type HistoryModule = 'resolution' | 'polynomial' | 'systems' | 'taylor';
+>>>>>>> Stashed changes
 
 export type AppTab =
   | 'verification'
@@ -8,7 +24,8 @@ export type AppTab =
   | 'results'
   | 'history'
   | 'graph'
-  | 'systems';
+  | 'systems'
+  | 'calculo';  
 
 export type AppAccessTab = 'verification' | 'taylor' | 'methods' | 'polynomial';
 

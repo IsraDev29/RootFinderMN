@@ -24,6 +24,7 @@ import {
 } from './lib/historyKeys';
 import { AppAccessTab, AppTab, CalculationResult, MethodType } from './types';
 import { Toaster } from '@/components/ui/sonner';
+<<<<<<< Updated upstream
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Activity,
@@ -43,6 +44,22 @@ import { Button } from '@/components/ui/button';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { clearHistoryItems, deleteHistoryItem, fetchHistory, saveHistoryItem, updateHistoryLabel } from '@/lib/historyApi';
+=======
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AppShell } from '@/components/layout/AppShell';
+import { PolynomialSection } from '@/components/modules/polynomial/PolynomialSection';
+import { ResolutionWorkspace } from '@/components/modules/resolution/ResolutionWorkspace';
+import { NewtonSystemSection } from '@/components/modules/systems/NewtonSystemSection';
+import { CalculoWorkspace } from '@/components/modules/calculo/CalculoWorkspace';
+import { TaylorSection } from '@/components/modules/taylor/TaylorSection';
+import { WelcomeLanding } from '@/components/welcome/WelcomeLanding';
+import { useAuth } from '@/hooks/useAuth';
+import { useHistory } from '@/hooks/useHistory';
+import { useModuleHistoryCounts } from '@/hooks/useModuleHistoryCounts';
+import type { AuthUser } from '@/types';
+import { setActiveTab, toggleSidebar, useUiStore, markWelcomeAsSeen } from '@/stores/uiStore';
+import type { AppTab } from '@/types';
+>>>>>>> Stashed changes
 
 const HistorySection = lazy(() => import('./components/HistorySection').then((module) => ({ default: module.HistorySection })));
 const GraphSection = lazy(() => import('./components/GraphSection').then((module) => ({ default: module.GraphSection })));
@@ -115,6 +132,7 @@ function LandingHero({ onOpenApp, onOpenMethods, onLogin }: LandingHeroProps) {
       onPointerMove={handlePointerMove}
       style={heroStyle}
     >
+<<<<<<< Updated upstream
       <img
         src={universityImage}
         alt="Edificio principal de la universidad"
@@ -244,6 +262,20 @@ function LandingHero({ onOpenApp, onOpenMethods, onLogin }: LandingHeroProps) {
         </div>
       </div>
     </section>
+=======
+      {activeTab === 'taylor' ? (
+        <TaylorSection />
+      ) : activeTab === 'polynomial' ? (
+        <PolynomialSection />
+      ) : activeTab === 'systems' ? (
+        <NewtonSystemSection />
+      ) : activeTab === 'calculo' ? (
+        <CalculoWorkspace />
+      ) : (
+        <ResolutionWorkspace activeTab={activeTab} history={history} />
+      )}
+    </AppShell>
+>>>>>>> Stashed changes
   );
 }
 

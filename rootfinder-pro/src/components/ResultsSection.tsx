@@ -9,7 +9,21 @@ interface ResultsSectionProps {
   result: CalculationResult | null;
 }
 
+<<<<<<< Updated upstream
 export function ResultsSection({ result }: ResultsSectionProps) {
+=======
+const methodLabels: Record<CalculationResult['method'], string> = {
+  'bisection': 'Bisección',
+  'false-position': 'Regla falsa',
+  'newton-raphson': 'Newton-Raphson',
+  'secant': 'Secante',
+  'fixed-point': 'Punto fijo',
+  'richardson': 'Richardson',
+  'romberg': 'Romberg',
+};
+
+export function ResultsSection({ result, onViewGraph, onBackToMethods }: ResultsSectionProps) {
+>>>>>>> Stashed changes
   if (!result) {
     return (
       <Card className="max-w-4xl mx-auto border-dashed">

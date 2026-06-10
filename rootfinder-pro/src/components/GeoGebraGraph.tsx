@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 
+
 type GeoGebraPoint = {
   x: number;
   y: number;
