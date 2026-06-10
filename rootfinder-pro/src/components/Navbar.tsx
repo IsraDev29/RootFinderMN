@@ -39,6 +39,13 @@ const moduleTabs = [
     subtitle: 'Ecuaciones no lineales múltiples',
     color: 'rose',
   },
+  {
+    id: 'interpolation',
+    step: '5',
+    title: 'Interpolación y Diferenciación',
+    subtitle: 'Splines cúbicos · Diferencias finitas',
+    color: 'violet',
+  },
 ] as const;
 
 const resolutionSections = [
@@ -59,6 +66,8 @@ export function Navbar({ activeTab, setActiveTab, user, onLogout }: NavbarProps)
       ? 'taylor'
       : activeTab === 'polynomial'
       ? 'polynomial'
+      : activeTab === 'interpolation'
+      ? 'interpolation'
       : 'resolution';
 
   const tabColorClass = (tabId: string) => {
@@ -71,6 +80,8 @@ export function Navbar({ activeTab, setActiveTab, user, onLogout }: NavbarProps)
         return 'text-amber-400 border-amber-300/25 bg-amber-300/8';
       case 'systems':
         return 'text-rose-400 border-rose-300/25 bg-rose-300/8';
+      case 'interpolation':
+        return 'text-violet-400 border-violet-300/25 bg-violet-300/8';
       default:
         return 'text-primary border-primary/25 bg-primary/8';
     }
@@ -112,7 +123,7 @@ export function Navbar({ activeTab, setActiveTab, user, onLogout }: NavbarProps)
                     setMenuOpen((open) => !open);
                     return;
                   }
-                  setActiveTab(tab.id);
+                  setActiveTab(tab.id as AppTab);
                   setMenuOpen(false);
                 }}
                 className={cn(

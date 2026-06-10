@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CalculationResult } from '@/types';
+import { CalculationResult, AppTab } from '@/types';
 import {
   Trash2,
   Download,
@@ -50,7 +50,7 @@ interface HistorySectionProps {
   onClear: () => void;
   onLoad: (result: CalculationResult) => void;
   onUpdate: (id: string, label: string) => void;
-  onNavigateToTab: (tab: 'history' | 'taylor' | 'polynomial' | 'systems' | 'results' | 'methods' | 'graph' | 'verification') => void;
+  onNavigateToTab: (tab: AppTab) => void;
   view?: 'full' | 'resolution';
 }
 

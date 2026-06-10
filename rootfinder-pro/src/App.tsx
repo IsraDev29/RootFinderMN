@@ -48,6 +48,7 @@ const HistorySection = lazy(() => import('./components/HistorySection').then((mo
 const GraphSection = lazy(() => import('./components/GraphSection').then((module) => ({ default: module.GraphSection })));
 const NewtonSystemSection = lazy(() => import('./components/NewtonSystemSection').then((module) => ({ default: module.NewtonSystemSection })));
 const TaylorSection = lazy(() => import('./components/TaylorSection').then((module) => ({ default: module.TaylorSection })));
+const InterpolationSection = lazy(() => import('./components/InterpolationSection').then((module) => ({ default: module.InterpolationSection })));
 
 const getModuleTheme = (tab: AppTab) => {
   if (tab === 'taylor') {
@@ -71,6 +72,14 @@ const getModuleTheme = (tab: AppTab) => {
       title: 'Newton-Raphson Sistemas',
       subtitle: 'Ecuaciones no lineales múltiples',
       themeClass: 'tab-theme-systems',
+    };
+  }
+
+  if (tab === 'interpolation') {
+    return {
+      title: 'Interpolación y Diferenciación',
+      subtitle: 'Trazadores cúbicos · Diferencias finitas',
+      themeClass: 'tab-theme-interpolation',
     };
   }
 
@@ -260,7 +269,7 @@ export default function App() {
 
   const [page, setPage] = useState<AppPage>(getInitialPage());
   const [activeTab, setActiveTab] = useState<AppTab>('taylor');
-  const [pendingTab, setPendingTab] = useState<'verification' | 'taylor' | 'methods' | 'polynomial'>('taylor');
+  const [pendingTab, setPendingTab] = useState<AppAccessTab>('taylor');
   
   // Input States
   const [f, setF] = useState('x^2 - 4');
@@ -752,6 +761,9 @@ export default function App() {
                     )}
                     {activeTab === 'systems' && (
                       <NewtonSystemSection />
+                    )}
+                    {activeTab === 'interpolation' && (
+                      <InterpolationSection />
                     )}
                   </Suspense>
                 </motion.div>

@@ -8,9 +8,10 @@ export type AppTab =
   | 'results'
   | 'history'
   | 'graph'
-  | 'systems';
+  | 'systems'
+  | 'interpolation';
 
-export type AppAccessTab = 'verification' | 'taylor' | 'methods' | 'polynomial';
+export type AppAccessTab = 'verification' | 'taylor' | 'methods' | 'polynomial' | 'interpolation';
 
 export interface FixedPointCandidate {
   expression: string;
