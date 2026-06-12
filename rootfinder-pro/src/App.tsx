@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { AppShell } from '@/components/layout/AppShell';
+import { AdvancedMethodsSection } from '@/components/modules/advanced/AdvancedMethodsSection';
 import { PolynomialSection } from '@/components/modules/polynomial/PolynomialSection';
 import { ResolutionWorkspace } from '@/components/modules/resolution/ResolutionWorkspace';
 import { NewtonSystemSection } from '@/components/modules/systems/NewtonSystemSection';
@@ -17,6 +18,7 @@ import type { AppTab } from '@/types';
 function getModuleLabel(tab: AppTab): string {
   if (tab === 'taylor') return 'Aproximación con Taylor';
   if (tab === 'polynomial') return 'Raíces polinómicas';
+  if (tab === 'advanced') return 'Métodos lineales e interpolación';
   if (tab === 'systems') return 'Newton-Raphson para sistemas';
   return 'Métodos de resolución';
 }
@@ -50,6 +52,8 @@ function AuthenticatedWorkspace({ user, logout }: { user: AuthUser; logout: () =
         <TaylorSection />
       ) : activeTab === 'polynomial' ? (
         <PolynomialSection />
+      ) : activeTab === 'advanced' ? (
+        <AdvancedMethodsSection />
       ) : activeTab === 'systems' ? (
         <NewtonSystemSection />
       ) : (

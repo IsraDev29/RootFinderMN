@@ -1,13 +1,15 @@
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import type { IterationData } from '@/types';
 
 interface ConvergenceChartProps {
-  iterations: IterationData[];
+  iterations: Array<{
+    iteration: number;
+    ea?: number;
+  }>;
   className?: string;
 }
 
-function readErrorValue(iteration: IterationData): number | null {
+function readErrorValue(iteration: ConvergenceChartProps['iterations'][number]): number | null {
   const directError = iteration.ea;
   if (typeof directError === 'number' && Number.isFinite(directError)) {
     return Math.max(directError, Number.EPSILON);

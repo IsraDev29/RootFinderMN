@@ -9,12 +9,13 @@ export type AppTab =
   | 'taylor'
   | 'methods'
   | 'polynomial'
+  | 'advanced'
   | 'results'
   | 'history'
   | 'graph'
   | 'systems';
 
-export type AppAccessTab = 'taylor' | 'methods' | 'polynomial';
+export type AppAccessTab = 'taylor' | 'methods' | 'polynomial' | 'advanced';
 export type AppTheme = 'dark';
 
 export interface FixedPointCandidate {

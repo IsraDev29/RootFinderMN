@@ -43,16 +43,6 @@ type GeoGebraApi = {
   reset?: () => void;
 };
 
-type GeoGebraMathAppsModule = {
-  mathApps: {
-    create: (params: Record<string, unknown>) => {
-      inject: (target: Element | string) => {
-        getAPI: () => Promise<GeoGebraApi>;
-      };
-    };
-  };
-};
-
 function normalizeForGeoGebra(expression: string) {
   return expression
     .trim()
@@ -68,6 +58,33 @@ function normalizeForGeoGebra(expression: string) {
 
 function safeObjectName(prefix: string, index: number) {
   return `${prefix}_${index + 1}`;
+}
+
+function loadScriptOnce(src: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement | null;
+    if (existing) {
+      if (existing.dataset.loaded === 'true') {
+        resolve();
+        return;
+      }
+
+      existing.addEventListener('load', () => resolve(), { once: true });
+      existing.addEventListener('error', () => reject(new Error(`No se pudo cargar ${src}`)), { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.dataset.loaded = 'false';
+    script.addEventListener('load', () => {
+      script.dataset.loaded = 'true';
+      resolve();
+    }, { once: true });
+    script.addEventListener('error', () => reject(new Error(`No se pudo cargar ${src}`)), { once: true });
+    document.head.appendChild(script);
+  });
 }
 
 export function GeoGebraGraph({
@@ -186,70 +203,20 @@ export function GeoGebraGraph({
       setLoaded(true);
     };
 
-    const loadViaModule = async () => {
+    const loadViaDeployScript = async () => {
+      await loadScriptOnce('https://www.geogebra.org/apps/deployggb.js');
+      if (cancelled || !window.GGBApplet) throw new Error('GeoGebra no quedó disponible');
+
       const target = hostRef.current;
       if (!target) throw new Error('No se encontro el contenedor de GeoGebra');
-
       const rect = target.getBoundingClientRect();
       const width = Math.max(Math.round(rect.width || target.clientWidth || 640), 320);
       const height = Math.max(Math.round(rect.height || target.clientHeight || 448), 320);
-
-      const moduleUrl = 'https://www.geogebra.org/apps/latest/web3d/web3d.nocache.mjs';
-      const module = await import(/* @vite-ignore */ moduleUrl) as GeoGebraMathAppsModule;
-      const injected = module.mathApps.create({
-        appName: 'graphing',
-        width,
-        height,
-        showToolBar: false,
-        showMenuBar: false,
-        showAlgebraView: false,
-        showAlgebraInput,
-        showDockBar: false,
-        showZoomButtons: true,
-        showSuggestionButtons: false,
-        showKeyboardOnFocus: false,
-        allowStyleBar: false,
-        showResetIcon: false,
-        enableCAS: false,
-        enable3d: false,
-        borderColor: '#000000',
-        language: 'es',
-      }).inject(target);
-
-      const api = await injected.getAPI();
-      if (cancelled) return;
-      finalizeLoad(api);
-    };
-
-    const loadViaDeployScript = async () => {
-      await new Promise<void>((resolve, reject) => {
-        const checkReady = () => {
-          if (window.GGBApplet) {
-            resolve();
-            return true;
-          }
-          return false;
-        };
-
-        if (checkReady()) return;
-
-        const existing = document.querySelector('script[src="https://www.geogebra.org/apps/deployggb.js"]') as HTMLScriptElement | null;
-        if (existing) {
-          existing.addEventListener('load', () => resolve(), { once: true });
-          existing.addEventListener('error', () => reject(new Error('No se pudo cargar deployggb.js')), { once: true });
-          return;
-        }
-
-        reject(new Error('deployggb.js no disponible'));
-      });
-
-      if (cancelled || !window.GGBApplet) return;
-
       const parameters = {
         id: containerIdRef.current,
         appName: 'graphing',
-        width: Math.max(Math.round(hostRef.current?.clientWidth || 640), 320),
-        height: Math.max(Math.round(hostRef.current?.clientHeight || 448), 320),
+        width,
+        height,
         showToolBar: false,
         showMenuBar: false,
         showAlgebraView: false,
@@ -274,8 +241,7 @@ export function GeoGebraGraph({
       new window.GGBApplet(parameters, true).inject(containerIdRef.current);
     };
 
-    loadViaModule()
-      .catch(() => loadViaDeployScript())
+    loadViaDeployScript()
       .catch(() => {
         if (cancelled) return;
         window.clearTimeout(timeout);

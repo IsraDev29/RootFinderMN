@@ -1,8 +1,9 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { ConvergenceChart } from '@/components/shared/ConvergenceChart';
-import { MathGraph } from '@/components/shared/MathGraph';
+import { GeoGebraGraph } from '@/components/GeoGebraGraph';
 import { IterationTable } from '@/components/shared/IterationTable';
 import { MethodBadge } from '@/components/shared/MethodBadge';
+import { estimateFunctionViewport, normalizeRange } from '@/lib/graphUtils';
 import type { CalculationResult } from '@/types';
 
 interface ResultsSectionProps {
@@ -21,6 +22,15 @@ export function ResultsSection({ result, onBackToMethods }: ResultsSectionProps)
       </div>
     );
   }
+
+  const fallbackRange = {
+    xmin: -10,
+    xmax: 10,
+    ymin: -10,
+    ymax: 10,
+  };
+  const autoRange = estimateFunctionViewport(result.functionF, { root: result.root, fallback: fallbackRange });
+  const effectiveRange = normalizeRange(autoRange, fallbackRange);
 
   return (
     <div className="space-y-6">
@@ -73,11 +83,32 @@ export function ResultsSection({ result, onBackToMethods }: ResultsSectionProps)
         </CardContent>
       </Card>
 
-      <MathGraph
-        title="Gráfica de validación"
-        expressions={[result.functionF]}
-        points={result.root !== null ? [{ x: result.root, y: 0, label: 'Raíz' }] : []}
-      />
+      <Card className="overflow-hidden border-[var(--border)] bg-[var(--bg-surface)]">
+        <CardContent className="p-0">
+          <div className="border-b border-[var(--border)] px-6 py-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+              GeoGebra
+            </p>
+            <h3 className="mt-2 text-2xl font-extrabold text-[var(--text-primary)]">
+              Gráfica de validación
+            </h3>
+            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
+              Esta vista usa GeoGebra directamente para contrastar la función con la raíz calculada.
+            </p>
+          </div>
+          <div className="p-4">
+            <GeoGebraGraph
+              expressions={[result.functionF]}
+              points={result.root !== null ? [{ x: result.root, y: 0, label: 'Raíz' }] : []}
+              xMin={effectiveRange.xmin}
+              xMax={effectiveRange.xmax}
+              yMin={effectiveRange.ymin}
+              yMax={effectiveRange.ymax}
+              heightClassName="h-[30rem] lg:h-[36rem]"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       <ConvergenceChart iterations={result.iterations} />
       <IterationTable rows={result.iterations} title="Tabla de iteraciones" />

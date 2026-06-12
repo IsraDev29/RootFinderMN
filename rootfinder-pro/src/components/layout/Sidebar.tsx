@@ -1,4 +1,4 @@
-import { Calculator, FunctionSquare, History, Orbit, Sigma } from 'lucide-react';
+import { Calculator, FunctionSquare, History, Layers3, Orbit, Sigma } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { AppTab, AuthUser } from '@/types';
 
@@ -16,7 +16,7 @@ interface SidebarProps {
   user: AuthUser | null;
   collapsed?: boolean;
   onLogout?: () => void;
-  counts?: Partial<Record<'taylor' | 'methods' | 'polynomial' | 'systems', number>>;
+  counts?: Partial<Record<'taylor' | 'methods' | 'polynomial' | 'advanced' | 'systems', number>>;
   className?: string;
 }
 
@@ -24,7 +24,8 @@ const navigationItems: NavigationItem[] = [
   { id: 'taylor', order: 1, label: 'Taylor', icon: FunctionSquare },
   { id: 'methods', order: 2, label: 'Resolución', icon: Calculator },
   { id: 'polynomial', order: 3, label: 'Polinomios', icon: Sigma },
-  { id: 'systems', order: 4, label: 'Sistemas', icon: Orbit },
+  { id: 'advanced', order: 4, label: 'Avanzados', icon: Layers3 },
+  { id: 'systems', order: 5, label: 'Sistemas', icon: Orbit },
 ];
 
 const resolutionItems: NavigationItem[] = [
@@ -76,6 +77,8 @@ export function Sidebar({
               ? counts?.methods
               : item.id === 'polynomial'
               ? counts?.polynomial
+              : item.id === 'advanced'
+              ? counts?.advanced
               : counts?.systems;
 
           return (

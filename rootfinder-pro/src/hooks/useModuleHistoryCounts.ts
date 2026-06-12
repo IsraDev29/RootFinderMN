@@ -12,6 +12,7 @@ interface ModuleHistoryCounts {
   taylor: number;
   methods: number;
   polynomial: number;
+  advanced: number;
   systems: number;
 }
 
@@ -63,6 +64,7 @@ export function useModuleHistoryCounts(resolutionCount: number): ModuleHistoryCo
       taylor: taylorCount,
       methods: resolutionCount,
       polynomial: polynomialCount,
+      advanced: 0,
       systems: systemsCount,
     }),
     [polynomialCount, resolutionCount, systemsCount, taylorCount],

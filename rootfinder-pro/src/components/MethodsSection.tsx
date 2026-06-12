@@ -39,6 +39,14 @@ interface MethodsSectionProps {
 
 type FixedPointMode = 'automatic' | 'manual';
 
+function formatFiniteNumber(value: number | null | undefined, digits = 6): string {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return 'N/D';
+  }
+
+  return value.toFixed(digits);
+}
+
 export function MethodsSection({
   f, setF, a, setA, b, setB,
   method, setMethod,
@@ -167,6 +175,18 @@ export function MethodsSection({
   }, [manualCandidates, selectedManualExpression]);
 
   const activeFixedPointSelection = fixedPointMode === 'manual' ? selectedManualCandidate : automaticPreview.selected;
+
+  const safeFixedPointReferenceValue = useMemo(() => {
+    if (!activeFixedPointSelection || Number.isNaN(fixedPointProbe)) {
+      return 'N/D';
+    }
+
+    try {
+      return formatFiniteNumber(MathEvaluator.evaluate(activeFixedPointSelection.expression, fixedPointProbe));
+    } catch {
+      return 'No evaluable';
+    }
+  }, [activeFixedPointSelection, fixedPointProbe]);
 
   useEffect(() => {
     if (method !== 'fixed-point') return;
@@ -545,8 +565,11 @@ export function MethodsSection({
                   <div className="rounded-3xl border border-primary/15 bg-background/35 p-5 space-y-5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">Laboratorio de Punto Fijo</p>
-                        <p className="mt-1 text-sm text-muted-foreground">Compara transformadas automáticas y despejes manuales antes de iterar.</p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">Punto fijo</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          Selecciona transformadas <span className="font-mono text-foreground">g(x)</span> claras y revisa si cumplen{' '}
+                          <span className="font-mono text-foreground">|g'(x)| &lt; 1</span>.
+                        </p>
                       </div>
                       <div className="flex rounded-2xl border border-primary/15 bg-muted/40 p-1">
                         <button
@@ -574,7 +597,7 @@ export function MethodsSection({
                       </div>
                     </div>
 
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-4 md:grid-cols-[1fr_0.9fr]">
                       <div className="grid gap-3">
                         <Label htmlFor="g1" className="text-primary/70 font-bold uppercase text-[12px] tracking-widest">Punto de prueba g1</Label>
                         <Input
@@ -590,9 +613,9 @@ export function MethodsSection({
                       <div className="rounded-2xl border border-primary/10 bg-primary/5 p-4">
                         <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/60">Referencia</p>
                         <p className="mt-2 text-sm text-muted-foreground">
-                          Se evalúa convergencia con
+                          Evaluamos las candidatas usando
                           <span className="mx-2 font-mono text-primary">{Number.isNaN(fixedPointProbe) ? 'sin definir' : fixedPointProbe}</span>
-                          y el criterio `|g'(x)| &lt; 1`.
+                          como punto de control.
                         </p>
                       </div>
                     </div>
@@ -605,38 +628,18 @@ export function MethodsSection({
                           value={manualCandidatesText}
                           onChange={(e) => setManualCandidatesText(e.target.value)}
                           placeholder={'Escribe una transformada por línea.\nEjemplo:\n(2*x + exp(x)) / 3\nsqrt(3*x - exp(x))'}
-                          className="min-h-36 w-full rounded-2xl border border-primary/20 bg-background/60 px-4 py-3 font-mono text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                          className="min-h-28 w-full rounded-2xl border border-primary/20 bg-background/60 px-4 py-3 font-mono text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                         />
                         <p className="text-xs text-muted-foreground">
-                          Puedes pegar varios despejes del cuaderno. El sistema calcula `g(x)`, `|g'(x)|` y te deja elegir el que converge.
+                          Puedes pegar varios despejes. El sistema compara `g(x)` y `|g'(x)|` para ayudarte a escoger la mejor.
                         </p>
                       </div>
                     )}
 
-                    <div className="grid gap-4 2xl:grid-cols-[1.2fr_0.8fr]">
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          {fixedPointMode === 'automatic' ? <Wand2 className="h-4 w-4 text-primary" /> : <Sigma className="h-4 w-4 text-primary" />}
-                          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">
-                            {fixedPointMode === 'automatic' ? 'Transformadas propuestas' : 'Transformadas manuales evaluadas'}
-                          </p>
-                        </div>
-                        <div className="space-y-3 max-h-[26rem] overflow-y-auto overflow-x-hidden pr-2">
-                          {(fixedPointMode === 'automatic' ? automaticPreview.candidates : manualCandidates).length > 0 ? (
-                            (fixedPointMode === 'automatic' ? automaticPreview.candidates : manualCandidates)
-                              .slice(0, fixedPointMode === 'automatic' ? 8 : 20)
-                              .map((candidate) => renderCandidateCard(candidate, activeFixedPointSelection?.expression === candidate.expression, fixedPointMode))
-                          ) : (
-                            <div className="rounded-2xl border border-dashed border-primary/15 bg-background/30 p-4 text-sm text-muted-foreground">
-                              Aún no hay transformadas listas para evaluar con la configuración actual.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
+                    <div className="space-y-4">
                       <div className="space-y-3">
                         <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">Transformación activa</p>
-                        <div className="rounded-3xl border border-primary/15 bg-primary/6 p-5 space-y-4 min-h-[16rem] overflow-hidden">
+                        <div className="min-h-[16rem] rounded-3xl border border-primary/15 bg-[#0f172a] p-5 space-y-4">
                           {activeFixedPointSelection ? (
                             <>
                               <div className="flex items-center justify-between gap-3">
@@ -647,28 +650,87 @@ export function MethodsSection({
                                   {activeFixedPointSelection.convergent ? 'Lista para iterar' : 'Revisar criterio'}
                                 </span>
                               </div>
-                              <p className="font-mono text-sm break-words [overflow-wrap:anywhere]">{activeFixedPointSelection.expression}</p>
+                              <p className="font-mono text-sm break-words [overflow-wrap:anywhere] text-slate-100">{activeFixedPointSelection.expression}</p>
                               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                <div className="rounded-2xl border border-primary/10 bg-background/40 p-3">
-                                  <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">g(x_ref)</p>
-                                  <p className="mt-2 font-mono text-sm">
-                                    {!Number.isNaN(fixedPointProbe) ? MathEvaluator.evaluate(activeFixedPointSelection.expression, fixedPointProbe).toFixed(6) : 'N/D'}
-                                  </p>
+                                <div className="rounded-2xl border border-[#263041] bg-[#111827] p-3">
+                                  <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400">g(x_ref)</p>
+                                  <p className="mt-2 font-mono text-sm text-slate-100">{safeFixedPointReferenceValue}</p>
                                 </div>
-                                <div className="rounded-2xl border border-primary/10 bg-background/40 p-3">
-                                  <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">|g'(x_ref)|</p>
-                                  <p className={cn('mt-2 font-mono text-sm', activeFixedPointSelection.convergent ? 'text-primary' : 'text-destructive')}>
-                                    {(activeFixedPointSelection.derivativeAtPoint ?? Number.NaN).toFixed(6)}
+                                <div className="rounded-2xl border border-[#263041] bg-[#111827] p-3">
+                                  <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400">|g'(x_ref)|</p>
+                                  <p className={cn('mt-2 font-mono text-sm', activeFixedPointSelection.convergent ? 'text-emerald-300' : 'text-rose-300')}>
+                                    {formatFiniteNumber(activeFixedPointSelection.derivativeAtPoint)}
                                   </p>
                                 </div>
                               </div>
-                              <p className="text-xs text-muted-foreground">{activeFixedPointSelection.reason}</p>
+                              <p className="text-xs leading-6 text-slate-400">{activeFixedPointSelection.reason}</p>
                             </>
                           ) : (
                             <div className="flex h-full min-h-[12rem] items-center justify-center text-center text-sm text-muted-foreground">
                               Define `x0` o `g1` y una función válida para mostrar una candidata activa.
                             </div>
                           )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 border-t border-primary/10 pt-6">
+                        <div className="flex items-center gap-2">
+                          {fixedPointMode === 'automatic' ? <Wand2 className="h-4 w-4 text-primary" /> : <Sigma className="h-4 w-4 text-primary" />}
+                          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary/70">
+                            {fixedPointMode === 'automatic' ? 'Transformadas propuestas' : 'Transformadas manuales evaluadas'}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl border border-primary/10 bg-[#0f172a] overflow-hidden">
+                          <div className="grid grid-cols-[72px_1.35fr_0.55fr_0.6fr] border-b border-[#243047] bg-[#111827] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">
+                            <span>Sel</span>
+                            <span>g(x)</span>
+                            <span>|g'(x)|</span>
+                            <span>Estado</span>
+                          </div>
+                          <div className="max-h-[22rem] overflow-y-auto">
+                            {(fixedPointMode === 'automatic' ? automaticPreview.candidates : manualCandidates).length > 0 ? (
+                              (fixedPointMode === 'automatic' ? automaticPreview.candidates : manualCandidates)
+                                .slice(0, fixedPointMode === 'automatic' ? 8 : 20)
+                                .map((candidate) => {
+                                  const selected = activeFixedPointSelection?.expression === candidate.expression;
+                                  return (
+                                    <button
+                                      key={`${fixedPointMode}-${candidate.expression}`}
+                                      type="button"
+                                      onClick={() => {
+                                        if (fixedPointMode === 'manual') {
+                                          setSelectedManualExpression(candidate.expression);
+                                        } else {
+                                          setSelectedAutoExpression(candidate.expression);
+                                        }
+                                      }}
+                                      className={cn(
+                                        'grid w-full grid-cols-[72px_1.35fr_0.55fr_0.6fr] items-center border-b border-[#243047] px-4 py-3 text-left transition-colors',
+                                        selected ? 'bg-emerald-500/8 text-emerald-300' : 'hover:bg-white/4',
+                                      )}
+                                    >
+                                      <span className={cn('text-[11px] font-semibold', selected ? 'text-emerald-300' : 'text-slate-400')}>
+                                        {selected ? '✓' : candidate.convergent ? 'OK' : '—'}
+                                      </span>
+                                      <span className="font-mono text-xs break-words [overflow-wrap:anywhere] text-slate-100">
+                                        {candidate.expression}
+                                      </span>
+                                      <span className={cn('font-mono text-xs', candidate.convergent ? 'text-emerald-300' : 'text-rose-300')}>
+                                        {formatFiniteNumber(candidate.derivativeAtPoint)}
+                                      </span>
+                                      <span className="text-xs text-slate-400">
+                                        {candidate.convergent ? 'Converge' : 'No'}
+                                      </span>
+                                    </button>
+                                  );
+                                })
+                            ) : (
+                              <div className="px-4 py-6 text-sm text-muted-foreground">
+                                Aún no hay transformadas listas para evaluar con la configuración actual.
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -24,12 +24,17 @@ export class NumericalMethods {
   ): FixedPointCandidate[] {
     const candidates: FixedPointCandidate[] = [];
     const seen = new Set<string>();
-    const derivativeAtReference = MathEvaluator.derivative(f, referencePoint);
+    let derivativeAtReference: number | null = null;
     const baseLambdas: number[] = [];
 
-    if (Math.abs(derivativeAtReference) > 1e-8) {
-      const optimalLambda = -1 / derivativeAtReference;
-      baseLambdas.push(optimalLambda, optimalLambda * 0.5, optimalLambda * 1.5, optimalLambda * 0.25, optimalLambda * 0.75);
+    try {
+      derivativeAtReference = MathEvaluator.derivative(f, referencePoint);
+      if (Math.abs(derivativeAtReference) > 1e-8) {
+        const optimalLambda = -1 / derivativeAtReference;
+        baseLambdas.push(optimalLambda, optimalLambda * 0.5, optimalLambda * 1.5, optimalLambda * 0.25, optimalLambda * 0.75);
+      }
+    } catch {
+      derivativeAtReference = null;
     }
 
     baseLambdas.push(-1, -0.5, -0.25, -0.1, 0.1, 0.25, 0.5, 1);

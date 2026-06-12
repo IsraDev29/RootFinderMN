@@ -12,7 +12,7 @@ interface AppShellProps {
   onToggleSidebar: () => void;
   onNavigate: (tab: AppTab) => void;
   onLogout?: () => void;
-  counts?: Partial<Record<'taylor' | 'methods' | 'polynomial' | 'systems', number>>;
+  counts?: Partial<Record<'taylor' | 'methods' | 'polynomial' | 'advanced' | 'systems', number>>;
   children: ReactNode;
   className?: string;
 }

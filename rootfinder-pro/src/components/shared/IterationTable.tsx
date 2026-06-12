@@ -68,7 +68,7 @@ export function IterationTable<TRow extends IterationRow>({
     return (
       <div
         className={cn(
-          'rounded-3xl border border-[var(--border)] bg-white p-6 text-sm text-[var(--text-muted)]',
+          'rounded-3xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 text-sm text-[var(--text-muted)]',
           className,
         )}
       >
@@ -78,7 +78,7 @@ export function IterationTable<TRow extends IterationRow>({
   }
 
   return (
-    <section className={cn('rounded-3xl border border-[var(--border)] bg-white', className)}>
+    <section className={cn('rounded-3xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-2xl shadow-black/10', className)}>
       <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-4">
         <div>
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
@@ -103,13 +103,13 @@ export function IterationTable<TRow extends IterationRow>({
         style={{ maxHeight: Math.min(viewportHeight, MAX_TABLE_HEIGHT) }}
         onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}
       >
-        <table className="w-full table-fixed border-collapse">
-          <thead className="sticky top-0 z-10 bg-emerald-600">
+        <table className="w-full table-fixed border-collapse text-[var(--text-primary)]">
+          <thead className="sticky top-0 z-10 bg-[linear-gradient(180deg,rgba(16,185,129,0.96),rgba(5,150,105,0.96))]">
             <tr>
               {columns.map((column) => (
                 <th
                   key={column}
-                  className="border-b border-emerald-700 bg-emerald-600 px-3 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-white"
+                  className="border-b border-emerald-900/40 bg-transparent px-3 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-50"
                 >
                   {column}
                 </th>
@@ -132,14 +132,15 @@ export function IterationTable<TRow extends IterationRow>({
                   key={absoluteIndex}
                   className={cn(
                     'border-b border-[var(--border)] align-top',
-                    isLast && 'bg-[color:rgba(16,185,129,0.08)]',
+                    absoluteIndex % 2 === 0 ? 'bg-[var(--bg-elevated)]/70' : 'bg-[var(--bg-surface)]',
+                    isLast && 'bg-[color:rgba(16,185,129,0.10)]',
                   )}
                   style={{ height: ROW_HEIGHT }}
                 >
                   {columns.map((column) => (
                     <td
                       key={`${absoluteIndex}-${column}`}
-                      className="bg-white px-3 py-2 text-center font-mono text-xs text-[var(--text-primary)]"
+                      className="px-3 py-2 text-center font-mono text-xs text-[var(--text-primary)]"
                     >
                       {formatCellValue(row[column])}
                     </td>
