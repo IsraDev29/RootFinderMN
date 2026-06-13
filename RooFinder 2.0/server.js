@@ -7,6 +7,7 @@ const { initDB } = require('./db');
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const historyRoutes = require('./routes/history');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -19,7 +20,8 @@ app.use(cors({
     'http://127.0.0.1:4000',
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'null'
   ].filter(Boolean),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -31,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/history', historyRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({

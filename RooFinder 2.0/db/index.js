@@ -62,6 +62,32 @@ async function initDB() {
       )
     `;
 
+    await sql`
+      CREATE TABLE IF NOT EXISTS history_entries (
+        id          UUID PRIMARY KEY,
+        user_id     UUID NOT NULL,
+        section     VARCHAR(40) NOT NULL DEFAULT 'panel',
+        method_id   VARCHAR(60),
+        title       VARCHAR(160) NOT NULL,
+        summary     TEXT DEFAULT '',
+        result      TEXT DEFAULT '',
+        note        TEXT DEFAULT '',
+        status      VARCHAR(20) DEFAULT 'info',
+        created_at  TIMESTAMPTZ DEFAULT NOW(),
+        updated_at  TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+
+    await sql`ALTER TABLE history_entries ADD COLUMN IF NOT EXISTS user_id UUID NOT NULL DEFAULT gen_random_uuid()`;
+    await sql`ALTER TABLE history_entries ALTER COLUMN id SET NOT NULL`;
+    await sql`ALTER TABLE history_entries ALTER COLUMN title SET NOT NULL`;
+    await sql`ALTER TABLE history_entries ALTER COLUMN section SET DEFAULT 'panel'`;
+    await sql`ALTER TABLE history_entries ALTER COLUMN status SET DEFAULT 'info'`;
+    await sql`ALTER TABLE history_entries ALTER COLUMN created_at SET DEFAULT NOW()`;
+    await sql`ALTER TABLE history_entries ALTER COLUMN updated_at SET DEFAULT NOW()`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_history_entries_user_updated ON history_entries (user_id, updated_at DESC)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_history_entries_user_section ON history_entries (user_id, section)`;
+
     console.log('[DB] Tables ready');
   } catch (err) {
     console.error('[DB] Failed to initialize database:', err.message);
