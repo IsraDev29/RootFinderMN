@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: rootfinder-mn
+    env: node
+    plan: free
+    rootDir: "RooFinder 2.0"
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production

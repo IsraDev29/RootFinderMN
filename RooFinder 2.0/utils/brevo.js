@@ -1,11 +1,12 @@
 const fetch = require('node-fetch');
 require('dotenv').config();
+const { getAppUrl } = require('./app-url');
 
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 const API_KEY = process.env.BREVO_API_KEY;
 const FROM_EMAIL = process.env.BREVO_SENDER_EMAIL;
 const FROM_NAME = process.env.BREVO_SENDER_NAME || 'RootFinder';
-const APP_URL = process.env.APP_URL || 'http://localhost:4000';
+const APP_URL = getAppUrl();
 
 async function sendEmail({ to, subject, html }) {
   if (!API_KEY || !FROM_EMAIL) {
