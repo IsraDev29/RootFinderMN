@@ -1,5 +1,11 @@
 (function () {
-  const API = '/api/auth';
+  const API_BASE =
+    window.location.protocol === 'file:' ||
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000'
+      : window.location.origin;
+  const API = `${API_BASE}/api/auth`;
   const REDIRECT_TO = 'dashboard.html';
 
   const TOKEN_KEY = 'rf_token';

@@ -2088,7 +2088,13 @@ function buildMethodCards(){
    HISTORIAL CRUD
 ════════════════════════════════════════════════════ */
 const HISTORY_KEY = 'rf_history_v2';
-const HISTORY_API_PATH = window.location.protocol === 'file:' ? 'http://localhost:4000/api/history' : '/api/history';
+const API_BASE =
+  window.location.protocol === 'file:' ||
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:4000'
+    : window.location.origin;
+const HISTORY_API_PATH = `${API_BASE}/api/history`;
 const HISTORY_SECTIONS = [
   {id:'panel', label:'Panel principal'},
   {id:'clasicos', label:'Métodos clásicos'},
