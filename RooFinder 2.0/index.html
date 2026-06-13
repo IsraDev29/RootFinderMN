@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RootFinder — Plataforma de Métodos Numéricos</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* =============================================
+       TOKENS & VARIABLES
+    ============================================= */
+    :root {
+      --bg-void:       #020408;
+      --bg-deep:       #06090f;
+      --bg-panel:      rgba(8, 13, 22, 0.92);
+      --bg-surface:    rgba(13, 20, 35, 0.85);
+      --bg-input:      rgba(255,255,255,0.035);
+      --bg-input-focus:rgba(255,255,255,0.065);
+
+      --acid:          #00ffe0;       /* cian eléctrico — la firma */
+      --acid-dim:      rgba(0,255,224,0.12);
+      --acid-glow:     0 0 28px rgba(0,255,224,0.35), 0 0 70px rgba(0,255,224,0.12);
+
+      --violet:        #7c3aed;
+      --violet-bright: #a855f7;
+      --violet-dim:    rgba(124,58,237,0.18);
+
+      --ember:         #ff4d4d;
+      --ember-dim:     rgba(255,77,77,0.12);
+
+      --gold:          #f59e0b;
+
+      --text-prime:    #eef2ff;
+      --text-sub:      #8892a4;
+      --text-ghost:    rgba(255,255,255,0.22);
+
+      --border-base:   rgba(255,255,255,0.07);
+      --border-acid:   rgba(0,255,224,0.3);
+
+      --font-display:  'Syne', sans-serif;
+      --font-body:     'Space Grotesk', sans-serif;
+      --font-mono:     'JetBrains Mono', monospace;
+
+      --radius-sm:     6px;
+      --radius-md:     12px;
+      --radius-lg:     20px;
+      --radius-xl:     28px;
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--acid-dim); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--acid); }
+
+    ::selection { background: rgba(0,255,224,0.18); color: var(--text-prime); }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-void);
+      color: var(--text-prime);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* =============================================
+       BACKGROUND — GRID + PARTICLES
+    ============================================= */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* Grid */
+    .bg-layer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,224,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,224,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    /* Orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.55;
+      animation: orb-drift 18s ease-in-out infinite alternate;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,255,224,0.18) 0%, transparent 70%);
+      top: -200px; left: -150px;
+      animation-duration: 22s;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,58,237,0.22) 0%, transparent 70%);
+      bottom: -150px; right: -100px;
+      animation-duration: 18s;
+      animation-delay: -8s;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,77,77,0.12) 0%, transparent 70%);
+      top: 40%; left: 55%;
+      animation-duration: 26s;
+      animation-delay: -14s;
+    }
+
+    @keyframes orb-drift {
+      0%   { transform: translate(0,0) scale(1); }
+      50%  { transform: translate(40px, 30px) scale(1.06); }
+      100% { transform: translate(-25px, 50px) scale(0.96); }
+    }
+
+    /* Scan-line */
+    .scanline {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--acid), transparent);
+      opacity: 0;
+      animation: scan 6s linear infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0%   { top: -2px; opacity: 0; }
+      5%   { opacity: 0.6; }
+      95%  { opacity: 0.3; }
+      100% { top: 100vh; opacity: 0; }
+    }
+
+    /* =============================================
+       LAYOUT WRAPPER
+    ============================================= */
+    .page-shell {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =============================================
+       NAV BAR
+    ============================================= */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 36px;
+      border-bottom: 1px solid var(--border-base);
+      backdrop-filter: blur(20px);
+      background: rgba(2,4,8,0.6);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--acid) 0%, var(--violet-bright) 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: #000;
+      box-shadow: var(--acid-glow);
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-prime);
+    }
+
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-top: 2px;
+    }
+
+    .nav-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 4px 12px;
+      border: 1px solid var(--border-acid);
+      color: var(--acid);
+      border-radius: 100px;
+      letter-spacing: 1px;
+    }
+
+    /* =============================================
+       MAIN GRID
+    ============================================= */
+    .auth-shell {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 73px);
+    }
+
+    /* ---- LEFT PANEL: HERO ---- */
+    .hero-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--acid);
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(38px, 4vw, 58px);
+      font-weight: 800;
+      line-height: 1.06;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+    }
+
+    .hero-headline .highlight {
+      background: linear-gradient(90deg, var(--acid) 0%, var(--violet-bright) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-sub);
+      line-height: 1.7;
+      max-width: 420px;
+      margin-bottom: 48px;
+    }
+
+    /* Feature pills */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .feature-dot {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .feature-dot.acid  { background: var(--acid-dim);   color: var(--acid); }
+    .feature-dot.violet{ background: var(--violet-dim);  color: var(--violet-bright); }
+    .feature-dot.ember { background: var(--ember-dim);   color: var(--ember); }
+
+    .feature-label {
+      font-size: 14px;
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+
+    /* Authors */
+    .authors {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-base);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .author-avatars {
+      display: flex;
+    }
+
+    .author-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-void);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: -8px;
+      color: #000;
+    }
+
+    .author-avatar:first-child { margin-left: 0; }
+    .av-1 { background: linear-gradient(135deg, var(--acid), #00b8a9); }
+    .av-2 { background: linear-gradient(135deg, var(--violet-bright), #6366f1); }
+    .av-3 { background: linear-gradient(135deg, var(--gold), var(--ember)); }
+
+    .author-text {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .author-text strong {
+      color: var(--text-prime);
+      font-weight: 600;
+    }
+
+    /* ---- RIGHT PANEL: FORM ---- */
+    .form-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+      border-left: 1px solid var(--border-base);
+      background: var(--bg-panel);
+      backdrop-filter: blur(40px);
+      position: relative;
+    }
+
+    .form-card {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* Tabs */
+    .form-tabs {
+      display: flex;
+      gap: 2px;
+      background: rgba(255,255,255,0.04);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 36px;
+      border: 1px solid var(--border-base);
+    }
+
+    .form-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+      color: var(--text-sub);
+      user-select: none;
+    }
+
+    .form-tab.active {
+      background: linear-gradient(135deg, rgba(0,255,224,0.15), rgba(124,58,237,0.15));
+      color: var(--acid);
+      box-shadow: 0 0 16px rgba(0,255,224,0.12);
+      border: 1px solid var(--border-acid);
+    }
+
+    /* Header */
+    .form-header { margin-bottom: 32px; }
+
+    .form-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: 8px;
+    }
+
+    .form-title {
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-prime);
+      margin-bottom: 8px;
+    }
+
+    .form-subtitle {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+
+    /* Form groups */
+    .field-group {
+      margin-bottom: 18px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .field-wrap {
+      position: relative;
+    }
+
+    .field-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-ghost);
+      font-size: 14px;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .field-wrap:focus-within .field-icon {
+      color: var(--acid);
+    }
+
+    .form-control-rf {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-md);
+      padding: 14px 16px 14px 44px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-prime);
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .form-control-rf::placeholder {
+      color: var(--text-ghost);
+    }
+
+    .form-control-rf:focus {
+      background: var(--bg-input-focus);
+      border-color: var(--border-acid);
+      box-shadow: 0 0 0 3px rgba(0,255,224,0.1);
+    }
+
+    .form-control-rf.has-right-icon {
+      padding-right: 44px;
+    }
+
+    .field-action {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-ghost);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+
+    .field-action:hover { color: var(--acid); }
+
+    /* Password strength */
+    .strength-bar {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .strength-seg {
+      height: 3px;
+      flex: 1;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.08);
+      transition: background 0.3s;
+    }
+
+    .strength-seg.filled-weak   { background: var(--ember); }
+    .strength-seg.filled-mid    { background: var(--gold); }
+    .strength-seg.filled-strong { background: var(--acid); }
+
+    .strength-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-ghost);
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* Checkbox */
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .check-rf {
+      width: 16px; height: 16px;
+      accent-color: var(--acid);
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .check-label {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .check-label a { color: var(--acid); text-decoration: none; }
+    .check-label a:hover { text-decoration: underline; }
+
+    /* Submit button */
+    .btn-launch {
+      width: 100%;
+      padding: 15px 24px;
+      background: linear-gradient(135deg, var(--acid) 0%, #00c9aa 50%, var(--violet-bright) 100%);
+      background-size: 200% auto;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-launch::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.5s;
+    }
+
+    .btn-launch:hover {
+      background-position: right center;
+      box-shadow: var(--acid-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-launch:hover::before { transform: translateX(100%); }
+    .btn-launch:active { transform: translateY(0); }
+
+    .btn-launch .btn-arrow {
+      font-size: 16px;
+      transition: transform 0.25s;
+    }
+
+    .btn-launch:hover .btn-arrow { transform: translateX(4px); }
+
+    /* Divider */
+    .form-divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      color: var(--text-ghost);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      letter-spacing: 2px;
+    }
+
+    .form-divider::before,
+    .form-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-base);
+    }
+
+    /* Switch link */
+    .switch-row {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .switch-row a {
+      color: var(--acid);
+      text-decoration: none;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .switch-row a:hover { text-decoration: underline; }
+
+    /* =============================================
+       NOTIFICATIONS
+    ============================================= */
+    .toast-stack {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast-rf {
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-family: var(--font-body);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      pointer-events: all;
+      animation: toast-in 0.4s cubic-bezier(0.4,0,0.2,1) forwards;
+      max-width: 360px;
+    }
+
+    .toast-rf.success {
+      background: rgba(0, 255, 224, 0.08);
+      border: 1px solid var(--border-acid);
+      color: var(--acid);
+    }
+
+    .toast-rf.error {
+      background: rgba(255,77,77,0.08);
+      border: 1px solid rgba(255,77,77,0.3);
+      color: var(--ember);
+    }
+
+    .toast-rf.info {
+      background: rgba(124,58,237,0.08);
+      border: 1px solid rgba(124,58,237,0.3);
+      color: var(--violet-bright);
+    }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateX(20px) scale(0.96); }
+      to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    /* =============================================
+       LOADER
+    ============================================= */
+    .btn-loader {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* =============================================
+       VERIFICATION SCREEN
+    ============================================= */
+    .verify-screen {
+      display: none;
+      padding: 8px 0 0;
+    }
+
+    .verify-card {
+      width: 100%;
+      border: 1px solid var(--border-base);
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(8,13,22,0.96), rgba(5,9,15,0.98));
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+      padding: 28px;
+    }
+
+    .verify-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-sub);
+      margin-bottom: 10px;
+    }
+
+    .verify-icon {
+      width: 58px; height: 58px;
+      margin-bottom: 18px;
+      background: var(--acid-dim);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--acid);
+      border: 2px solid var(--border-acid);
+      box-shadow: 0 0 0 1px rgba(0,255,224,0.06), var(--acid-glow);
+    }
+
+    .verify-title {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.06;
+      margin-bottom: 12px;
+    }
+
+    .verify-desc {
+      font-size: 15px;
+      color: var(--text-sub);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .verify-note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-base);
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+
+    .verify-note i {
+      color: var(--acid);
+      flex-shrink: 0;
+    }
+
+    .verify-code-group {
+      margin-bottom: 20px;
+    }
+
+    .verify-email-display {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--acid);
+      background: var(--acid-dim);
+      border: 1px solid var(--border-acid);
+      border-radius: 999px;
+      padding: 9px 16px;
+      display: block;
+      width: 100%;
+      margin: 12px 0 18px;
+    }
+
+    .verify-screen .btn-launch {
+      margin-bottom: 14px;
+    }
+
+    .verify-screen .switch-row {
+      margin-top: 16px;
+    }
+
+    .btn-ghost {
+      background: none;
+      border: 1px solid var(--border-base);
+      border-radius: var(--radius-md);
+      color: var(--text-sub);
+      padding: 12px 20px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--border-acid);
+      color: var(--acid);
+    }
+
+
+
+    /* =============================================
+       ANIMATIONS — PAGE REVEAL
+    ============================================= */
+    .anim-slide {
+      opacity: 0;
+      transform: translateY(28px);
+      animation: reveal 0.6s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+
+    @keyframes reveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .d1 { animation-delay: 0.05s; }
+    .d2 { animation-delay: 0.12s; }
+    .d3 { animation-delay: 0.20s; }
+    .d4 { animation-delay: 0.28s; }
+    .d5 { animation-delay: 0.36s; }
+    .d6 { animation-delay: 0.44s; }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 900px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .hero-panel { display: none; }
+      .form-panel { border-left: none; padding: 40px 24px; }
+      .config-grid { grid-template-columns: 1fr; }
+      .top-nav { padding: 16px 20px; }
+    }
+
+    /* =============================================
+       MISC UTILITIES
+    ============================================= */
+    .text-acid   { color: var(--acid); }
+    .text-violet { color: var(--violet-bright); }
+    .text-ember  { color: var(--ember); }
+    .mono        { font-family: var(--font-mono); }
+
+    /* Form panels visibility */
+    .form-pane { display: none; }
+    .form-pane.active { display: block; }
+
+    /* Input error state */
+    .form-control-rf.is-error {
+      border-color: var(--ember);
+      box-shadow: 0 0 0 3px rgba(255,77,77,0.1);
+    }
+
+    .field-error {
+      font-size: 11px;
+      color: var(--ember);
+      margin-top: 6px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+      display: none;
+    }
+
+    .field-error.visible { display: block; }
+
+    /* Forgot password link */
+    .forgot-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -10px;
+      margin-bottom: 18px;
+    }
+
+    .forgot-link {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-ghost);
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: color 0.2s;
+    }
+
+    .forgot-link:hover { color: var(--acid); }
+  </style>
+</head>
+
+<body>
+
+<!-- Background FX -->
+<div class="bg-layer">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<div class="scanline"></div>
+
+<!-- Toast stack -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ========================
+     NAV
+========================= -->
+<div class="page-shell">
+  <nav class="top-nav">
+    <a class="nav-brand" href="#">
+      <div class="brand-icon">Σ</div>
+      <div class="brand-text">
+        <span class="brand-name">RootFinder</span>
+        <span class="brand-sub">Métodos Numéricos</span>
+      </div>
+    </a>
+    <div class="nav-badge">v2.1.0 — STABLE</div>
+  </nav>
+
+  <!-- ========================
+       AUTH SHELL
+  ========================= -->
+  <div class="auth-shell">
+
+    <!-- LEFT HERO -->
+    <div class="hero-panel">
+
+      <p class="hero-eyebrow anim-slide d1">Plataforma académica</p>
+
+      <h1 class="hero-headline anim-slide d2">
+        Donde convergen<br/>
+        las raíces del<br/>
+        <span class="highlight">análisis numérico.</span>
+      </h1>
+
+      <p class="hero-desc anim-slide d3">
+        Motor de cómputo científico con visualización en tiempo real
+        sobre GeoGebra. Newton-Raphson, bisección, interpolación y más —
+        en una sola plataforma de precisión real.
+      </p>
+
+      <div class="feature-list anim-slide d4">
+        <div class="feature-item">
+          <div class="feature-dot acid"><i class="fa-solid fa-flask-vial"></i></div>
+          <span class="feature-label">Laboratorio de análisis numérico interactivo</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot violet"><i class="fa-solid fa-chart-line"></i></div>
+          <span class="feature-label">Motor de iteraciones con convergencia visual (GeoGebra)</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot ember"><i class="fa-solid fa-bolt"></i></div>
+          <span class="feature-label">Cómputo numérico rápido y con trazabilidad de pasos</span>
+        </div>
+      </div>
+
+      <div class="authors anim-slide d5">
+        <div class="author-avatars">
+          <div class="author-avatar av-1">IE</div>
+          <div class="author-avatar av-2">LP</div>
+          <div class="author-avatar av-3">RA</div>
+        </div>
+        <div class="author-text">
+          Elaborado por<br/>
+          <strong>Israel Espinoza · Luis Pérez · Randall Arguello</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT FORM -->
+    <div class="form-panel">
+      <div class="form-card">
+
+        <!-- Tabs -->
+        <div class="form-tabs">
+          <div class="form-tab active" id="tab-login" onclick="switchTab('login')">Ingresar</div>
+          <div class="form-tab" id="tab-register" onclick="switchTab('register')">Registrarse</div>
+        </div>
+
+        <!-- ===== LOGIN PANE ===== -->
+        <div class="form-pane active" id="pane-login">
+
+          <div class="form-header">
+            <div class="form-eyebrow">// acceso seguro</div>
+            <div class="form-title">Entra al laboratorio</div>
+            <div class="form-subtitle">Accede a tus cálculos, historial y módulos matemáticos desde una sesión protegida.</div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="login-email">Correo electrónico</label>
+            <div class="field-wrap">
+              <i class="fa-regular fa-envelope field-icon"></i>
+              <input type="email" id="login-email" class="form-control-rf"
+                     placeholder="usuario@dominio.com" autocomplete="email" />
+            </div>
+            <div class="field-error" id="err-login-email">Correo inválido o vacío.</div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="login-pass">Contraseña</label>
+            <div class="field-wrap">
+              <i class="fa-solid fa-lock field-icon"></i>
+              <input type="password" id="login-pass" class="form-control-rf has-right-icon"
+                     placeholder="••••••••" autocomplete="current-password" />
+              <button class="field-action" type="button" onclick="togglePwd('login-pass', this)">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+            <div class="field-error" id="err-login-pass">Ingresa tu contraseña.</div>
+          </div>
+
+          <div class="forgot-row">
+            <a href="#" class="forgot-link" onclick="showForgot(); return false;">¿Olvidaste tu contraseña?</a>
+          </div>
+
+          <button class="btn-launch" onclick="doLogin()">
+            <span class="btn-text">Ingresar al sistema</span>
+            <i class="fa-solid fa-arrow-right btn-arrow"></i>
+            <div class="btn-loader" id="loader-login"></div>
+          </button>
+
+            <div class="switch-row">
+              ¿Aún no tienes cuenta? <a href="#" onclick="switchTab('register'); return false;">Regístrate</a>
+            </div>
+
+        </div>
+
+        <!-- ===== REGISTER PANE ===== -->
+        <div class="form-pane" id="pane-register">
+
+          <!-- Register Form -->
+          <div id="register-form-view">
+            <div class="form-header">
+              <div class="form-eyebrow">// nuevo acceso</div>
+              <div class="form-title">Abre tu workspace</div>
+              <div class="form-subtitle">Registro con verificación por correo y sesión segura vía refresh token.</div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="reg-username">Nombre de usuario</label>
+              <div class="field-wrap">
+                <i class="fa-regular fa-user field-icon"></i>
+                <input type="text" id="reg-username" class="form-control-rf"
+                       placeholder="mi_usuario_42" autocomplete="username" />
+              </div>
+              <div class="field-error" id="err-reg-username">Mínimo 3 caracteres, sin espacios.</div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="reg-email">Correo electrónico</label>
+              <div class="field-wrap">
+                <i class="fa-regular fa-envelope field-icon"></i>
+                <input type="email" id="reg-email" class="form-control-rf"
+                       placeholder="usuario@dominio.com" autocomplete="email" />
+              </div>
+              <div class="field-error" id="err-reg-email">Correo inválido o vacío.</div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="reg-pass">Contraseña</label>
+              <div class="field-wrap">
+                <i class="fa-solid fa-lock field-icon"></i>
+                <input type="password" id="reg-pass" class="form-control-rf has-right-icon"
+                       placeholder="••••••••" autocomplete="new-password"
+                       oninput="checkStrength(this.value)" />
+                <button class="field-action" type="button" onclick="togglePwd('reg-pass', this)">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+              <div class="strength-bar">
+                <div class="strength-seg" id="seg-1"></div>
+                <div class="strength-seg" id="seg-2"></div>
+                <div class="strength-seg" id="seg-3"></div>
+                <div class="strength-seg" id="seg-4"></div>
+              </div>
+              <div class="strength-label" id="strength-label">— escribe tu contraseña</div>
+              <div class="field-error" id="err-reg-pass">Mínimo 8 caracteres.</div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="reg-confirm">Confirmar contraseña</label>
+              <div class="field-wrap">
+                <i class="fa-solid fa-shield-halved field-icon"></i>
+                <input type="password" id="reg-confirm" class="form-control-rf has-right-icon"
+                       placeholder="••••••••" autocomplete="new-password" />
+                <button class="field-action" type="button" onclick="togglePwd('reg-confirm', this)">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+              <div class="field-error" id="err-reg-confirm">Las contraseñas no coinciden.</div>
+            </div>
+
+            <div class="check-row">
+              <input type="checkbox" id="reg-terms" class="check-rf" />
+              <label for="reg-terms" class="check-label">
+                Acepto los <a href="#">Términos de uso</a> y la
+                <a href="#">Política de privacidad</a> de RootFinder.
+              </label>
+            </div>
+
+            <button class="btn-launch" onclick="doRegister()">
+              <span class="btn-text">Crear cuenta</span>
+              <i class="fa-solid fa-arrow-right btn-arrow"></i>
+              <div class="btn-loader" id="loader-register"></div>
+            </button>
+
+            <div class="switch-row">
+              ¿Ya tienes cuenta? <a href="#" onclick="switchTab('login'); return false;">Inicia sesión</a>
+            </div>
+          </div>
+
+          <!-- Verification Screen -->
+          <div class="verify-screen" id="verify-screen">
+            <div class="verify-card">
+              <div class="verify-kicker">Verificar cuenta</div>
+              <div class="verify-icon">
+                <i class="fa-solid fa-envelope-open-text"></i>
+              </div>
+              <div class="verify-title">Confirma tu acceso</div>
+              <div class="verify-desc">
+                Ingresa el código enviado a tu correo para completar la autenticación.
+              </div>
+              <div class="verify-note">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Revisa tu correo y usa el código de verificación.</span>
+              </div>
+
+              <div class="field-group verify-code-group">
+                <label class="field-label" for="verify-code">Código de verificación</label>
+                <div class="field-wrap">
+                  <i class="fa-solid fa-key field-icon"></i>
+                  <input
+                    type="text"
+                    id="verify-code"
+                    class="form-control-rf"
+                    placeholder="••••••"
+                    autocomplete="one-time-code"
+                    inputmode="numeric"
+                    maxlength="6"
+                  />
+                </div>
+              </div>
+
+              <button class="btn-launch" onclick="verifyEmailCode()">
+                <span class="btn-text">Verificar y entrar</span>
+                <i class="fa-solid fa-arrow-right btn-arrow"></i>
+                <div class="btn-loader" id="loader-verify"></div>
+              </button>
+
+              <div class="verify-email-display" id="verify-email-display">usuario@dominio.com</div>
+
+              <button class="btn-ghost" onclick="resendVerification()">
+                <i class="fa-solid fa-rotate-right"></i> &nbsp;Reenviar código de verificación
+              </button>
+
+              <div class="switch-row">
+                <a href="#" onclick="switchTab('login'); return false;">Volver al inicio de sesión</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div><!-- /.auth-shell -->
+
+  </div><!-- /.auth-shell -->
+</div><!-- /.page-shell -->
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="auth.js"></script>
+
+</body>
+</html>

@@ -1,5 +1,0 @@
-{
-  "name": "RootFinder Pro",
-  "description": "Aplicación avanzada para encontrar raíces de funciones matemáticas mediante métodos numéricos (Bisección, Newton-Raphson, etc.) con gráficas en tiempo real e historial.",
-  "requestFramePermissions": []
-}

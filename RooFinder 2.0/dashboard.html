@@ -1,0 +1,3019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RootFinder MN — Panel de Métodos</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Manrope:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+<script src="https://www.geogebra.org/apps/deployggb.js"></script>
+<style>
+:root{
+  --bg-void:#0b0d10;--bg-deep:#10131a;--bg-panel:rgba(20,24,32,0.92);
+  --bg-surface:rgba(26,31,42,0.88);--bg-card:rgba(22,26,36,0.85);
+  --bg-input:rgba(255,255,255,0.045);--bg-input-focus:rgba(255,255,255,0.08);
+  --coral:#ff7a59;--coral-dim:rgba(255,122,89,0.12);--coral-glow:0 0 24px rgba(255,122,89,0.25),0 0 60px rgba(255,122,89,0.08);
+  --teal:#2dd4bf;--teal-dim:rgba(45,212,191,0.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,0.12);
+  --rose:#fb7185;--rose-dim:rgba(251,113,133,0.12);
+  --lilac:#c084fc;--lilac-dim:rgba(192,132,252,0.12);
+  --green:#4ade80;
+  --text-prime:#f1f3f6;--text-sub:#9aa3b2;--text-ghost:rgba(255,255,255,0.22);
+  --border-base:rgba(255,255,255,0.08);--border-accent:rgba(255,122,89,0.3);
+  --font-display:'Sora',sans-serif;--font-body:'Manrope',sans-serif;--font-mono:'Source Code Pro',monospace;
+  --radius-sm:6px;--radius-md:12px;--radius-lg:18px;--radius-xl:26px;
+  --sidebar-w:268px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--coral-dim);border-radius:10px;}
+::selection{background:rgba(255,122,89,0.18);color:var(--text-prime);}
+body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-prime);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* BG */
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-layer::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0);background-size:32px 32px;mask-image:radial-gradient(ellipse 85% 85% at 50% 40%,black 30%,transparent 100%);}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:0.35;}
+.orb-1{width:520px;height:520px;background:radial-gradient(circle,rgba(255,122,89,0.18) 0%,transparent 70%);top:-220px;left:-120px;}
+.orb-2{width:420px;height:420px;background:radial-gradient(circle,rgba(45,212,191,0.16) 0%,transparent 70%);bottom:-120px;right:-90px;}
+
+/* LAYOUT */
+.app-shell{position:relative;z-index:10;display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);height:100vh;background:var(--bg-panel);border-right:1px solid var(--border-base);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;backdrop-filter:blur(28px);}
+.sidebar-brand{padding:24px 20px 18px;border-bottom:1px solid var(--border-base);display:flex;align-items:center;gap:12px;}
+.brand-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--coral),var(--lilac));border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:17px;font-weight:700;color:#0b0d10;flex-shrink:0;box-shadow:var(--coral-glow);}
+.brand-name{font-family:var(--font-display);font-size:14px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;}
+.brand-sub{font-family:var(--font-mono);font-size:8px;letter-spacing:3px;color:var(--coral);}
+.sidebar-section{padding:18px 14px 6px;font-family:var(--font-mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-ghost);}
+.sidebar-scroll{overflow-y:auto;flex:1 1 auto;min-height:0;padding-bottom:8px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:var(--radius-md);margin:2px 10px;cursor:pointer;transition:all 0.2s;color:var(--text-sub);font-size:13px;font-weight:500;border:1px solid transparent;user-select:none;}
+.nav-item:hover{background:var(--coral-dim);color:var(--coral);border-color:rgba(255,122,89,0.12);}
+.nav-item.active{background:linear-gradient(135deg,rgba(255,122,89,0.14),rgba(192,132,252,0.1));color:var(--coral);border-color:var(--border-accent);}
+.nav-item .ni{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:11px;flex-shrink:0;}
+.nav-item.active .ni{background:var(--coral-dim);}
+.nav-item .badge-new{margin-left:auto;font-size:9px;background:var(--lilac);color:#0b0d10;padding:2px 7px;border-radius:100px;font-family:var(--font-mono);font-weight:700;}
+.sidebar-bottom{padding:16px 10px;border-top:1px solid var(--border-base);}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-md);background:var(--coral-dim);border:1px solid var(--border-accent);}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--lilac));display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:13px;font-weight:700;color:#0b0d10;flex-shrink:0;}
+.user-name{font-size:13px;font-weight:600;color:var(--text-prime);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-status{font-size:10px;color:var(--coral);font-family:var(--font-mono);}
+.btn-logout{margin-top:8px;width:100%;padding:9px;background:none;border:1px solid var(--border-base);border-radius:var(--radius-md);color:var(--text-ghost);font-size:12px;font-family:var(--font-mono);cursor:pointer;transition:all 0.2s;letter-spacing:1px;}
+.btn-logout:hover{border-color:rgba(251,113,133,0.4);color:var(--rose);}
+
+/* MAIN */
+.main-area{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{padding:16px 32px;border-bottom:1px solid var(--border-base);display:flex;align-items:center;justify-content:space-between;background:rgba(11,13,16,0.55);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--font-display);font-size:18px;font-weight:700;}
+.topbar-path{font-family:var(--font-mono);font-size:10px;color:var(--coral);letter-spacing:2px;text-transform:uppercase;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.topbar-badge{font-family:var(--font-mono);font-size:10px;padding:4px 12px;border:1px solid var(--border-accent);color:var(--coral);border-radius:100px;letter-spacing:1px;}
+.menu-toggle{display:none;width:36px;height:36px;border-radius:var(--radius-md);border:1px solid var(--border-base);background:var(--bg-input);align-items:center;justify-content:center;cursor:pointer;color:var(--text-sub);}
+
+/* CONTENT */
+.content{padding:32px;flex:1;}
+
+/* PANELS */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* WELCOME PANEL */
+.welcome-hero{padding:42px;background:linear-gradient(135deg,rgba(255,122,89,0.07) 0%,rgba(192,132,252,0.06) 100%);border:1px solid var(--border-accent);border-radius:var(--radius-xl);margin-bottom:28px;position:relative;overflow:hidden;}
+.welcome-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,122,89,0.12),transparent 70%);border-radius:50%;}
+.welcome-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--coral);margin-bottom:12px;}
+.welcome-title{font-family:var(--font-display);font-size:clamp(28px,3vw,40px);font-weight:800;margin-bottom:8px;}
+.welcome-title span{background:linear-gradient(90deg,var(--coral),var(--lilac));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.welcome-sub{color:var(--text-sub);font-size:15px;max-width:560px;line-height:1.7;}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--bg-card);border:1px solid var(--border-base);border-radius:var(--radius-lg);padding:20px;transition:border-color 0.2s;}
+.stat-card:hover{border-color:var(--border-accent);}
+.stat-label{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-ghost);margin-bottom:10px;}
+.stat-value{font-family:var(--font-display);font-size:28px;font-weight:800;line-height:1;}
+.stat-sub{font-size:11px;color:var(--text-ghost);margin-top:6px;}
+.stat-icon{float:right;width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+
+/* METHOD CARDS GRID */
+.methods-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
+.method-card{background:var(--bg-card);border:1px solid var(--border-base);border-radius:var(--radius-lg);padding:20px;cursor:pointer;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden;}
+.method-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--coral-dim),var(--lilac-dim));opacity:0;transition:opacity 0.25s;}
+.method-card:hover{border-color:var(--border-accent);transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,122,89,0.08);}
+.method-card:hover::before{opacity:1;}
+.method-card-inner{position:relative;z-index:1;}
+.mc-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:13px;}
+.mc-cat{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-ghost);margin-bottom:6px;}
+.mc-title{font-family:var(--font-display);font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text-prime);}
+.mc-desc{font-size:12px;color:var(--text-sub);line-height:1.55;}
+.mc-tag{display:inline-block;margin-top:11px;font-family:var(--font-mono);font-size:9px;padding:3px 10px;border-radius:100px;letter-spacing:1px;}
+
+/* SECTION TITLE */
+.section-title{font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:6px;}
+.section-sub{font-size:13px;color:var(--text-sub);margin-bottom:22px;}
+
+/* CALCULATOR PANEL */
+.calc-layout{display:grid;grid-template-columns:1fr;gap:24px;align-items:start;}
+.calc-layout > div:last-child{display:block;}
+.calc-form-card{background:var(--bg-card);border:1px solid var(--border-base);border-radius:var(--radius-lg);padding:24px;}
+.calc-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:4px;}
+.calc-desc{font-size:12px;color:var(--text-sub);margin-bottom:20px;line-height:1.6;}
+.field-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-sub);margin-bottom:7px;display:block;}
+.rf-input{width:100%;background:var(--bg-input);border:1px solid var(--border-base);border-radius:var(--radius-md);padding:11px 14px;font-family:var(--font-mono);font-size:13px;color:var(--text-prime);outline:none;transition:all 0.2s;margin-bottom:14px;}
+.rf-input:focus{background:var(--bg-input-focus);border-color:var(--border-accent);box-shadow:0 0 0 3px rgba(255,122,89,0.08);}
+.rf-input::placeholder{color:var(--text-ghost);}
+.rf-input.matrix-area{font-size:12px;min-height:90px;resize:vertical;}
+.rf-select{width:100%;background:var(--bg-input);border:1px solid var(--border-base);border-radius:var(--radius-md);padding:11px 14px;font-family:var(--font-mono);font-size:13px;color:var(--text-prime);outline:none;transition:all 0.2s;margin-bottom:14px;cursor:pointer;}
+.rf-select:focus{border-color:var(--border-accent);}
+.rf-select option{background:#171b25;color:var(--text-prime);}
+.btn-calc{width:100%;padding:13px;background:linear-gradient(135deg,var(--coral),var(--lilac));border:none;border-radius:var(--radius-md);font-family:var(--font-display);font-size:14px;font-weight:700;color:#0b0d10;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-calc:hover{opacity:0.92;box-shadow:var(--coral-glow);transform:translateY(-1px);}
+.btn-secondary{width:100%;padding:11px;background:none;border:1px solid var(--border-base);border-radius:var(--radius-md);font-family:var(--font-mono);font-size:12px;color:var(--text-sub);cursor:pointer;transition:all 0.2s;margin-top:8px;letter-spacing:1px;}
+.btn-secondary:hover{border-color:var(--border-accent);color:var(--coral);}
+
+/* RESULTS TABLE */
+.results-card{background:var(--bg-card);border:1px solid var(--border-base);border-radius:var(--radius-lg);padding:24px;}
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.results-title{font-family:var(--font-display);font-size:16px;font-weight:700;}
+.results-badge{font-family:var(--font-mono);font-size:10px;padding:4px 12px;border-radius:100px;letter-spacing:1px;}
+.rb-running{background:rgba(251,191,36,0.13);color:var(--amber);border:1px solid rgba(251,191,36,0.3);}
+.rb-ok{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.3);}
+.rb-err{background:rgba(251,113,133,0.1);color:var(--rose);border:1px solid rgba(251,113,133,0.3);}
+.rb-idle{background:rgba(255,255,255,0.04);color:var(--text-ghost);border:1px solid var(--border-base);}
+
+/* TABLE */
+.iter-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:11px;}
+.iter-table th{background:rgba(255,122,89,0.06);color:var(--coral);padding:9px 12px;text-align:right;border-bottom:1px solid var(--border-accent);letter-spacing:1px;font-weight:600;white-space:nowrap;}
+.iter-table th:first-child{text-align:center;}
+.iter-table td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--border-base);color:var(--text-sub);transition:background 0.15s;}
+.iter-table td:first-child{text-align:center;color:var(--lilac);}
+.iter-table tr:hover td{background:rgba(255,255,255,0.02);}
+.iter-table tr.converged td{color:var(--teal);}
+.table-wrap{max-height:320px;overflow-y:auto;overflow-x:auto;border-radius:var(--radius-md);border:1px solid var(--border-base);}
+
+/* SUMMARY BOX */
+.summary-box{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.sum-item{background:rgba(255,255,255,0.03);border:1px solid var(--border-base);border-radius:var(--radius-md);padding:12px;}
+.sum-label{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-ghost);margin-bottom:6px;}
+.sum-value{font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--coral);word-break:break-all;}
+.sum-sub{font-size:10px;color:var(--text-ghost);margin-top:3px;}
+
+/* GEOGEBRA CONTAINER */
+.ggb-wrap{background:var(--bg-card);border:1px solid var(--border-base);border-radius:var(--radius-lg);overflow:hidden;margin-top:0;grid-column:1 / -1;}
+.ggb-header{padding:14px 20px;border-bottom:1px solid var(--border-base);display:flex;align-items:center;gap:10px;}
+.ggb-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);}
+.ggb-title{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;color:var(--teal);}
+.ggb-body{min-height:360px;height:clamp(320px,42vw,420px);width:100%;position:relative;}
+#geogebra-container{width:100%;height:100%;min-height:100%;min-width:300px;}
+#geogebra-container .geogebra-canvas, #geogebra-container > div{width:100% !important;height:100% !important;}
+.ggb-skeleton{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--text-ghost);font-family:var(--font-mono);font-size:11px;letter-spacing:2px;background:var(--bg-deep);}
+.ggb-skeleton i{font-size:22px;color:var(--coral);animation:spin 1.2s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* FORMULA BOX */
+.formula-box{background:rgba(45,212,191,0.05);border:1px solid rgba(45,212,191,0.25);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:16px;font-family:var(--font-mono);font-size:12px;color:var(--teal);line-height:1.8;}
+.formula-box strong{color:var(--text-prime);}
+
+/* ERROR/IDLE STATES */
+.state-idle{text-align:center;padding:48px 24px;color:var(--text-ghost);}
+.state-idle i{font-size:36px;margin-bottom:16px;display:block;color:var(--coral-dim);}
+.state-idle p{font-size:13px;}
+
+/* METHOD HEADER */
+.method-header{display:flex;align-items:center;gap:16px;margin-bottom:24px;}
+.method-back{width:36px;height:36px;background:var(--bg-input);border:1px solid var(--border-base);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;color:var(--text-sub);font-size:14px;}
+.method-back:hover{border-color:var(--border-accent);color:var(--coral);}
+.method-badge{font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:100px;letter-spacing:1px;}
+
+/* STEP-BY-STEP BLOCK */
+.steps-box{margin-top:22px;padding:22px;background:rgba(255,122,89,0.04);border-left:4px solid var(--coral);border-radius:var(--radius-lg);border-top:1px solid rgba(255,122,89,0.12);border-right:1px solid rgba(255,122,89,0.12);border-bottom:1px solid rgba(255,122,89,0.12);}
+.steps-box h4{margin:0 0 12px 0;color:var(--coral);font-family:var(--font-display);font-size:16px;font-weight:700;}
+.steps-box p{margin:0 0 10px 0;font-size:13px;color:var(--text-sub);}
+.steps-box .formula-line{font-family:var(--font-mono);font-size:14px;margin-bottom:15px;padding-left:12px;border-left:2px solid var(--coral);}
+
+/* ANIMATIONS */
+.anim-in{opacity:0;transform:translateY(16px);animation:fadein 0.4s cubic-bezier(0.4,0,0.2,1) forwards;}
+@keyframes fadein{to{opacity:1;transform:translateY(0);}}
+.d1{animation-delay:0.05s;}.d2{animation-delay:0.12s;}.d3{animation-delay:0.2s;}.d4{animation-delay:0.28s;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s;}
+  .sidebar.open{transform:translateX(0);}
+  .main-area{margin-left:0;}
+  .calc-layout{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .menu-toggle{display:flex;}
+}
+
+/* TOAST */
+.toasts{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast-rf{padding:12px 18px;border-radius:var(--radius-md);font-size:13px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:toast-in 0.35s cubic-bezier(0.4,0,0.2,1) forwards;max-width:340px;}
+.toast-rf.success{background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.3);color:var(--teal);}
+.toast-rf.error{background:rgba(251,113,133,0.08);border:1px solid rgba(251,113,133,0.3);color:var(--rose);}
+.toast-rf.info{background:rgba(192,132,252,0.08);border:1px solid rgba(192,132,252,0.3);color:var(--lilac);}
+@keyframes toast-in{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
+
+/* COLORS */
+.c-coral{color:var(--coral);}.c-teal{color:var(--teal);}.c-lilac{color:var(--lilac);}.c-amber{color:var(--amber);}.c-rose{color:var(--rose);}.c-green{color:var(--green);}
+.bg-coral{background:var(--coral-dim);}.bg-teal{background:var(--teal-dim);}.bg-lilac{background:var(--lilac-dim);}.bg-amber{background:var(--amber-dim);}.bg-rose{background:var(--rose-dim);}
+
+/* MINI MATRIX GRID (Gauss/Jacobi inputs) */
+.matrix-builder{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.matrix-row{display:grid;gap:6px;}
+.matrix-cell{background:var(--bg-input);border:1px solid var(--border-base);border-radius:var(--radius-sm);padding:8px 6px;font-family:var(--font-mono);font-size:12px;color:var(--text-prime);text-align:center;outline:none;}
+.matrix-cell:focus{border-color:var(--border-accent);}
+.matrix-cell.bvec{border-color:rgba(45,212,191,0.3);}
+.dim-controls{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+.dim-controls input{width:60px;}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+<div class="toasts" id="toasts"></div>
+
+<div class="app-shell">
+
+<!-- ═══════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">Σ</div>
+    <div>
+      <div class="brand-name">RootFinder</div>
+      <div class="brand-sub">MÉTODOS NUMÉRICOS</div>
+    </div>
+  </div>
+
+  <div class="sidebar-scroll">
+
+  <div class="sidebar-section">Inicio</div>
+  <div class="nav-item active" onclick="showPanel('home')">
+    <div class="ni bg-coral c-coral"><i class="fa-solid fa-grip"></i></div>
+    Panel principal
+  </div>
+
+  <div class="sidebar-section">Métodos avanzados</div>
+  <div class="nav-item" onclick="openMethod('muller')">
+    <div class="ni bg-lilac c-lilac"><i class="fa-solid fa-wave-square"></i></div>
+    Método de Müller
+  </div>
+  <div class="nav-item" onclick="openMethod('bairstow')">
+    <div class="ni bg-teal c-teal"><i class="fa-solid fa-chart-line"></i></div>
+    Método de Bairstow
+  </div>
+  <div class="nav-item" onclick="openMethod('horner_newton')">
+    <div class="ni bg-amber c-amber"><i class="fa-solid fa-divide"></i></div>
+    Horner-Newton
+  </div>
+  <div class="nav-item" onclick="openMethod('newton_multi')">
+    <div class="ni bg-rose c-rose"><i class="fa-solid fa-diagram-project"></i></div>
+    Newton-Raphson Multi
+  </div>
+  <div class="nav-item" onclick="openMethod('gauss_seidel')">
+    <div class="ni bg-coral c-coral"><i class="fa-solid fa-table-cells"></i></div>
+    Gauss-Seidel
+  </div>
+  <div class="nav-item" onclick="openMethod('jacobi')">
+    <div class="ni bg-lilac c-lilac"><i class="fa-solid fa-table-cells-large"></i></div>
+    Método de Jacobi
+  </div>
+
+  <div class="sidebar-section">Métodos clásicos</div>
+  <div class="nav-item" onclick="openMethod('biseccion')">
+    <div class="ni bg-teal c-teal"><i class="fa-solid fa-arrows-left-right-to-line"></i></div>
+    Bisección
+  </div>
+  <div class="nav-item" onclick="openMethod('regula')">
+    <div class="ni bg-amber c-amber"><i class="fa-solid fa-chart-area"></i></div>
+    Regla Falsa
+  </div>
+  <div class="nav-item" onclick="openMethod('newton')">
+    <div class="ni bg-rose c-rose"><i class="fa-solid fa-arrow-trend-up"></i></div>
+    Newton-Raphson Uni
+  </div>
+  <div class="nav-item" onclick="openMethod('secante')">
+    <div class="ni bg-coral c-coral"><i class="fa-solid fa-square-root-variable"></i></div>
+    Secante
+  </div>
+  <div class="nav-item" onclick="openMethod('punto_fijo')">
+    <div class="ni bg-lilac c-lilac"><i class="fa-solid fa-bullseye"></i></div>
+    Punto Fijo
+  </div>
+  <div class="nav-item" onclick="openMethod('taylor')">
+    <div class="ni bg-teal c-teal"><i class="fa-solid fa-list-ol"></i></div>
+    Serie de Taylor
+  </div>
+
+  <div class="sidebar-section">Interpolación</div>
+  <div class="nav-item" onclick="openMethod('newton_interp')">
+    <div class="ni bg-amber c-amber"><i class="fa-solid fa-superscript"></i></div>
+    Polinomio de Newton
+  </div>
+  <div class="nav-item" onclick="openMethod('lagrange')">
+    <div class="ni bg-rose c-rose"><i class="fa-solid fa-shapes"></i></div>
+    Polinomio de Lagrange
+  </div>
+  <div class="nav-item" onclick="openMethod('splines')">
+    <div class="ni bg-coral c-coral"><i class="fa-solid fa-chart-line"></i></div>
+    Trazadores Cúbicos
+  </div>
+
+  <div class="sidebar-section">Diferenciación</div>
+  <div class="nav-item" onclick="openMethod('diferenciacion')">
+    <div class="ni bg-lilac c-lilac"><i class="fa-solid fa-chart-line"></i></div>
+    Diferenciación Numérica
+  </div>
+  <div class="nav-item" onclick="openMethod('richardson')">
+    <div class="ni bg-teal c-teal"><i class="fa-solid fa-layer-group"></i></div>
+    Extrapolación de Richardson
+  </div>
+
+  <div class="sidebar-section">Integración</div>
+  <div class="nav-item" onclick="openMethod('trapecio')">
+    <div class="ni bg-amber c-amber"><i class="fa-solid fa-square"></i></div>
+    Regla del Trapecio
+  </div>
+  <div class="nav-item" onclick="openMethod('simpson')">
+    <div class="ni bg-rose c-rose"><i class="fa-solid fa-chart-area"></i></div>
+    Simpson 1/3 y 3/8
+  </div>
+
+  <div class="sidebar-section">Teoremas</div>
+  <div class="nav-item" onclick="openMethod('bolzano')">
+    <div class="ni bg-coral c-coral"><i class="fa-solid fa-scale-balanced"></i></div>
+    Teorema de Bolzano
+  </div>
+
+  </div><!-- /.sidebar-scroll -->
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-avatar" id="sideUserAvatar">?</div>
+      <div>
+        <div class="user-name" id="sideUserName">Cargando...</div>
+        <div class="user-status">● Sesión activa</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> &nbsp;Cerrar sesión</button>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════
+     MAIN
+═══════════════════════════════════ -->
+<main class="main-area">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fa-solid fa-bars"></i></div>
+      <div>
+        <div class="topbar-path" id="topbarPath">ROOTFINDER / PANEL</div>
+        <div class="topbar-title" id="topbarTitle">Panel principal</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-badge">v3.0</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════════ HOME ══════════════ -->
+    <div class="panel active" id="panel-home">
+      <div class="welcome-hero anim-in d1">
+        <div class="welcome-eyebrow">// laboratorio de métodos numéricos</div>
+        <div class="welcome-title">Hola, <span id="welcomeUser">Usuario</span></div>
+        <div class="welcome-sub">Selecciona un método en el menú lateral para abrir su laboratorio interactivo. Cada laboratorio incluye tabla de iteraciones, resumen de resultados y gráfico generado con GeoGebra en tiempo real. El motor admite funciones trigonométricas, exponenciales, logarítmicas, raíces y expresiones algebraicas generales.</div>
+      </div>
+
+      <div class="stats-row anim-in d2">
+        <div class="stat-card">
+          <div class="stat-label"><div class="stat-icon bg-coral c-coral" style="float:right;"><i class="fa-solid fa-flask-vial"></i></div>Métodos disponibles</div>
+          <div class="stat-value c-coral">21</div>
+          <div class="stat-sub">Raíces, sistemas, interp., integ.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><div class="stat-icon bg-lilac c-lilac" style="float:right;"><i class="fa-solid fa-chart-line"></i></div>Motor gráfico</div>
+          <div class="stat-value c-lilac">GGB</div>
+          <div class="stat-sub">GeoGebra API en vivo</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><div class="stat-icon bg-amber c-amber" style="float:right;"><i class="fa-solid fa-square-root-variable"></i></div>Motor de cálculo</div>
+          <div class="stat-value c-amber">math.js</div>
+          <div class="stat-sub">Parser algebraico completo</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><div class="stat-icon bg-teal c-teal" style="float:right;"><i class="fa-solid fa-shield-halved"></i></div>Sesión</div>
+          <div class="stat-value" style="color:var(--green);">Activa</div>
+          <div class="stat-sub">Autenticación JWT</div>
+        </div>
+      </div>
+
+      <div class="section-title anim-in d3">Catálogo de métodos</div>
+      <div class="section-sub">Haz clic en cualquier tarjeta para abrir el laboratorio interactivo correspondiente.</div>
+      <div class="methods-grid anim-in d4" id="methodsGrid">
+        <!-- generado dinámicamente desde methodMeta -->
+      </div>
+      <!-- host inicial para el applet GeoGebra: con tamaño real para que el motor inicialice correctamente -->
+      <div style="position:absolute;top:0;left:0;width:600px;height:420px;opacity:0;pointer-events:none;overflow:hidden;z-index:-1;" id="graph-panel">
+        <div class="ggb-skeleton" id="geogebra-skeleton"><i class="fa-solid fa-circle-notch"></i><span>Cargando motor gráfico…</span></div>
+        <div id="geogebra-container" style="width:600px;height:420px;display:none;"></div>
+      </div>
+    </div>
+    <!-- ══════════════ BISECCIÓN ══════════════ -->
+    <div class="panel" id="panel-biseccion">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.3);">Métodos clásicos</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Método de Bisección</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Fórmula:</strong> c = (a+b)/2<br/>
+        <strong>Condición:</strong> f(a)·f(b) &lt; 0 (cambio de signo en [a,b])<br/>
+        <strong>Convergencia:</strong> Lineal, garantizada si se cumple la condición de signo
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x) y un intervalo [a,b] donde f cambie de signo.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="bis-fx" placeholder="x^3 - x - 2" value="x^3 - x - 2"/>
+          <label class="field-lbl">Límite inferior a</label>
+          <input class="rf-input" id="bis-a" placeholder="1" value="1"/>
+          <label class="field-lbl">Límite superior b</label>
+          <input class="rf-input" id="bis-b" placeholder="2" value="2"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="bis-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="bis-max" placeholder="50" value="50"/>
+          <button class="btn-calc" onclick="runBiseccion()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('bis')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="bis-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>n</th><th>a</th><th>b</th><th>c = (a+b)/2</th><th>f(c)</th><th>Error</th></tr></thead>
+                <tbody id="bis-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-flask-vial"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="bis-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">Raíz encontrada</div><div class="sum-value" id="bis-root">—</div><div class="sum-sub">f(x) ≈ 0</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="bis-iters">—</div><div class="sum-sub">convergidas</div></div>
+              <div class="sum-item"><div class="sum-label">Error final</div><div class="sum-value" id="bis-err">—</div><div class="sum-sub">|b−a|/2</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-biseccion"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ NEWTON-RAPHSON ══════════════ -->
+    <div class="panel" id="panel-newton">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(251,113,133,0.3);">Métodos clásicos</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Newton-Raphson (univariable)</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Fórmula:</strong> x₁ = x₀ − f(x₀)/f'(x₀)<br/>
+        <strong>Derivada numérica (si se omite):</strong> f'(x) ≈ [f(x+h)−f(x−h)] / 2h<br/>
+        <strong>Convergencia:</strong> Cuadrática cerca de una raíz simple
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x), su derivada f'(x) (opcional) y el punto inicial x₀.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="nwt-fx" placeholder="x^3 - x - 2" value="x^3 - x - 2"/>
+          <label class="field-lbl">Derivada f'(x) <span style="color:var(--text-ghost);font-size:9px;">(opcional)</span></label>
+          <input class="rf-input" id="nwt-dfx" placeholder="3*x^2 - 1 (vacío = numérica)" value="3*x^2 - 1"/>
+          <label class="field-lbl">Punto inicial x₀</label>
+          <input class="rf-input" id="nwt-x0" placeholder="1.5" value="1.5"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="nwt-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="nwt-max" placeholder="30" value="30"/>
+          <button class="btn-calc" onclick="runNewton()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('nwt')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="nwt-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>n</th><th>xₙ</th><th>f(xₙ)</th><th>f'(xₙ)</th><th>xₙ₊₁</th><th>|Error|</th></tr></thead>
+                <tbody id="nwt-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-arrow-trend-up"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="nwt-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">Raíz encontrada</div><div class="sum-value" id="nwt-root">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="nwt-iters">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error final</div><div class="sum-value" id="nwt-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-nwt"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ SECANTE ══════════════ -->
+    <div class="panel" id="panel-secante">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--coral-dim);color:var(--coral);border:1px solid var(--border-accent);">Métodos clásicos</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Método de la Secante</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Fórmula:</strong> x₂ = x₁ − f(x₁)·(x₁−x₀) / (f(x₁)−f(x₀))<br/>
+        <strong>Ventaja:</strong> No requiere derivada analítica<br/>
+        <strong>Convergencia:</strong> Superlineal, orden ≈ 1.618
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Se necesitan dos puntos iniciales x₀ y x₁, distintos entre sí.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="sec-fx" placeholder="x^3 - x - 2" value="x^3 - x - 2"/>
+          <label class="field-lbl">x₀ (primer punto)</label>
+          <input class="rf-input" id="sec-x0" placeholder="1" value="1"/>
+          <label class="field-lbl">x₁ (segundo punto)</label>
+          <input class="rf-input" id="sec-x1" placeholder="2" value="2"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="sec-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="sec-max" placeholder="30" value="30"/>
+          <button class="btn-calc" onclick="runSecante()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('sec')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="sec-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>n</th><th>xₙ₋₁</th><th>xₙ</th><th>f(xₙ₋₁)</th><th>f(xₙ)</th><th>xₙ₊₁</th><th>|Error|</th></tr></thead>
+                <tbody id="sec-tbody"><tr><td colspan="7"><div class="state-idle"><i class="fa-solid fa-square-root-variable"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="sec-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">Raíz encontrada</div><div class="sum-value" id="sec-root">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="sec-iters">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error final</div><div class="sum-value" id="sec-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-sec"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ REGULA FALSI ══════════════ -->
+    <div class="panel" id="panel-regula">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(251,191,36,0.3);">Métodos clásicos</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Regla Falsa (Regula Falsi)</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Fórmula:</strong> c = b − f(b)·(b−a) / (f(b)−f(a))<br/>
+        <strong>Condición:</strong> f(a)·f(b) &lt; 0<br/>
+        <strong>Ventaja vs Bisección:</strong> Interpolación lineal, suele converger más rápido
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Igual que bisección: necesita un intervalo con cambio de signo.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="reg-fx" placeholder="x^3 - x - 2" value="x^3 - x - 2"/>
+          <label class="field-lbl">Límite inferior a</label>
+          <input class="rf-input" id="reg-a" placeholder="1" value="1"/>
+          <label class="field-lbl">Límite superior b</label>
+          <input class="rf-input" id="reg-b" placeholder="2" value="2"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="reg-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="reg-max" placeholder="50" value="50"/>
+          <button class="btn-calc" onclick="runRegula()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('reg')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="reg-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>n</th><th>a</th><th>b</th><th>c (falsa pos.)</th><th>f(c)</th><th>|Error|</th></tr></thead>
+                <tbody id="reg-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-chart-area"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="reg-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">Raíz encontrada</div><div class="sum-value" id="reg-root">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="reg-iters">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error final</div><div class="sum-value" id="reg-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-reg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ PUNTO FIJO ══════════════ -->
+    <div class="panel" id="panel-punto_fijo">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--lilac-dim);color:var(--lilac);border:1px solid rgba(192,132,252,0.3);">Métodos clásicos</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Iteración de Punto Fijo</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Reformulación:</strong> f(x)=0 → x = g(x)<br/>
+        <strong>Iteración:</strong> xₙ₊₁ = g(xₙ)<br/>
+        <strong>Convergencia:</strong> Si |g'(x*)| &lt; 1 en la raíz x*
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Define g(x) tal que la raíz de f(x)=0 sea punto fijo de g. Ej: f(x)=x³−x−2 → g(x)=(x+2)^(1/3)</div>
+          <label class="field-lbl">Función g(x) (x = g(x))</label>
+          <input class="rf-input" id="pf-gx" placeholder="(x+2)^(1/3)" value="(x+2)^(1/3)"/>
+          <label class="field-lbl">Punto inicial x₀</label>
+          <input class="rf-input" id="pf-x0" placeholder="1.5" value="1.5"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="pf-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="pf-max" placeholder="50" value="50"/>
+          <button class="btn-calc" onclick="runPuntoFijo()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('pf')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="pf-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>n</th><th>xₙ</th><th>xₙ₊₁ = g(xₙ)</th><th>|xₙ₊₁ − xₙ|</th></tr></thead>
+                <tbody id="pf-tbody"><tr><td colspan="4"><div class="state-idle"><i class="fa-solid fa-bullseye"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="pf-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">Punto fijo</div><div class="sum-value" id="pf-root">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="pf-iters">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error final</div><div class="sum-value" id="pf-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-pf"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ══════════════ MÜLLER ══════════════ -->
+    <div class="panel" id="panel-muller">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--lilac-dim);color:var(--lilac);border:1px solid rgba(192,132,252,0.3);">Métodos avanzados</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Método de Müller</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Idea:</strong> ajusta una parábola por 3 puntos (xₙ₋₂, xₙ₋₁, xₙ) y toma la raíz de esa parábola más cercana a xₙ.<br/>
+        <strong>Fórmula:</strong> xₙ₊₁ = xₙ + (−2c)/(b ± √(b²−4ac))  (se elige el signo que maximice |denominador|)<br/>
+        <strong>Ventaja:</strong> puede encontrar raíces complejas y no requiere derivadas
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x) y tres aproximaciones iniciales cercanas a la raíz.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="mul-fx" placeholder="x^3 - x - 2" value="x^3 - x - 2"/>
+          <label class="field-lbl">x₀</label>
+          <input class="rf-input" id="mul-x0" placeholder="0.5" value="0.5"/>
+          <label class="field-lbl">x₁</label>
+          <input class="rf-input" id="mul-x1" placeholder="1" value="1"/>
+          <label class="field-lbl">x₂</label>
+          <input class="rf-input" id="mul-x2" placeholder="1.5" value="1.5"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="mul-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="mul-max" placeholder="30" value="30"/>
+          <button class="btn-calc" onclick="runMuller()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('mul')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="mul-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>n</th><th>x₀</th><th>x₁</th><th>x₂</th><th>x₃</th><th>|Error|</th><th>¿Complejo?</th></tr></thead>
+                <tbody id="mul-tbody"><tr><td colspan="7"><div class="state-idle"><i class="fa-solid fa-wave-square"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="mul-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">Raíz encontrada</div><div class="sum-value" id="mul-root">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="mul-iters">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error final</div><div class="sum-value" id="mul-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-mul"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ BAIRSTOW ══════════════ -->
+    <div class="panel" id="panel-bairstow">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.3);">Métodos avanzados</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Método de Bairstow</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Idea:</strong> divide P(x) por un factor cuadrático x²−rx−s usando división sintética; ajusta r,s con Newton hasta que el residuo (b,c) sea ≈0.<br/>
+        <strong>Resultado:</strong> factores cuadráticos x²−rx−s ⇒ raíces (r ± √(r²+4s))/2, posiblemente complejas.<br/>
+        Ingresa los coeficientes del polinomio de mayor a menor grado, separados por comas.
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ej: para x³−x−2 ingresa: 1, 0, -1, -2</div>
+          <label class="field-lbl">Coeficientes (a₀..aₙ, de mayor a menor grado)</label>
+          <input class="rf-input" id="bw-coefs" placeholder="1, 0, -1, -2" value="1, 0, -1, -2"/>
+          <label class="field-lbl">r₀ inicial</label>
+          <input class="rf-input" id="bw-r0" placeholder="0" value="0"/>
+          <label class="field-lbl">s₀ inicial</label>
+          <input class="rf-input" id="bw-s0" placeholder="0" value="0"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="bw-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="bw-max" placeholder="50" value="50"/>
+          <button class="btn-calc" onclick="runBairstow()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('bw')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones (r, s)</div>
+              <span class="results-badge rb-idle" id="bw-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>n</th><th>r</th><th>s</th><th>Δr</th><th>Δs</th><th>|Error|</th></tr></thead>
+                <tbody id="bw-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-chart-line"></i><p>Ingresa los coeficientes y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="bw-summary" style="display:none;grid-template-columns:repeat(2,1fr);">
+              <div class="sum-item"><div class="sum-label">Factor cuadrático</div><div class="sum-value" id="bw-factor">—</div></div>
+              <div class="sum-item"><div class="sum-label">Raíces del factor</div><div class="sum-value" id="bw-roots">—</div></div>
+            </div>
+            <div id="bw-allroots" style="margin-top:14px;"></div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-bw"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ HORNER-NEWTON ══════════════ -->
+    <div class="panel" id="panel-horner_newton">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(251,191,36,0.3);">Métodos avanzados</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Horner-Newton (deflación polinómica)</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Idea:</strong> usa división de Horner para evaluar P(x), P'(x) y aplica Newton-Raphson: xₙ₊₁ = xₙ − P(xₙ)/P'(xₙ)<br/>
+        <strong>División sintética:</strong> bₙ = aₙ, bᵢ = aᵢ + bᵢ₊₁·x ⇒ P(x)=b₀, residuo cocientes derivada
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa los coeficientes del polinomio (de mayor a menor grado) y un valor inicial x₀.</div>
+          <label class="field-lbl">Coeficientes (a₀..aₙ)</label>
+          <input class="rf-input" id="hn-coefs" placeholder="1, 0, -1, -2" value="1, 0, -1, -2"/>
+          <label class="field-lbl">Punto inicial x₀</label>
+          <input class="rf-input" id="hn-x0" placeholder="1.5" value="1.5"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="hn-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="hn-max" placeholder="30" value="30"/>
+          <button class="btn-calc" onclick="runHornerNewton()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('hn')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="hn-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>n</th><th>xₙ</th><th>P(xₙ)</th><th>P'(xₙ)</th><th>xₙ₊₁</th><th>|Error|</th></tr></thead>
+                <tbody id="hn-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-divide"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="hn-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">Raíz encontrada</div><div class="sum-value" id="hn-root">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="hn-iters">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error final</div><div class="sum-value" id="hn-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-hn"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ NEWTON-RAPHSON MULTIVARIABLE ══════════════ -->
+    <div class="panel" id="panel-newton_multi">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(251,113,133,0.3);">Métodos avanzados</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Newton-Raphson Multivariable (sistema n×n)</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Sistema:</strong> F(x) = 0 con n ecuaciones y n incógnitas<br/>
+        <strong>Iteración:</strong> xₖ₊₁ = xₖ − J(xₖ)⁻¹·F(xₖ)<br/>
+        <strong>Jacobiano:</strong> Jᵢⱼ = ∂fᵢ/∂xⱼ, calculado simbólicamente con math.js
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Define n, llena n ecuaciones Fᵢ(x₁..xₙ)=0 y un vector inicial x⁰.</div>
+          <div class="dim-controls">
+            <label class="field-lbl" style="margin:0;">Tamaño n</label>
+            <input class="rf-input" id="nm-n" type="number" min="2" max="8" step="1" value="2" style="margin:0;" onfocus="this.select()" onchange="buildNewtonMultiGrid()"/>
+          </div>
+          <div id="nm-fns" class="matrix-builder"></div>
+          <label class="field-lbl">Vector inicial x⁰ (separado por comas)</label>
+          <input class="rf-input" id="nm-x0" placeholder="1,1" value="1,1"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="nm-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="nm-max" placeholder="30" value="30"/>
+          <button class="btn-calc" onclick="runNewtonMulti()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('nm')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="nm-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr id="nm-thead"><th>k</th><th>x</th><th>‖F(x)‖</th><th>‖Error‖</th></tr></thead>
+                <tbody id="nm-tbody"><tr><td colspan="4"><div class="state-idle"><i class="fa-solid fa-diagram-project"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="nm-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">x*</div><div class="sum-value" id="nm-rootx">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="nm-iters">—</div></div>
+              <div class="sum-item"><div class="sum-label">Norma final</div><div class="sum-value" id="nm-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-nm"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ SERIE DE TAYLOR ══════════════ -->
+    <div class="panel" id="panel-taylor">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.3);">Métodos clásicos</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Serie de Taylor</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Fórmula:</strong> P(x) = Σₖ₌₀ⁿ f⁽ᵏ⁾(a)/k! · (x−a)ᵏ<br/>
+        Las derivadas se calculan simbólicamente con math.js (math.derivative).
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x), el punto de expansión a y un criterio automático para detener la expansión.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="tay-fx" placeholder="exp(x)" value="exp(x)"/>
+          <label class="field-lbl">Punto de expansión a</label>
+          <input class="rf-input" id="tay-a" placeholder="0" value="0"/>
+          <label class="field-lbl">Evaluar en x</label>
+          <input class="rf-input" id="tay-x" placeholder="1" value="1"/>
+          <label class="field-lbl">Tolerancia automática</label>
+          <input class="rf-input" id="tay-tol" placeholder="0.000001" value="0.000001"/>
+          <button class="btn-calc" onclick="runTaylor()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('tay')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Términos de la serie</div>
+              <span class="results-badge rb-idle" id="tay-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>k</th><th>f⁽ᵏ⁾(a)</th><th>k!</th><th>Coeficiente</th><th>Término en x</th></tr></thead>
+                <tbody id="tay-tbody"><tr><td colspan="5"><div class="state-idle"><i class="fa-solid fa-list-ol"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="tay-summary" style="display:none;grid-template-columns:repeat(4,1fr);">
+              <div class="sum-item"><div class="sum-label">Grado detectado</div><div class="sum-value" id="tay-degree">—</div></div>
+              <div class="sum-item"><div class="sum-label">P(x) evaluado</div><div class="sum-value" id="tay-pval">—</div></div>
+              <div class="sum-item"><div class="sum-label">f(x) real</div><div class="sum-value" id="tay-fval">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error absoluto</div><div class="sum-value" id="tay-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-tay"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ BOLZANO ══════════════ -->
+    <div class="panel" id="panel-bolzano">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--coral-dim);color:var(--coral);border:1px solid var(--border-accent);">Teoremas</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Teorema de Bolzano</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Teorema:</strong> si f es continua en [a,b] y f(a)·f(b) &lt; 0, entonces existe c ∈ (a,b) tal que f(c)=0.<br/>
+        Esta herramienta verifica la condición de signo y, si se pide, escanea subintervalos en busca de cambios de signo.
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x) y el intervalo [a,b]. Opcionalmente, un número de subdivisiones para escanear cambios de signo.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="bz-fx" placeholder="x^3 - x - 2" value="x^3 - x - 2"/>
+          <label class="field-lbl">Límite inferior a</label>
+          <input class="rf-input" id="bz-a" placeholder="-3" value="-3"/>
+          <label class="field-lbl">Límite superior b</label>
+          <input class="rf-input" id="bz-b" placeholder="3" value="3"/>
+          <label class="field-lbl">Subdivisiones para escanear</label>
+          <input class="rf-input" id="bz-n" placeholder="12" value="12"/>
+          <button class="btn-calc" onclick="runBolzano()"><i class="fa-solid fa-play"></i> Verificar</button>
+          <button class="btn-secondary" onclick="resetMethod('bz')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Subintervalos evaluados</div>
+              <span class="results-badge rb-idle" id="bz-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>i</th><th>xᵢ</th><th>xᵢ₊₁</th><th>f(xᵢ)</th><th>f(xᵢ₊₁)</th><th>f(xᵢ)·f(xᵢ₊₁)</th><th>¿Cambio?</th></tr></thead>
+                <tbody id="bz-tbody"><tr><td colspan="7"><div class="state-idle"><i class="fa-solid fa-scale-balanced"></i><p>Ingresa los parámetros y presiona Verificar</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="bz-summary" style="display:none;grid-template-columns:repeat(2,1fr);">
+              <div class="sum-item"><div class="sum-label">f(a)·f(b)</div><div class="sum-value" id="bz-prod">—</div></div>
+              <div class="sum-item"><div class="sum-label">Conclusión</div><div class="sum-value" id="bz-concl" style="font-size:13px;">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-bz"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ══════════════ GAUSS-SEIDEL ══════════════ -->
+    <div class="panel" id="panel-gauss_seidel">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--coral-dim);color:var(--coral);border:1px solid var(--border-accent);">Métodos avanzados</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Método de Gauss-Seidel</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Fórmula:</strong> xᵢ^(k+1) = (bᵢ − Σⱼ&lt;ᵢ aᵢⱼxⱼ^(k+1) − Σⱼ&gt;ᵢ aᵢⱼxⱼ^(k)) / aᵢᵢ<br/>
+        <strong>Convergencia:</strong> garantizada si A es diagonal dominante o simétrica definida positiva
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Sistema Ax = b</div>
+          <div class="calc-desc">Define el tamaño n y llena la matriz A y el vector b.</div>
+          <div class="dim-controls">
+            <label class="field-lbl" style="margin:0;">Tamaño n</label>
+            <input class="rf-input" id="gs-n" value="3" style="margin:0;" oninput="buildMatrixGrid('gs')"/>
+          </div>
+          <div id="gs-matrix" class="matrix-builder"></div>
+          <label class="field-lbl">Vector inicial x⁰ (separado por comas, opcional)</label>
+          <input class="rf-input" id="gs-x0" placeholder="0,0,0" value="0,0,0"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="gs-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="gs-max" placeholder="50" value="50"/>
+          <button class="btn-calc" onclick="runGaussSeidel()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('gs')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="gs-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table" id="gs-table">
+                <thead><tr id="gs-thead"><th>k</th></tr></thead>
+                <tbody id="gs-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-table-cells"></i><p>Define el sistema y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="gs-summary" style="display:none;grid-template-columns:repeat(2,1fr);">
+              <div class="sum-item"><div class="sum-label">Solución x</div><div class="sum-value" id="gs-sol">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="gs-iters">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-gs"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ JACOBI ══════════════ -->
+    <div class="panel" id="panel-jacobi">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--lilac-dim);color:var(--lilac);border:1px solid rgba(192,132,252,0.3);">Métodos avanzados</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Método de Jacobi</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Fórmula:</strong> xᵢ^(k+1) = (bᵢ − Σⱼ≠ᵢ aᵢⱼxⱼ^(k)) / aᵢᵢ &nbsp;(todos los valores se actualizan al final de la iteración)<br/>
+        <strong>Convergencia:</strong> garantizada si A es diagonal dominante
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Sistema Ax = b</div>
+          <div class="calc-desc">Define el tamaño n y llena la matriz A y el vector b.</div>
+          <div class="dim-controls">
+            <label class="field-lbl" style="margin:0;">Tamaño n</label>
+            <input class="rf-input" id="ja-n" value="3" style="margin:0;" oninput="buildMatrixGrid('ja')"/>
+          </div>
+          <div id="ja-matrix" class="matrix-builder"></div>
+          <label class="field-lbl">Vector inicial x⁰ (separado por comas, opcional)</label>
+          <input class="rf-input" id="ja-x0" placeholder="0,0,0" value="0,0,0"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="ja-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. iteraciones</label>
+          <input class="rf-input" id="ja-max" placeholder="50" value="50"/>
+          <button class="btn-calc" onclick="runJacobi()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('ja')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="ja-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table" id="ja-table">
+                <thead><tr id="ja-thead"><th>k</th></tr></thead>
+                <tbody id="ja-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-table-cells-large"></i><p>Define el sistema y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="ja-summary" style="display:none;grid-template-columns:repeat(2,1fr);">
+              <div class="sum-item"><div class="sum-label">Solución x</div><div class="sum-value" id="ja-sol">—</div></div>
+              <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value" id="ja-iters">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-ja"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ POLINOMIO DE NEWTON (DIF. DIVIDIDAS) ══════════════ -->
+    <div class="panel" id="panel-newton_interp">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(251,191,36,0.3);">Interpolación</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Polinomio de Newton (Diferencias Divididas)</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>P(x) = f[x₀] + f[x₀,x₁](x−x₀) + f[x₀,x₁,x₂](x−x₀)(x−x₁) + ...</strong><br/>
+        Tabla de diferencias divididas: f[xᵢ,...,xⱼ] = (f[xᵢ₊₁,...,xⱼ] − f[xᵢ,...,xⱼ₋₁]) / (xⱼ−xᵢ)
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa los puntos conocidos (x,y separados por ;) y el valor x donde interpolar.</div>
+          <label class="field-lbl">Puntos (x,y separados por ;)</label>
+          <input class="rf-input" id="ni-pts" placeholder="0,1; 1,3; 2,2; 4,5" value="0,1; 1,3; 2,2; 4,5"/>
+          <label class="field-lbl">Valor a interpolar x*</label>
+          <input class="rf-input" id="ni-xi" placeholder="2.5" value="2.5"/>
+          <button class="btn-calc" onclick="runNewtonInterp()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('ni')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de diferencias divididas</div>
+              <span class="results-badge rb-idle" id="ni-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table" id="ni-table">
+                <thead><tr id="ni-thead"><th>xᵢ</th><th>f[xᵢ]</th></tr></thead>
+                <tbody id="ni-tbody"><tr><td colspan="2"><div class="state-idle"><i class="fa-solid fa-superscript"></i><p>Ingresa los puntos y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="ni-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">P(x*) interpolado</div><div class="sum-value" id="ni-result">—</div></div>
+              <div class="sum-item"><div class="sum-label">Grado polinomio</div><div class="sum-value" id="ni-degree">—</div></div>
+              <div class="sum-item"><div class="sum-label">Puntos usados</div><div class="sum-value" id="ni-pts-n">—</div></div>
+            </div>
+            <div id="ni-poly" style="margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--text-sub);"></div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-ni"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ POLINOMIO DE LAGRANGE ══════════════ -->
+    <div class="panel" id="panel-lagrange">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(251,113,133,0.3);">Interpolación</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Polinomio de Lagrange</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>P(x) = Σ yᵢ · Lᵢ(x)</strong> &nbsp;donde&nbsp; <strong>Lᵢ(x) = Π (x−xⱼ)/(xᵢ−xⱼ), j≠i</strong><br/>
+        Ingresa los puntos como pares x,y separados por punto y coma. Ej: 0,1; 1,3; 2,2; 4,5
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa los puntos conocidos y el valor x donde deseas interpolar.</div>
+          <label class="field-lbl">Puntos (x,y separados por ;)</label>
+          <input class="rf-input" id="lag-pts" placeholder="0,1; 1,3; 2,2; 4,5" value="0,1; 1,3; 2,2; 4,5"/>
+          <label class="field-lbl">Valor a interpolar x*</label>
+          <input class="rf-input" id="lag-xi" placeholder="2.5" value="2.5"/>
+          <button class="btn-calc" onclick="runLagrange()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('lag')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Polinomios base Lᵢ(x*)</div>
+              <span class="results-badge rb-idle" id="lag-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>i</th><th>xᵢ</th><th>yᵢ</th><th>Lᵢ(x*)</th><th>yᵢ·Lᵢ(x*)</th></tr></thead>
+                <tbody id="lag-tbody"><tr><td colspan="5"><div class="state-idle"><i class="fa-solid fa-shapes"></i><p>Ingresa los puntos y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="lag-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">P(x*) interpolado</div><div class="sum-value" id="lag-result">—</div></div>
+              <div class="sum-item"><div class="sum-label">Grado polinomio</div><div class="sum-value" id="lag-degree">—</div></div>
+              <div class="sum-item"><div class="sum-label">Puntos usados</div><div class="sum-value" id="lag-pts-n">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-lag"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ TRAZADORES CÚBICOS ══════════════ -->
+    <div class="panel" id="panel-splines">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--coral-dim);color:var(--coral);border:1px solid var(--border-accent);">Interpolación</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Trazadores Cúbicos (Cubic Splines)</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Spline natural:</strong> en cada intervalo [xᵢ,xᵢ₊₁], Sᵢ(x)=aᵢ+bᵢ(x−xᵢ)+cᵢ(x−xᵢ)²+dᵢ(x−xᵢ)³<br/>
+        Condiciones: S, S' y S'' continuas; S''(x₀)=S''(xₙ)=0 (spline natural)
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa los puntos (x,y separados por ;), ordenados por x creciente, y el valor x donde evaluar el spline.</div>
+          <label class="field-lbl">Puntos (x,y separados por ;)</label>
+          <input class="rf-input" id="sp-pts" placeholder="0,1; 1,3; 2,2; 4,5" value="0,1; 1,3; 2,2; 4,5"/>
+          <label class="field-lbl">Valor a evaluar x*</label>
+          <input class="rf-input" id="sp-xi" placeholder="2.5" value="2.5"/>
+          <button class="btn-calc" onclick="runSplines()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('sp')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Coeficientes por tramo</div>
+              <span class="results-badge rb-idle" id="sp-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>i</th><th>[xᵢ,xᵢ₊₁]</th><th>aᵢ</th><th>bᵢ</th><th>cᵢ</th><th>dᵢ</th></tr></thead>
+                <tbody id="sp-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-chart-line"></i><p>Ingresa los puntos y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="sp-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">S(x*)</div><div class="sum-value" id="sp-result">—</div></div>
+              <div class="sum-item"><div class="sum-label">Tramo usado</div><div class="sum-value" id="sp-tramo">—</div></div>
+              <div class="sum-item"><div class="sum-label">N° de tramos</div><div class="sum-value" id="sp-ntramos">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-sp"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ DIFERENCIACIÓN NUMÉRICA ══════════════ -->
+    <div class="panel" id="panel-diferenciacion">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--lilac-dim);color:var(--lilac);border:1px solid rgba(192,132,252,0.3);">Diferenciación</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Diferenciación Numérica</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Diferencias finitas (orden 1):</strong><br/>
+        Adelante: f'(x)≈[f(x+h)−f(x)]/h &nbsp;|&nbsp; Atrás: f'(x)≈[f(x)−f(x−h)]/h &nbsp;|&nbsp; Central: f'(x)≈[f(x+h)−f(x−h)]/2h<br/>
+        <strong>Segunda derivada (central):</strong> f''(x) ≈ [f(x+h)−2f(x)+f(x−h)]/h²
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x), el punto x₀, el paso h, y el tipo de diferencia.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="df-fx" placeholder="sin(x)" value="sin(x)"/>
+          <label class="field-lbl">Punto x₀</label>
+          <input class="rf-input" id="df-x0" placeholder="1" value="1"/>
+          <label class="field-lbl">Paso h</label>
+          <input class="rf-input" id="df-h" placeholder="0.1" value="0.1"/>
+          <label class="field-lbl">Tipo de diferencia</label>
+          <select class="rf-select" id="df-tipo">
+            <option value="central">Central (1ra derivada)</option>
+            <option value="adelante">Adelante (1ra derivada)</option>
+            <option value="atras">Atrás (1ra derivada)</option>
+            <option value="segunda">Central (2da derivada)</option>
+          </select>
+          <button class="btn-calc" onclick="runDiferenciacion()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('df')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Comparación de pasos h</div>
+              <span class="results-badge rb-idle" id="df-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>h</th><th>f'(x₀) aprox.</th><th>f'(x₀) exacta (sim.)</th><th>|Error|</th></tr></thead>
+                <tbody id="df-tbody"><tr><td colspan="4"><div class="state-idle"><i class="fa-solid fa-chart-line"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="df-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">f'(x₀) ≈</div><div class="sum-value" id="df-result">—</div></div>
+              <div class="sum-item"><div class="sum-label">Valor exacto (simbólico)</div><div class="sum-value" id="df-exact">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error absoluto</div><div class="sum-value" id="df-error">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-df"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ EXTRAPOLACIÓN DE RICHARDSON ══════════════ -->
+    <div class="panel" id="panel-richardson">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.3);">Diferenciación</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Extrapolación de Richardson</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Fórmula recursiva:</strong> Rⱼ,ₖ = Rⱼ,ₖ₋₁ + (Rⱼ,ₖ₋₁ − Rⱼ₋₁,ₖ₋₁) / (2^(p·k) − 1)<br/>
+        Combina aproximaciones D(h), D(h/2), D(h/4), ... de orden O(hᵖ) para obtener una estimación de mayor orden.
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x), el punto x₀, el paso inicial h₀, el número de niveles, el orden base p de la fórmula y qué derivada estimar.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="ri-fx" placeholder="sin(x)" value="sin(x)"/>
+          <label class="field-lbl">Punto x₀</label>
+          <input class="rf-input" id="ri-x0" placeholder="1" value="1"/>
+          <label class="field-lbl">Paso inicial h₀</label>
+          <input class="rf-input" id="ri-h0" placeholder="0.5" value="0.5"/>
+          <label class="field-lbl">Niveles de extrapolación n</label>
+          <input class="rf-input" id="ri-n" placeholder="4" value="4"/>
+          <label class="field-lbl">Orden base p (diferencia central=2)</label>
+          <input class="rf-input" id="ri-p" placeholder="2" value="2"/>
+          <button class="btn-calc" onclick="runRichardson()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('ri')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de Richardson</div>
+              <span class="results-badge rb-idle" id="ri-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table" id="ri-table">
+                <thead><tr id="ri-thead"><th>i</th><th>h</th></tr></thead>
+                <tbody id="ri-tbody"><tr><td colspan="2"><div class="state-idle"><i class="fa-solid fa-layer-group"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="ri-summary" style="display:none;grid-template-columns:repeat(2,1fr);">
+              <div class="sum-item"><div class="sum-label">Mejor estimación</div><div class="sum-value" id="ri-best">—</div></div>
+              <div class="sum-item"><div class="sum-label">Estimación base D(h₀)</div><div class="sum-value" id="ri-base">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-ri"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ══════════════ TRAPECIO ══════════════ -->
+    <div class="panel" id="panel-trapecio">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--amber-dim);color:var(--amber);border:1px solid rgba(251,191,36,0.3);">Integración</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Regla del Trapecio</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Simple:</strong> ∫ₐᵇf(x)dx ≈ (b−a)/2 · [f(a)+f(b)]<br/>
+        <strong>Compuesta (n subintervalos):</strong> ∫ₐᵇf(x)dx ≈ h/2 · [f(x₀)+2Σf(xᵢ)+f(xₙ)], h=(b−a)/n
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x), el intervalo [a,b] y el número de subintervalos n.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="tr-fx" placeholder="x^2" value="x^2"/>
+          <label class="field-lbl">Límite inferior a</label>
+          <input class="rf-input" id="tr-a" placeholder="0" value="0"/>
+          <label class="field-lbl">Límite superior b</label>
+          <input class="rf-input" id="tr-b" placeholder="2" value="2"/>
+          <label class="field-lbl">Subintervalos n</label>
+          <input class="rf-input" id="tr-n" placeholder="4" value="4"/>
+          <button class="btn-calc" onclick="runTrapecio()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('tr')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de evaluaciones</div>
+              <span class="results-badge rb-idle" id="tr-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>i</th><th>xᵢ</th><th>f(xᵢ)</th><th>Peso</th><th>Peso·f(xᵢ)</th></tr></thead>
+                <tbody id="tr-tbody"><tr><td colspan="5"><div class="state-idle"><i class="fa-solid fa-square"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="tr-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">∫f(x)dx ≈</div><div class="sum-value" id="tr-result">—</div></div>
+              <div class="sum-item"><div class="sum-label">h = (b−a)/n</div><div class="sum-value" id="tr-h">—</div></div>
+              <div class="sum-item"><div class="sum-label">N° subintervalos</div><div class="sum-value" id="tr-n-out">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-tr"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ SIMPSON ══════════════ -->
+    <div class="panel" id="panel-simpson">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(251,113,133,0.3);">Integración</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Simpson 1/3 y 3/8</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Simpson 1/3 (n par):</strong> ∫ₐᵇf(x)dx ≈ h/3·[f(x₀)+4Σf(xᵢ impar)+2Σf(xᵢ par)+f(xₙ)]<br/>
+        <strong>Simpson 3/8 (n múltiplo de 3):</strong> ∫ₐᵇf(x)dx ≈ 3h/8·[f(x₀)+3f(x₁)+3f(x₂)+2f(x₃)+...+f(xₙ)]<br/>
+        El programa elige automáticamente 1/3 si n es par, o 3/8 si n es múltiplo de 3 (y no par).
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x), el intervalo [a,b] y el número de subintervalos n (par, o múltiplo de 3).</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="si-fx" placeholder="x^2" value="x^2"/>
+          <label class="field-lbl">Límite inferior a</label>
+          <input class="rf-input" id="si-a" placeholder="0" value="0"/>
+          <label class="field-lbl">Límite superior b</label>
+          <input class="rf-input" id="si-b" placeholder="2" value="2"/>
+          <label class="field-lbl">Subintervalos n</label>
+          <input class="rf-input" id="si-n" placeholder="4" value="4"/>
+          <button class="btn-calc" onclick="runSimpson()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('si')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de evaluaciones</div>
+              <span class="results-badge rb-idle" id="si-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table">
+                <thead><tr><th>i</th><th>xᵢ</th><th>f(xᵢ)</th><th>Peso</th><th>Peso·f(xᵢ)</th></tr></thead>
+                <tbody id="si-tbody"><tr><td colspan="5"><div class="state-idle"><i class="fa-solid fa-chart-area"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="si-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">∫f(x)dx ≈</div><div class="sum-value" id="si-result">—</div></div>
+              <div class="sum-item"><div class="sum-label">Regla usada</div><div class="sum-value" id="si-rule">—</div></div>
+              <div class="sum-item"><div class="sum-label">h = (b−a)/n</div><div class="sum-value" id="si-h">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-si"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.content -->
+</main>
+</div><!-- /.app-shell -->
+<script>
+/* ════════════════════════════════════════════════════
+   AUTH / SESIÓN
+════════════════════════════════════════════════════ */
+(function checkAuth(){
+  const token = localStorage.getItem('rf_token');
+  const user = localStorage.getItem('rf_user');
+  if(!token || !user){ window.location.href = 'login.html'; return; }
+  try{
+    const u = JSON.parse(user);
+    const name = u.name || u.username || u.email || 'Usuario';
+    document.getElementById('sideUserName').textContent = name;
+    document.getElementById('sideUserAvatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('welcomeUser').textContent = name.split(' ')[0];
+  }catch(e){
+    document.getElementById('sideUserName').textContent = 'Usuario';
+    document.getElementById('sideUserAvatar').textContent = 'U';
+  }
+})();
+function doLogout(){
+  localStorage.removeItem('rf_token');
+  localStorage.removeItem('rf_user');
+  window.location.href = 'login.html';
+}
+
+/* ════════════════════════════════════════════════════
+   TOASTS
+════════════════════════════════════════════════════ */
+function toast(msg, type='info'){
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast-rf ${type}`;
+  const icon = type==='success'?'fa-circle-check':type==='error'?'fa-triangle-exclamation':'fa-circle-info';
+  el.innerHTML = `<i class="fa-solid ${icon}"></i><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(16px)'; setTimeout(()=>el.remove(),300); }, 3600);
+}
+
+/* ════════════════════════════════════════════════════
+   NAVEGACIÓN DE PANELES
+════════════════════════════════════════════════════ */
+const panelMeta = {
+  home:{title:'Panel principal', path:'ROOTFINDER / PANEL'},
+  biseccion:{title:'Método de Bisección', path:'ROOTFINDER / CLÁSICOS / BISECCIÓN'},
+  newton:{title:'Newton-Raphson', path:'ROOTFINDER / CLÁSICOS / NEWTON-RAPHSON'},
+  secante:{title:'Método de la Secante', path:'ROOTFINDER / CLÁSICOS / SECANTE'},
+  regula:{title:'Regla Falsa', path:'ROOTFINDER / CLÁSICOS / REGLA FALSA'},
+  punto_fijo:{title:'Punto Fijo', path:'ROOTFINDER / CLÁSICOS / PUNTO FIJO'},
+  taylor:{title:'Serie de Taylor', path:'ROOTFINDER / CLÁSICOS / TAYLOR'},
+  muller:{title:'Método de Müller', path:'ROOTFINDER / AVANZADOS / MÜLLER'},
+  bairstow:{title:'Método de Bairstow', path:'ROOTFINDER / AVANZADOS / BAIRSTOW'},
+  horner_newton:{title:'Horner-Newton', path:'ROOTFINDER / AVANZADOS / HORNER-NEWTON'},
+  newton_multi:{title:'Newton-Raphson Multi', path:'ROOTFINDER / AVANZADOS / NEWTON MULTI'},
+  gauss_seidel:{title:'Gauss-Seidel', path:'ROOTFINDER / AVANZADOS / GAUSS-SEIDEL'},
+  jacobi:{title:'Método de Jacobi', path:'ROOTFINDER / AVANZADOS / JACOBI'},
+  newton_interp:{title:'Polinomio de Newton', path:'ROOTFINDER / INTERPOLACIÓN / NEWTON'},
+  lagrange:{title:'Polinomio de Lagrange', path:'ROOTFINDER / INTERPOLACIÓN / LAGRANGE'},
+  splines:{title:'Trazadores Cúbicos', path:'ROOTFINDER / INTERPOLACIÓN / SPLINES'},
+  diferenciacion:{title:'Diferenciación Numérica', path:'ROOTFINDER / DIFERENCIACIÓN / NUMÉRICA'},
+  richardson:{title:'Extrapolación de Richardson', path:'ROOTFINDER / DIFERENCIACIÓN / RICHARDSON'},
+  trapecio:{title:'Regla del Trapecio', path:'ROOTFINDER / INTEGRACIÓN / TRAPECIO'},
+  simpson:{title:'Simpson 1/3 y 3/8', path:'ROOTFINDER / INTEGRACIÓN / SIMPSON'},
+  bolzano:{title:'Teorema de Bolzano', path:'ROOTFINDER / TEOREMAS / BOLZANO'},
+};
+
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panel = document.getElementById('panel-'+name);
+  if(panel) panel.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(name==='home'){
+    document.querySelector('.sidebar .nav-item').classList.add('active');
+  }
+  const meta = panelMeta[name] || {title:name, path:'ROOTFINDER'};
+  document.getElementById('topbarTitle').textContent = meta.title;
+  document.getElementById('topbarPath').textContent = meta.path;
+  document.getElementById('sidebar').classList.remove('open');
+  // mover applet GGB compartido al slot correspondiente
+  moveGGBTo(name);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function openMethod(name){
+  showPanel(name);
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')===`openMethod('${name}')`) n.classList.add('active');
+  });
+}
+function resetMethod(prefix){
+  // limpia tablas/resúmenes de un panel sin recargar
+  const tbody = document.getElementById(prefix+'-tbody');
+  const status = document.getElementById(prefix+'-status');
+  const summary = document.getElementById(prefix+'-summary');
+  if(status){ status.textContent='ESPERANDO'; status.className='results-badge rb-idle'; }
+  if(summary) summary.style.display='none';
+  if(tbody){
+    const cols = tbody.parentElement.querySelector('thead tr').children.length;
+    tbody.innerHTML = `<tr><td colspan="${cols}"><div class="state-idle"><i class="fa-solid fa-flask-vial"></i><p>Listo para un nuevo cálculo</p></div></td></tr>`;
+  }
+  toast('Formulario reiniciado','info');
+}
+
+/* ════════════════════════════════════════════════════
+   PARSER MATEMÁTICO (math.js) — soporta trig, exp, log,
+   raíces, potencias, etc. Convierte notación común a
+   sintaxis de math.js.
+════════════════════════════════════════════════════ */
+function preprocessExpr(expr){
+  if(!expr) return expr;
+  let e = expr.trim();
+  // normaliza caracteres matemáticos que math.js no acepta directamente
+  e = e
+    .replace(/[−–—]/g,'-')
+    .replace(/[×·]/g,'*')
+    .replace(/\u00A0/g,' ');
+  // reemplazos de notación común
+  e = e.replace(/ln\(/gi,'log(');     // ln -> log natural en math.js es "log"
+  e = e.replace(/log10\(/gi,'log10(');
+  e = e.replace(/√\(/g,'sqrt(');
+  e = e.replace(/π/g,'pi');
+  e = e.replace(/\be\^\(([^)]+)\)/gi,'exp($1)');
+  e = e.replace(/\be\^([a-zA-Z0-9_]+)/gi,'exp($1)');
+  // multiplicación implícita: 2x -> 2*x, 3sin(x) -> 3*sin(x), )( -> )*(
+  e = e.replace(/(\d)(\s*)([a-zA-Z(])/g,'$1*$3');
+  e = e.replace(/\)(\s*)(\()/g,')*(');
+  e = e.replace(/\)(\s*)([a-zA-Z0-9])/g,')*$2');
+  return e;
+}
+
+/** Evalúa f(x) numéricamente usando math.js. scope adicional permite x,y,etc */
+function evalFn(expr, scope){
+  const e = preprocessExpr(expr);
+  return math.evaluate(e, scope);
+}
+
+/** Devuelve un compilador reutilizable para evaluar muchas veces (más rápido) */
+function compileFn(expr){
+  const e = preprocessExpr(expr);
+  return math.compile(e);
+}
+
+/** Derivada simbólica respecto a una variable, devuelve expresión compilable */
+function derivativeFn(expr, variable='x'){
+  const e = preprocessExpr(expr);
+  const node = math.derivative(e, variable);
+  return node;
+}
+
+function fmtNum(x, d=6){
+  if(x===null || x===undefined || isNaN(x)) return '—';
+  if(typeof x==='object' && x.re!==undefined){
+    // número complejo de math.js
+    const re = x.re, im = x.im;
+    if(Math.abs(im) < 1e-10) return fmtNum(re,d);
+    return `${fmtNum(re,d)} ${im>=0?'+':'-'} ${fmtNum(Math.abs(im),d)}i`;
+  }
+  if(Math.abs(x) < 1e-12) return '0';
+  if(Math.abs(x) > 1e9 || (Math.abs(x) < 1e-4 && x!==0)) return x.toExponential(d-2);
+  return Number(x.toFixed(d)).toString();
+}
+
+/* ════════════════════════════════════════════════════
+   GEOGEBRA — APPLET COMPARTIDO DINÁMICO (deployggb.js)
+════════════════════════════════════════════════════ */
+let ggbApplet = null;
+let ggbReady = false;
+const ggbQueue = [];
+const ggbSlotMap = {
+  home: 'graph-panel',
+  biseccion: 'graph-panel-biseccion',
+  newton: 'graph-panel-nwt',
+  secante: 'graph-panel-sec',
+  regula: 'graph-panel-reg',
+  punto_fijo: 'graph-panel-pf',
+  muller: 'graph-panel-mul',
+  bairstow: 'graph-panel-bw',
+  horner_newton: 'graph-panel-hn',
+  newton_multi: 'graph-panel-nm',
+  taylor: 'graph-panel-tay',
+  bolzano: 'graph-panel-bz',
+  gauss_seidel: 'graph-panel-gs',
+  jacobi: 'graph-panel-ja',
+  newton_interp: 'graph-panel-ni',
+  lagrange: 'graph-panel-lag',
+  splines: 'graph-panel-sp',
+  diferenciacion: 'graph-panel-df',
+  richardson: 'graph-panel-ri',
+  trapecio: 'graph-panel-tr',
+  simpson: 'graph-panel-si',
+};
+
+function initGeoGebra(){
+  const params = {
+    appName: 'graphing',
+    width: 900,
+    height: 420,
+    showToolBar: false,
+    showAlgebraInput: false,
+    showMenuBar: false,
+    showResetIcon: true,
+    enableLabelDrags: false,
+    enableShiftDragZoom: true,
+    showZoomButtons: true,
+    capturingThreshold: null,
+    allowStyleBar: false,
+    preventFocus: false,
+    language: 'es',
+    appletOnLoad: function(api){
+      ggbApplet = api;
+      ggbReady = true;
+      const sk = document.getElementById('geogebra-skeleton');
+      const cont = document.getElementById('geogebra-container');
+      if(sk) sk.style.display='none';
+      if(cont) cont.style.display='block';
+      while(ggbQueue.length){ ggbQueue.shift()(); }
+    }
+  };
+  const applet = new GGBApplet(params, true);
+  applet.inject('geogebra-container');
+}
+
+/** Ejecuta fn cuando el applet esté listo */
+function withGGB(fn){
+  if(ggbReady && ggbApplet) fn();
+  else ggbQueue.push(fn);
+}
+
+/** Limpia el lienzo y resetea la vista */
+function ggbReset(){
+  withGGB(()=>{
+    try{ ggbApplet.reset(); }catch(e){}
+    try{ ggbApplet.setPerspective('G'); }catch(e){}
+  });
+}
+
+/** Mueve el applet GGB compartido al panel activo */
+function moveGGBTo(panelName){
+  const container = document.getElementById('geogebra-container');
+  const skeleton = document.getElementById('geogebra-skeleton');
+  if(!container) return;
+  const targetId = ggbSlotMap[panelName] || 'graph-panel';
+  const target = document.getElementById(targetId) || document.getElementById('graph-panel');
+  if(!target) return;
+  // mover el div padre (geogebra wrapper) si está en otro slot
+  if(!target.contains(container)){
+    if(skeleton && skeleton.parentElement!==target) target.appendChild(skeleton);
+    target.appendChild(container);
+  }
+  withGGB(()=>{
+    try{ ggbApplet.recalculateEnvironments(); }catch(e){}
+    try{
+      const w = target.clientWidth || 600;
+      const h = target.clientHeight || 420;
+      if(typeof ggbApplet.setSize==='function') ggbApplet.setSize(w,h);
+    }catch(e){}
+    requestAnimationFrame(()=>{
+      try{
+        const w = target.clientWidth || 600;
+        const h = target.clientHeight || 420;
+        if(typeof ggbApplet.setSize==='function') ggbApplet.setSize(w,h);
+        if(typeof ggbApplet.recalculateEnvironments==='function') ggbApplet.recalculateEnvironments();
+      }catch(e){}
+    });
+  });
+}
+
+/** Grafica f(x) en GeoGebra junto con puntos opcionales */
+function ggbPlotFunction(expr, points=[], extraCmds=[]){
+  withGGB(()=>{
+    try{
+      ggbApplet.reset();
+      const e = preprocessExpr(expr).replace(/\bx\b/g,'x');
+      ggbApplet.evalCommand(`f(x)=${e}`);
+      ggbApplet.setColor('f', 255,122,89);
+      ggbApplet.setLineThickness('f', 3);
+      points.forEach((p,i)=>{
+        const name = 'P'+i;
+        ggbApplet.evalCommand(`${name}=(${p[0]},${p[1]})`);
+        ggbApplet.setColor(name, 45,212,191);
+        ggbApplet.setPointSize(name, 4);
+        if(p[2]) ggbApplet.setLabelVisible(name,true);
+      });
+      extraCmds.forEach(cmd=>{ try{ ggbApplet.evalCommand(cmd); }catch(err){} });
+      ggbApplet.setCoordSystem(-10,10,-10,10);
+    }catch(err){ console.warn('GGB error', err); }
+  });
+}
+
+/** Grafica un sistema de 2 ecuaciones implícitas (para Newton multivariable) */
+function ggbPlotImplicit(expr1, expr2, point=null){
+  withGGB(()=>{
+    try{
+      ggbApplet.reset();
+      ggbApplet.evalCommand(`curve1: ${preprocessExpr(expr1)}=0`);
+      ggbApplet.evalCommand(`curve2: ${preprocessExpr(expr2)}=0`);
+      ggbApplet.setColor('curve1', 255,122,89);
+      ggbApplet.setColor('curve2', 45,212,191);
+      ggbApplet.setLineThickness('curve1', 3);
+      ggbApplet.setLineThickness('curve2', 3);
+      if(point){
+        ggbApplet.evalCommand(`Sol=(${point[0]},${point[1]})`);
+        ggbApplet.setColor('Sol', 192,132,252);
+        ggbApplet.setPointSize('Sol', 5);
+      }
+      ggbApplet.setCoordSystem(-8,8,-8,8);
+    }catch(err){ console.warn('GGB error', err); }
+  });
+}
+
+/** Grafica polinomio dado coeficientes (para Bairstow/Horner) */
+function ggbPlotPoly(coefs, roots=[]){
+  withGGB(()=>{
+    try{
+      ggbApplet.reset();
+      const n = coefs.length-1;
+      const terms = coefs.map((c,i)=>{
+        const pw = n-i;
+        if(pw===0) return `${c}`;
+        if(pw===1) return `${c}*x`;
+        return `${c}*x^${pw}`;
+      }).join('+').replace(/\+-/g,'-');
+      ggbApplet.evalCommand(`f(x)=${terms}`);
+      ggbApplet.setColor('f', 255,122,89);
+      ggbApplet.setLineThickness('f', 3);
+      roots.forEach((r,i)=>{
+        if(Math.abs(r.im||0) < 1e-9){
+          const name='R'+i;
+          ggbApplet.evalCommand(`${name}=(${r.re!==undefined?r.re:r},0)`);
+          ggbApplet.setColor(name, 45,212,191);
+          ggbApplet.setPointSize(name,4);
+        }
+      });
+      ggbApplet.setCoordSystem(-6,6,-6,6);
+    }catch(err){ console.warn('GGB error', err); }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(typeof GGBApplet !== 'undefined') initGeoGebra();
+  else { const s=document.createElement('script'); s.src='https://www.geogebra.org/apps/deployggb.js'; s.onload=initGeoGebra; document.head.appendChild(s); }
+  buildMethodCards();
+  buildMatrixGrid('gs');
+  buildMatrixGrid('ja');
+  buildNewtonMultiGrid();
+});
+
+/* ════════════════════════════════════════════════════
+   TARJETAS DEL DASHBOARD (home)
+════════════════════════════════════════════════════ */
+const methodMeta = [
+  {id:'biseccion', cat:'Métodos clásicos', title:'Bisección', desc:'Búsqueda de raíces por intervalos con cambio de signo. Convergencia lineal garantizada.', icon:'fa-arrows-left-right-to-line', color:'teal', tag:'Raíces'},
+  {id:'regula', cat:'Métodos clásicos', title:'Regla Falsa', desc:'Interpolación lineal entre extremos del intervalo para acelerar la convergencia.', icon:'fa-chart-area', color:'amber', tag:'Raíces'},
+  {id:'newton', cat:'Métodos clásicos', title:'Newton-Raphson', desc:'Convergencia cuadrática usando derivadas. Rápido cerca de la raíz.', icon:'fa-arrow-trend-up', color:'rose', tag:'Raíces'},
+  {id:'secante', cat:'Métodos clásicos', title:'Secante', desc:'Aproxima la derivada con dos puntos previos. No requiere f\'(x).', icon:'fa-square-root-variable', color:'coral', tag:'Raíces'},
+  {id:'punto_fijo', cat:'Métodos clásicos', title:'Punto Fijo', desc:'Reformula f(x)=0 como x=g(x) e itera hasta converger.', icon:'fa-bullseye', color:'lilac', tag:'Raíces'},
+  {id:'taylor', cat:'Métodos clásicos', title:'Serie de Taylor', desc:'Aproxima f(x) mediante un polinomio basado en derivadas en un punto.', icon:'fa-list-ol', color:'teal', tag:'Series'},
+  {id:'muller', cat:'Métodos avanzados', title:'Método de Müller', desc:'Ajusta una parábola por 3 puntos; puede hallar raíces complejas.', icon:'fa-wave-square', color:'lilac', tag:'Nuevo'},
+  {id:'bairstow', cat:'Métodos avanzados', title:'Método de Bairstow', desc:'Factoriza polinomios en factores cuadráticos para hallar todas sus raíces.', icon:'fa-chart-line', color:'teal', tag:'Nuevo'},
+  {id:'horner_newton', cat:'Métodos avanzados', title:'Horner-Newton', desc:'Evalúa polinomios y derivadas con división sintética + Newton.', icon:'fa-divide', color:'amber', tag:'Nuevo'},
+  {id:'newton_multi', cat:'Métodos avanzados', title:'Newton-Raphson Multi', desc:'Resuelve sistemas no lineales n×n con matriz Jacobiana.', icon:'fa-diagram-project', color:'rose', tag:'Nuevo'},
+  {id:'gauss_seidel', cat:'Métodos avanzados', title:'Gauss-Seidel', desc:'Resuelve sistemas lineales Ax=b de forma iterativa.', icon:'fa-table-cells', color:'coral', tag:'Sistemas'},
+  {id:'jacobi', cat:'Métodos avanzados', title:'Método de Jacobi', desc:'Iteración simultánea para sistemas lineales diagonal-dominantes.', icon:'fa-table-cells-large', color:'lilac', tag:'Sistemas'},
+  {id:'newton_interp', cat:'Interpolación', title:'Polinomio de Newton', desc:'Construye el polinomio interpolante usando diferencias divididas.', icon:'fa-superscript', color:'amber', tag:'Interp.'},
+  {id:'lagrange', cat:'Interpolación', title:'Polinomio de Lagrange', desc:'Interpolación clásica mediante combinación de polinomios base.', icon:'fa-shapes', color:'rose', tag:'Interp.'},
+  {id:'splines', cat:'Interpolación', title:'Trazadores Cúbicos', desc:'Interpolación suave por tramos con splines cúbicos naturales.', icon:'fa-chart-line', color:'coral', tag:'Nuevo'},
+  {id:'diferenciacion', cat:'Diferenciación', title:'Diferenciación Numérica', desc:'Aproxima derivadas mediante diferencias finitas adelante/atrás/central.', icon:'fa-chart-line', color:'lilac', tag:'Nuevo'},
+  {id:'richardson', cat:'Diferenciación', title:'Extrapolación de Richardson', desc:'Combina aproximaciones de distinto paso h para mayor precisión.', icon:'fa-layer-group', color:'teal', tag:'Nuevo'},
+  {id:'trapecio', cat:'Integración', title:'Regla del Trapecio', desc:'Aproxima integrales definidas usando trapecios.', icon:'fa-square', color:'amber', tag:'Integral'},
+  {id:'simpson', cat:'Integración', title:'Simpson 1/3 y 3/8', desc:'Reglas de Simpson para mayor precisión en integración numérica.', icon:'fa-chart-area', color:'rose', tag:'Integral'},
+  {id:'bolzano', cat:'Teoremas', title:'Teorema de Bolzano', desc:'Verifica existencia de raíces por cambio de signo en un intervalo.', icon:'fa-scale-balanced', color:'coral', tag:'Teorema'},
+];
+
+function buildMethodCards(){
+  const grid = document.getElementById('methodsGrid');
+  grid.innerHTML = methodMeta.map(m=>`
+    <div class="method-card" onclick="openMethod('${m.id}')">
+      <div class="method-card-inner">
+        <div class="mc-icon bg-${m.color} c-${m.color}"><i class="fa-solid ${m.icon}"></i></div>
+        <div class="mc-cat">${m.cat}</div>
+        <div class="mc-title">${m.title}</div>
+        <div class="mc-desc">${m.desc}</div>
+        <span class="mc-tag bg-${m.color} c-${m.color}">${m.tag}</span>
+      </div>
+    </div>
+  `).join('');
+}
+</script>
+<script>
+/* ════════════════════════════════════════════════════
+   BISECCIÓN
+════════════════════════════════════════════════════ */
+function runBiseccion(){
+  try{
+    const fx = document.getElementById('bis-fx').value;
+    let a = parseFloat(document.getElementById('bis-a').value);
+    let b = parseFloat(document.getElementById('bis-b').value);
+    const tol = parseFloat(document.getElementById('bis-tol').value);
+    const maxIt = parseInt(document.getElementById('bis-max').value);
+    const f = compileFn(fx);
+    let fa = f.evaluate({x:a}), fb = f.evaluate({x:b});
+    if(fa*fb > 0){ toast('No hay cambio de signo en [a,b]. Elige otro intervalo.','error'); return; }
+    const status = document.getElementById('bis-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rows=[], c, fc, err=Math.abs(b-a);
+    for(let i=1;i<=maxIt;i++){
+      c = (a+b)/2; fc = f.evaluate({x:c});
+      err = Math.abs(b-a)/2;
+      rows.push({n:i,a,b,c,fc,err});
+      if(Math.abs(fc)<1e-14 || err<tol) break;
+      if(fa*fc<0){ b=c; fb=fc; } else { a=c; fa=fc; }
+    }
+    const tbody = document.getElementById('bis-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.a)}</td><td>${fmtNum(r.b)}</td><td>${fmtNum(r.c)}</td><td>${fmtNum(r.fc)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    const last = rows[rows.length-1];
+    document.getElementById('bis-root').textContent = fmtNum(last.c);
+    document.getElementById('bis-iters').textContent = rows.length;
+    document.getElementById('bis-err').textContent = fmtNum(last.err);
+    document.getElementById('bis-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    ggbPlotFunction(fx, [[last.c, 0, true]], [`SetValue(f,${preprocessExpr(fx)})`]);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   NEWTON-RAPHSON (univariable)
+════════════════════════════════════════════════════ */
+function runNewton(){
+  try{
+    const fx = document.getElementById('nwt-fx').value;
+    const dfxStr = document.getElementById('nwt-dfx').value.trim();
+    let x0 = parseFloat(document.getElementById('nwt-x0').value);
+    const tol = parseFloat(document.getElementById('nwt-tol').value);
+    const maxIt = parseInt(document.getElementById('nwt-max').value);
+    const f = compileFn(fx);
+    let df;
+    if(dfxStr) df = compileFn(dfxStr);
+    else { const node = derivativeFn(fx,'x'); df = {evaluate:(s)=>node.evaluate(s)}; }
+    const status = document.getElementById('nwt-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rows=[], x=x0, err=Infinity;
+    for(let i=1;i<=maxIt;i++){
+      const fxn = f.evaluate({x});
+      const dfxn = df.evaluate({x});
+      if(Math.abs(dfxn)<1e-14){ toast('Derivada cercana a 0, no se puede continuar','error'); break; }
+      const xNext = x - fxn/dfxn;
+      err = Math.abs(xNext-x);
+      rows.push({n:i,x,fxn,dfxn,xNext,err});
+      x = xNext;
+      if(err<tol || Math.abs(fxn)<1e-14) break;
+    }
+    const tbody = document.getElementById('nwt-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.x)}</td><td>${fmtNum(r.fxn)}</td><td>${fmtNum(r.dfxn)}</td><td>${fmtNum(r.xNext)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    const last = rows[rows.length-1];
+    document.getElementById('nwt-root').textContent = fmtNum(last.xNext);
+    document.getElementById('nwt-iters').textContent = rows.length;
+    document.getElementById('nwt-err').textContent = fmtNum(last.err);
+    document.getElementById('nwt-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    ggbPlotFunction(fx, [[last.xNext,0,true]]);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   SECANTE
+════════════════════════════════════════════════════ */
+function runSecante(){
+  try{
+    const fx = document.getElementById('sec-fx').value;
+    let x0 = parseFloat(document.getElementById('sec-x0').value);
+    let x1 = parseFloat(document.getElementById('sec-x1').value);
+    const tol = parseFloat(document.getElementById('sec-tol').value);
+    const maxIt = parseInt(document.getElementById('sec-max').value);
+    const f = compileFn(fx);
+    const status = document.getElementById('sec-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rows=[], err=Infinity;
+    for(let i=1;i<=maxIt;i++){
+      const f0=f.evaluate({x:x0}), f1=f.evaluate({x:x1});
+      if(Math.abs(f1-f0)<1e-14){ toast('División por cero, f(x1)≈f(x0)','error'); break; }
+      const x2 = x1 - f1*(x1-x0)/(f1-f0);
+      err = Math.abs(x2-x1);
+      rows.push({n:i,x0,x1,f0,f1,x2,err});
+      x0=x1; x1=x2;
+      if(err<tol || Math.abs(f1)<1e-14) break;
+    }
+    const tbody = document.getElementById('sec-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.x0)}</td><td>${fmtNum(r.x1)}</td><td>${fmtNum(r.f0)}</td><td>${fmtNum(r.f1)}</td><td>${fmtNum(r.x2)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    const last = rows[rows.length-1];
+    document.getElementById('sec-root').textContent = fmtNum(last.x2);
+    document.getElementById('sec-iters').textContent = rows.length;
+    document.getElementById('sec-err').textContent = fmtNum(last.err);
+    document.getElementById('sec-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    ggbPlotFunction(fx, [[last.x2,0,true]]);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   REGLA FALSA
+════════════════════════════════════════════════════ */
+function runRegula(){
+  try{
+    const fx = document.getElementById('reg-fx').value;
+    let a = parseFloat(document.getElementById('reg-a').value);
+    let b = parseFloat(document.getElementById('reg-b').value);
+    const tol = parseFloat(document.getElementById('reg-tol').value);
+    const maxIt = parseInt(document.getElementById('reg-max').value);
+    const f = compileFn(fx);
+    let fa=f.evaluate({x:a}), fb=f.evaluate({x:b});
+    if(fa*fb>0){ toast('No hay cambio de signo en [a,b]. Elige otro intervalo.','error'); return; }
+    const status = document.getElementById('reg-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rows=[], c, fc, cPrev=null, err=Infinity;
+    for(let i=1;i<=maxIt;i++){
+      c = b - fb*(b-a)/(fb-fa);
+      fc = f.evaluate({x:c});
+      err = cPrev===null ? Math.abs(b-a) : Math.abs(c-cPrev);
+      rows.push({n:i,a,b,c,fc,err});
+      if(Math.abs(fc)<1e-14 || err<tol) break;
+      if(fa*fc<0){ b=c; fb=fc; } else { a=c; fa=fc; }
+      cPrev=c;
+    }
+    const tbody = document.getElementById('reg-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.a)}</td><td>${fmtNum(r.b)}</td><td>${fmtNum(r.c)}</td><td>${fmtNum(r.fc)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    const last = rows[rows.length-1];
+    document.getElementById('reg-root').textContent = fmtNum(last.c);
+    document.getElementById('reg-iters').textContent = rows.length;
+    document.getElementById('reg-err').textContent = fmtNum(last.err);
+    document.getElementById('reg-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    ggbPlotFunction(fx, [[last.c,0,true]]);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   PUNTO FIJO
+════════════════════════════════════════════════════ */
+function runPuntoFijo(){
+  try{
+    const gx = document.getElementById('pf-gx').value;
+    let x0 = parseFloat(document.getElementById('pf-x0').value);
+    const tol = parseFloat(document.getElementById('pf-tol').value);
+    const maxIt = parseInt(document.getElementById('pf-max').value);
+    const g = compileFn(gx);
+    const status = document.getElementById('pf-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rows=[], x=x0, err=Infinity;
+    for(let i=1;i<=maxIt;i++){
+      const xNext = g.evaluate({x});
+      if(typeof xNext!=='number' || !isFinite(xNext)){ toast('g(x) produjo un valor no válido. Revisa la función.','error'); break; }
+      err = Math.abs(xNext-x);
+      rows.push({n:i,x,xNext,err});
+      x = xNext;
+      if(err<tol) break;
+      if(Math.abs(x)>1e8){ toast('La iteración diverge. Prueba otro g(x) o x₀.','error'); break; }
+    }
+    const tbody = document.getElementById('pf-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.x)}</td><td>${fmtNum(r.xNext)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    const last = rows[rows.length-1];
+    document.getElementById('pf-root').textContent = fmtNum(last.xNext);
+    document.getElementById('pf-iters').textContent = rows.length;
+    document.getElementById('pf-err').textContent = fmtNum(last.err);
+    document.getElementById('pf-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    ggbPlotFunction(gx, [[last.xNext, g.evaluate({x:last.xNext}), true]], [`g2(x)=x`]);
+    withGGB(()=>{ try{ ggbApplet.evalCommand('g2(x)=x'); ggbApplet.setColor('g2',45,212,191); ggbApplet.setLineStyle('g2',1); }catch(e){} });
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+</script>
+<script>
+/* ════════════════════════════════════════════════════
+   MÜLLER
+════════════════════════════════════════════════════ */
+function runMuller(){
+  try{
+    const fx = document.getElementById('mul-fx').value;
+    let x0 = parseFloat(document.getElementById('mul-x0').value);
+    let x1 = parseFloat(document.getElementById('mul-x1').value);
+    let x2 = parseFloat(document.getElementById('mul-x2').value);
+    const tol = parseFloat(document.getElementById('mul-tol').value);
+    const maxIt = parseInt(document.getElementById('mul-max').value);
+    const f = compileFn(fx);
+    const status = document.getElementById('mul-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rows=[], err=Infinity, x3=x2, isComplex=false;
+    for(let i=1;i<=maxIt;i++){
+      const f0=f.evaluate({x:x0}), f1=f.evaluate({x:x1}), f2=f.evaluate({x:x2});
+      const h0=x1-x0, h1=x2-x1;
+      const d0=(f1-f0)/h0, d1=(f2-f1)/h1;
+      const a=(d1-d0)/(h1+h0);
+      const b=a*h1+d1;
+      const c=f2;
+      const disc = math.complex(b*b-4*a*c, 0); // usar complejo para soportar negativo
+      const sq = math.sqrt(disc);
+      // elegir signo que maximice |denominador|
+      const denomPlus = math.add(b, sq);
+      const denomMinus = math.subtract(b, sq);
+      const denom = math.abs(denomPlus)>math.abs(denomMinus) ? denomPlus : denomMinus;
+      let dx;
+      if(Math.abs(denom.re||denom)<1e-14 && Math.abs(denom.im||0)<1e-14){ toast('Denominador ≈ 0, no se puede continuar','error'); break; }
+      dx = math.divide(math.complex(-2*c,0), denom);
+      const x3c = math.add(math.complex(x2,0), dx);
+      isComplex = Math.abs(x3c.im)>1e-9;
+      err = math.abs(dx);
+      x3 = x3c;
+      rows.push({n:i, x0,x1,x2, x3:x3c, err, complex:isComplex});
+      if(err<tol) break;
+      x0=x1; x1=x2; x2= isComplex ? x3c.re : x3c.re; // avanzar con parte real para continuar iterando reales
+      if(isComplex) x2 = x3c.re;
+    }
+    const tbody = document.getElementById('mul-tbody');
+    tbody.innerHTML = rows.map(r=>{
+      const x3str = r.complex ? `${fmtNum(r.x3.re)} ${r.x3.im>=0?'+':'-'} ${fmtNum(Math.abs(r.x3.im))}i` : fmtNum(r.x3.re);
+      return `<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.x0)}</td><td>${fmtNum(r.x1)}</td><td>${fmtNum(r.x2)}</td><td>${x3str}</td><td>${fmtNum(r.err)}</td><td>${r.complex?'Sí':'No'}</td></tr>`;
+    }).join('');
+    const last = rows[rows.length-1];
+    const rootStr = last.complex ? `${fmtNum(last.x3.re)} ${last.x3.im>=0?'+':'-'} ${fmtNum(Math.abs(last.x3.im))}i` : fmtNum(last.x3.re);
+    document.getElementById('mul-root').textContent = rootStr;
+    document.getElementById('mul-iters').textContent = rows.length;
+    document.getElementById('mul-err').textContent = fmtNum(last.err);
+    document.getElementById('mul-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    if(!last.complex) ggbPlotFunction(fx, [[last.x3.re,0,true]]);
+    else ggbPlotFunction(fx,[]);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   BAIRSTOW
+════════════════════════════════════════════════════ */
+function runBairstow(){
+  try{
+    const coefsStr = document.getElementById('bw-coefs').value;
+    let coefs = coefsStr.split(',').map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v));
+    if(coefs.length<3){ toast('Ingresa al menos 3 coeficientes (grado ≥ 2)','error'); return; }
+    let r = parseFloat(document.getElementById('bw-r0').value)||0;
+    let s = parseFloat(document.getElementById('bw-s0').value)||0;
+    const tol = parseFloat(document.getElementById('bw-tol').value);
+    const maxIt = parseInt(document.getElementById('bw-max').value);
+    const status = document.getElementById('bw-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+
+    const allRoots=[];
+    let work = coefs.slice();
+    let rows=[];
+
+    // función que hace una secuencia de Bairstow sobre 'work', devuelve {r,s,rows,b,c}
+    function bairstowStep(a, r, s){
+      const n = a.length-1;
+      let b=new Array(n+1), c=new Array(n+1);
+      let lr=r, ls=s, localRows=[];
+      for(let it=1; it<=maxIt; it++){
+        b[n]=a[n]; b[n-1]=a[n-1]+lr*b[n];
+        for(let i=n-2;i>=0;i--) b[i]=a[i]+lr*b[i+1]+ls*b[i+2];
+        c[n]=b[n]; c[n-1]=b[n-1]+lr*c[n];
+        for(let i=n-2;i>=0;i--) c[i]=b[i]+lr*c[i+1]+ls*c[i+2];
+        const det = c[2]*c[2]-c[3]*c[1];
+        if(Math.abs(det)<1e-14){ lr+=1; ls+=1; continue; }
+        const dr = (-b[1]*c[2]+b[0]*c[3])/det;
+        const ds = (-b[0]*c[2]+b[1]*c[1])/det;
+        lr+=dr; ls+=ds;
+        const err = Math.abs(dr)+Math.abs(ds);
+        localRows.push({n:it, r:lr, s:ls, dr, ds, err});
+        if(err<tol) break;
+      }
+      return {r:lr, s:ls, rows:localRows, b};
+    }
+
+    while(work.length>3){
+      const res = bairstowStep(work, r, s);
+      rows = rows.concat(res.rows.map(rr=>({...rr})));
+      // raíces del factor x^2 - r x - s
+      const R=res.r, S=res.s;
+      const discr = R*R+4*S;
+      if(discr>=0){
+        const sq=Math.sqrt(discr);
+        allRoots.push(math.complex((R+sq)/2,0), math.complex((R-sq)/2,0));
+      } else {
+        const sq=Math.sqrt(-discr);
+        allRoots.push(math.complex(R/2, sq/2), math.complex(R/2,-sq/2));
+      }
+      // deflactar: nuevos coeficientes son b[2..n]
+      const n=work.length-1;
+      work = res.b.slice(2,n+1);
+      r=res.r; s=res.s;
+    }
+    // resolver lo que queda (grado 1 o 2)
+    if(work.length===3){
+      const [a0,a1,a2]=work; // a0 x^2+a1 x+a2
+      const discr=a1*a1-4*a0*a2;
+      if(discr>=0){ const sq=Math.sqrt(discr); allRoots.push(math.complex((-a1+sq)/(2*a0),0), math.complex((-a1-sq)/(2*a0),0)); }
+      else{ const sq=Math.sqrt(-discr); allRoots.push(math.complex(-a1/(2*a0), sq/(2*a0)), math.complex(-a1/(2*a0), -sq/(2*a0))); }
+    } else if(work.length===2){
+      allRoots.push(math.complex(-work[1]/work[0],0));
+    }
+
+    const tbody = document.getElementById('bw-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.r)}</td><td>${fmtNum(r.s)}</td><td>${fmtNum(r.dr)}</td><td>${fmtNum(r.ds)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    const lastFactor = `x² ${r>=0?'-':'+'} ${fmtNum(Math.abs(r))}x ${ -s>=0?'-':'+'} ${fmtNum(Math.abs(-s))}`;
+    document.getElementById('bw-factor').textContent = lastFactor;
+    const lastRootsStr = allRoots.slice(-2).map(rt=> Math.abs(rt.im)<1e-9 ? fmtNum(rt.re) : `${fmtNum(rt.re)}${rt.im>=0?'+':'-'}${fmtNum(Math.abs(rt.im))}i`).join(', ');
+    document.getElementById('bw-roots').textContent = lastRootsStr;
+    document.getElementById('bw-summary').style.display='grid';
+
+    const allDiv = document.getElementById('bw-allroots');
+    allDiv.innerHTML = `<div class="field-lbl" style="margin-bottom:8px;">Todas las raíces encontradas</div>` +
+      `<div style="display:flex;flex-wrap:wrap;gap:8px;">` +
+      allRoots.map((rt,i)=>{
+        const str = Math.abs(rt.im)<1e-9 ? fmtNum(rt.re) : `${fmtNum(rt.re)} ${rt.im>=0?'+':'-'} ${fmtNum(Math.abs(rt.im))}i`;
+        return `<span class="mc-tag bg-coral c-coral" style="font-size:11px;padding:6px 12px;">x${i+1} = ${str}</span>`;
+      }).join('') + `</div>`;
+
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    ggbPlotPoly(coefs, allRoots);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   HORNER-NEWTON
+════════════════════════════════════════════════════ */
+function hornerEval(coefs, x){
+  // devuelve [P(x), P'(x)] usando división sintética doble
+  const n=coefs.length-1;
+  let b=coefs[0], c=b;
+  for(let i=1;i<=n;i++){
+    b = coefs[i] + b*x;
+    if(i<n) c = b + c*x;
+  }
+  // P(x)=b (último b), P'(x)=c
+  return [b, c];
+}
+function runHornerNewton(){
+  try{
+    const coefsStr = document.getElementById('hn-coefs').value;
+    let coefs = coefsStr.split(',').map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v));
+    if(coefs.length<2){ toast('Ingresa al menos 2 coeficientes','error'); return; }
+    let x = parseFloat(document.getElementById('hn-x0').value);
+    const tol = parseFloat(document.getElementById('hn-tol').value);
+    const maxIt = parseInt(document.getElementById('hn-max').value);
+    const status = document.getElementById('hn-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rows=[], err=Infinity;
+    for(let i=1;i<=maxIt;i++){
+      const [Px,Ppx] = hornerEval(coefs, x);
+      if(Math.abs(Ppx)<1e-14){ toast('P\'(x) ≈ 0, no se puede continuar','error'); break; }
+      const xNext = x - Px/Ppx;
+      err = Math.abs(xNext-x);
+      rows.push({n:i,x,Px,Ppx,xNext,err});
+      x=xNext;
+      if(err<tol || Math.abs(Px)<1e-14) break;
+    }
+    const tbody = document.getElementById('hn-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.x)}</td><td>${fmtNum(r.Px)}</td><td>${fmtNum(r.Ppx)}</td><td>${fmtNum(r.xNext)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    const last = rows[rows.length-1];
+    document.getElementById('hn-root').textContent = fmtNum(last.xNext);
+    document.getElementById('hn-iters').textContent = rows.length;
+    document.getElementById('hn-err').textContent = fmtNum(last.err);
+    document.getElementById('hn-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    ggbPlotPoly(coefs, [{re:last.xNext, im:0}]);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+function buildNewtonMultiGrid(){
+  const nInput = document.getElementById('nm-n');
+  const fnWrap = document.getElementById('nm-fns');
+  const x0Input = document.getElementById('nm-x0');
+  const thead = document.getElementById('nm-thead');
+  const tbody = document.getElementById('nm-tbody');
+  if(!nInput || !fnWrap || !x0Input) return;
+  const n = Math.max(2, Math.min(8, parseInt(nInput.value)||2));
+  nInput.value = n;
+  const vars = n === 2 ? ['x', 'y'] : Array.from({length:n}, (_,i)=>`x${i+1}`);
+  const defaults = n === 2 ? ['x^2 + y^2 - 4', 'x^2 - y'] : Array.from({length:n}, (_,i)=>`${vars[i]}^2 - ${i+1}`);
+  fnWrap.innerHTML = vars.map((v,i)=>`
+    <div class="matrix-row" style="grid-template-columns:64px 1fr;">
+      <div class="matrix-cell" style="display:flex;align-items:center;justify-content:center;font-weight:700;">F${i+1}</div>
+      <input class="rf-input" id="nm-f-${i}" value="${defaults[i]}" placeholder="f${i+1}(${vars.join(', ')}) = 0" style="margin:0;"/>
+    </div>
+  `).join('');
+  x0Input.value = Array.from({length:n}, ()=>'1').join(',');
+  if(thead) thead.innerHTML = '<th>k</th>' + vars.map(v=>`<th>${v}</th>`).join('') + '<th>‖F(x)‖</th><th>‖Error‖</th>';
+  if(tbody) tbody.innerHTML = `<tr><td colspan="${n+3}"><div class="state-idle"><i class="fa-solid fa-diagram-project"></i><p>Define el sistema y presiona Calcular</p></div></td></tr>`;
+}
+
+function solveLinearSystem(A, b){
+  const n = A.length;
+  const M = A.map((row, i)=>row.slice().concat([b[i]]));
+  for(let col=0; col<n; col++){
+    let pivot = col;
+    for(let r=col+1; r<n; r++){
+      if(Math.abs(M[r][col]) > Math.abs(M[pivot][col])) pivot = r;
+    }
+    if(Math.abs(M[pivot][col]) < 1e-14) return null;
+    if(pivot !== col) [M[col], M[pivot]] = [M[pivot], M[col]];
+    for(let r=col+1; r<n; r++){
+      const factor = M[r][col] / M[col][col];
+      if(!isFinite(factor)) return null;
+      for(let c=col; c<=n; c++) M[r][c] -= factor * M[col][c];
+    }
+  }
+  const x = new Array(n).fill(0);
+  for(let i=n-1; i>=0; i--){
+    let sum = M[i][n];
+    for(let j=i+1; j<n; j++) sum -= M[i][j] * x[j];
+    if(Math.abs(M[i][i]) < 1e-14) return null;
+    x[i] = sum / M[i][i];
+  }
+  return x;
+}
+
+/* ════════════════════════════════════════════════════
+   NEWTON-RAPHSON MULTIVARIABLE (sistema n×n)
+════════════════════════════════════════════════════ */
+function runNewtonMulti(){
+  try{
+    const n = Math.max(2, Math.min(8, parseInt(document.getElementById('nm-n').value)||2));
+    const vars = n === 2 ? ['x', 'y'] : Array.from({length:n}, (_,i)=>`x${i+1}`);
+    const exprs = vars.map((_,i)=>document.getElementById(`nm-f-${i}`).value.trim());
+    const x0Str = document.getElementById('nm-x0').value.trim();
+    const xInit = x0Str ? x0Str.split(',').map(s=>parseFloat(s.trim())||0) : [];
+    let x = xInit.length === n ? xInit : new Array(n).fill(1);
+    const tol = parseFloat(document.getElementById('nm-tol').value) || 1e-4;
+    const maxIt = parseInt(document.getElementById('nm-max').value) || 30;
+    const funcs = exprs.map(expr=>compileFn(expr));
+    const derivs = exprs.map(expr => vars.map(v => math.derivative(preprocessExpr(expr), v)));
+    const status = document.getElementById('nm-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rows=[], err=Infinity;
+    for(let i=1;i<=maxIt;i++){
+      const scope = Object.fromEntries(vars.map((v,idx)=>[v, x[idx]]));
+      const F = funcs.map(fn=>fn.evaluate(scope));
+      const J = derivs.map(row=>row.map(node=>node.evaluate(scope)));
+      const delta = solveLinearSystem(J, F.map(v=>-v));
+      if(!delta){ toast('Jacobiano singular, no se puede continuar','error'); break; }
+      const xNext = x.map((v,idx)=>v + delta[idx]);
+      err = Math.max(...delta.map(v=>Math.abs(v)));
+      rows.push({n:i, x:x.slice(), F, err});
+      x = xNext;
+      if(err < tol) break;
+    }
+    if(!rows.length){ status.textContent='ERROR'; status.className='results-badge rb-err'; return; }
+    const tbody = document.getElementById('nm-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td>${r.x.map(v=>`<td>${fmtNum(v)}</td>`).join('')}<td>${fmtNum(Math.sqrt(r.F.reduce((s,v)=>s+v*v,0)))}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    document.getElementById('nm-rootx').textContent = '[' + x.map(v=>fmtNum(v)).join(', ') + ']';
+    document.getElementById('nm-iters').textContent = rows.length;
+    document.getElementById('nm-err').textContent = fmtNum(rows[rows.length-1].err);
+    document.getElementById('nm-summary').style.display='grid';
+    const last = rows[rows.length-1];
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    if(n===2){
+      ggbPlotImplicit(exprs[0], exprs[1], [x[0], x[1]]);
+    }else{
+      withGGB(()=>{ try{ ggbApplet.reset(); }catch(e){} });
+    }
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   SERIE DE TAYLOR
+════════════════════════════════════════════════════ */
+function runTaylor(){
+  try{
+    const fx = document.getElementById('tay-fx').value;
+    const a = parseFloat(document.getElementById('tay-a').value);
+    const xVal = parseFloat(document.getElementById('tay-x').value);
+    const tol = parseFloat(document.getElementById('tay-tol').value) || 1e-6;
+    const maxOrder = 20;
+    const status = document.getElementById('tay-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    const e = preprocessExpr(fx);
+    const f = compileFn(fx);
+    const baseNode = math.parse(e);
+    let rows=[], P=0, fact=1, degree=0;
+    for(let k=0;k<=maxOrder;k++){
+      let dnode = baseNode;
+      for(let j=0;j<k;j++) dnode = math.derivative(dnode,'x');
+      const fk_a = dnode.evaluate({x:a});
+      if(k>0) fact *= k;
+      const coef = fk_a/fact;
+      const term = coef*Math.pow(xVal-a, k);
+      if(k>0 && Math.abs(term) < tol) break;
+      rows.push({k, fk_a, fact, coef, term});
+      P += term;
+      degree = k;
+    }
+    if(!rows.length){ toast('No se pudo construir la serie','error'); return; }
+    const tbody = document.getElementById('tay-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr><td>${r.k}</td><td>${fmtNum(r.fk_a)}</td><td>${r.fact}</td><td>${fmtNum(r.coef)}</td><td>${fmtNum(r.term)}</td></tr>`).join('');
+    let realVal;
+    try{
+      realVal = f.evaluate({x:xVal});
+    }catch(_err){
+      realVal = math.evaluate(e, {x:xVal});
+    }
+    document.getElementById('tay-degree').textContent = degree;
+    document.getElementById('tay-pval').textContent = fmtNum(P);
+    document.getElementById('tay-fval').textContent = fmtNum(realVal);
+    document.getElementById('tay-err').textContent = fmtNum(Math.abs(realVal-P));
+    document.getElementById('tay-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    ggbPlotFunction(fx, [[xVal, P, true]]);
+    withGGB(()=>{
+      try{
+        const polyTerms = rows
+          .filter(r=>Math.abs(r.coef) >= 1e-14)
+          .map(r=>r.k===0 ? `${r.coef}` : `${r.coef}*(x-(${a}))^${r.k}`);
+        const polyStr = polyTerms.join('+').replace(/\+-/g,'-') || '0';
+        ggbApplet.evalCommand(`T(x)=${polyStr}`);
+        ggbApplet.setColor('T',45,212,191);
+        ggbApplet.setLineThickness('T',3);
+        ggbApplet.setLineStyle('T',1);
+      }catch(e){}
+    });
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   TEOREMA DE BOLZANO
+════════════════════════════════════════════════════ */
+function runBolzano(){
+  try{
+    const fx = document.getElementById('bz-fx').value;
+    const a = parseFloat(document.getElementById('bz-a').value);
+    const b = parseFloat(document.getElementById('bz-b').value);
+    const n = parseInt(document.getElementById('bz-n').value);
+    const f = compileFn(fx);
+    const status = document.getElementById('bz-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    const h=(b-a)/n;
+    let rows=[], changes=[];
+    for(let i=0;i<n;i++){
+      const xi=a+i*h, xi1=a+(i+1)*h;
+      const fi=f.evaluate({x:xi}), fi1=f.evaluate({x:xi1});
+      const prod=fi*fi1;
+      const change = prod<0;
+      if(change) changes.push([xi,xi1]);
+      rows.push({i:i+1,xi,xi1,fi,fi1,prod,change});
+    }
+    const tbody = document.getElementById('bz-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.change?' class="converged"':''}><td>${r.i}</td><td>${fmtNum(r.xi)}</td><td>${fmtNum(r.xi1)}</td><td>${fmtNum(r.fi)}</td><td>${fmtNum(r.fi1)}</td><td>${fmtNum(r.prod)}</td><td>${r.change?'✔ Sí':'No'}</td></tr>`).join('');
+    const fa=f.evaluate({x:a}), fb=f.evaluate({x:b});
+    document.getElementById('bz-prod').textContent = fmtNum(fa*fb);
+    let concl;
+    if(fa*fb<0) concl = `f(a)·f(b) < 0 ⇒ existe al menos una raíz en (${fmtNum(a)}, ${fmtNum(b)}) por el Teorema de Bolzano.`;
+    else concl = `f(a)·f(b) ≥ 0 ⇒ Bolzano no garantiza raíz en [a,b], pero se detectaron ${changes.length} subintervalo(s) con cambio de signo.`;
+    document.getElementById('bz-concl').textContent = concl;
+    document.getElementById('bz-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    const pts = changes.map(c=>[(c[0]+c[1])/2, 0, false]);
+    ggbPlotFunction(fx, pts);
+    toast('Verificación completada','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+</script>
+<script>
+/* ════════════════════════════════════════════════════
+   MATRIX BUILDER (Gauss-Seidel / Jacobi)
+════════════════════════════════════════════════════ */
+function buildMatrixGrid(prefix){
+  const n = Math.max(2, Math.min(8, parseInt(document.getElementById(prefix+'-n').value)||3));
+  const wrap = document.getElementById(prefix+'-matrix');
+  let html = `<div class="field-lbl">Matriz A | vector b</div>`;
+  for(let i=0;i<n;i++){
+    html += `<div class="matrix-row" style="grid-template-columns:repeat(${n},1fr) 14px 1fr;">`;
+    for(let j=0;j<n;j++){
+      const def = i===j?2:(j===i+1||j===i-1? -0.5:0);
+      html += `<input class="matrix-cell" id="${prefix}-a-${i}-${j}" value="${i===j?(n+1).toFixed(0):(Math.abs(i-j)===1?'-1':'0')}"/>`;
+    }
+    html += `<div style="display:flex;align-items:center;justify-content:center;color:var(--text-ghost);">|</div>`;
+    html += `<input class="matrix-cell bvec" id="${prefix}-b-${i}" value="${(i+1)*1.0}"/>`;
+    html += `</div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+function readMatrix(prefix){
+  const n = Math.max(2, Math.min(8, parseInt(document.getElementById(prefix+'-n').value)||3));
+  let A=[], b=[];
+  for(let i=0;i<n;i++){
+    let row=[];
+    for(let j=0;j<n;j++){
+      const el=document.getElementById(`${prefix}-a-${i}-${j}`);
+      row.push(parseFloat(el.value)||0);
+    }
+    A.push(row);
+    b.push(parseFloat(document.getElementById(`${prefix}-b-${i}`).value)||0);
+  }
+  return {A,b,n};
+}
+
+/* ════════════════════════════════════════════════════
+   GAUSS-SEIDEL
+════════════════════════════════════════════════════ */
+function runGaussSeidel(){
+  try{
+    const {A,b,n} = readMatrix('gs');
+    for(let i=0;i<n;i++) if(Math.abs(A[i][i])<1e-12){ toast(`Diagonal A[${i+1}][${i+1}] = 0, reordena el sistema`,'error'); return; }
+    const tol = parseFloat(document.getElementById('gs-tol').value);
+    const maxIt = parseInt(document.getElementById('gs-max').value);
+    let x0Str = document.getElementById('gs-x0').value.trim();
+    let x = x0Str ? x0Str.split(',').map(s=>parseFloat(s.trim())||0) : new Array(n).fill(0);
+    if(x.length!==n) x = new Array(n).fill(0);
+    const status = document.getElementById('gs-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    // header
+    const thead = document.getElementById('gs-thead');
+    thead.innerHTML = '<th>k</th>' + Array.from({length:n},(_,i)=>`<th>x${i+1}</th>`).join('') + '<th>Error</th>';
+    let rows=[], err=Infinity;
+    for(let k=1;k<=maxIt;k++){
+      const xOld = x.slice();
+      for(let i=0;i<n;i++){
+        let sum=b[i];
+        for(let j=0;j<n;j++) if(j!==i) sum -= A[i][j]*x[j];
+        x[i] = sum/A[i][i];
+      }
+      err = Math.max(...x.map((v,i)=>Math.abs(v-xOld[i])));
+      rows.push({k,x:x.slice(),err});
+      if(err<tol) break;
+      if(!isFinite(err) || err>1e10){ toast('El sistema diverge con este orden/valores','error'); break; }
+    }
+    const tbody = document.getElementById('gs-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.k}</td>${r.x.map(v=>`<td>${fmtNum(v)}</td>`).join('')}<td>${fmtNum(r.err)}</td></tr>`).join('');
+    const last = rows[rows.length-1];
+    document.getElementById('gs-sol').textContent = last.x.map(v=>fmtNum(v)).join(', ');
+    document.getElementById('gs-iters').textContent = rows.length;
+    document.getElementById('gs-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    if(n===2){
+      withGGB(()=>{
+        try{
+          ggbApplet.reset();
+          ggbApplet.evalCommand(`line1: ${A[0][0]}x+${A[0][1]}y=${b[0]}`);
+          ggbApplet.evalCommand(`line2: ${A[1][0]}x+${A[1][1]}y=${b[1]}`);
+          ggbApplet.setColor('line1',255,122,89); ggbApplet.setColor('line2',45,212,191);
+          ggbApplet.evalCommand(`Sol=(${last.x[0]},${last.x[1]})`);
+          ggbApplet.setColor('Sol',192,132,252); ggbApplet.setPointSize('Sol',5);
+          ggbApplet.setCoordSystem(-10,10,-10,10);
+        }catch(e){}
+      });
+    }
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   JACOBI
+════════════════════════════════════════════════════ */
+function runJacobi(){
+  try{
+    const {A,b,n} = readMatrix('ja');
+    for(let i=0;i<n;i++) if(Math.abs(A[i][i])<1e-12){ toast(`Diagonal A[${i+1}][${i+1}] = 0, reordena el sistema`,'error'); return; }
+    const tol = parseFloat(document.getElementById('ja-tol').value);
+    const maxIt = parseInt(document.getElementById('ja-max').value);
+    let x0Str = document.getElementById('ja-x0').value.trim();
+    let x = x0Str ? x0Str.split(',').map(s=>parseFloat(s.trim())||0) : new Array(n).fill(0);
+    if(x.length!==n) x = new Array(n).fill(0);
+    const status = document.getElementById('ja-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    const thead = document.getElementById('ja-thead');
+    thead.innerHTML = '<th>k</th>' + Array.from({length:n},(_,i)=>`<th>x${i+1}</th>`).join('') + '<th>Error</th>';
+    let rows=[], err=Infinity;
+    for(let k=1;k<=maxIt;k++){
+      const xNew = new Array(n);
+      for(let i=0;i<n;i++){
+        let sum=b[i];
+        for(let j=0;j<n;j++) if(j!==i) sum -= A[i][j]*x[j];
+        xNew[i]=sum/A[i][i];
+      }
+      err = Math.max(...xNew.map((v,i)=>Math.abs(v-x[i])));
+      x = xNew;
+      rows.push({k,x:x.slice(),err});
+      if(err<tol) break;
+      if(!isFinite(err) || err>1e10){ toast('El sistema diverge con este orden/valores','error'); break; }
+    }
+    const tbody = document.getElementById('ja-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.k}</td>${r.x.map(v=>`<td>${fmtNum(v)}</td>`).join('')}<td>${fmtNum(r.err)}</td></tr>`).join('');
+    const last = rows[rows.length-1];
+    document.getElementById('ja-sol').textContent = last.x.map(v=>fmtNum(v)).join(', ');
+    document.getElementById('ja-iters').textContent = rows.length;
+    document.getElementById('ja-summary').style.display='grid';
+    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    if(n===2){
+      withGGB(()=>{
+        try{
+          ggbApplet.reset();
+          ggbApplet.evalCommand(`line1: ${A[0][0]}x+${A[0][1]}y=${b[0]}`);
+          ggbApplet.evalCommand(`line2: ${A[1][0]}x+${A[1][1]}y=${b[1]}`);
+          ggbApplet.setColor('line1',255,122,89); ggbApplet.setColor('line2',45,212,191);
+          ggbApplet.evalCommand(`Sol=(${last.x[0]},${last.x[1]})`);
+          ggbApplet.setColor('Sol',192,132,252); ggbApplet.setPointSize('Sol',5);
+          ggbApplet.setCoordSystem(-10,10,-10,10);
+        }catch(e){}
+      });
+    }
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   PARSEO DE PUNTOS "x,y; x,y; ..."
+════════════════════════════════════════════════════ */
+function parsePoints(str){
+  return str.split(';').map(s=>s.trim()).filter(Boolean).map(pair=>{
+    const [x,y] = pair.split(',').map(v=>parseFloat(v.trim()));
+    return [x,y];
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   POLINOMIO DE LAGRANGE
+════════════════════════════════════════════════════ */
+function runLagrange(){
+  try{
+    const pts = parsePoints(document.getElementById('lag-pts').value);
+    const xi = parseFloat(document.getElementById('lag-xi').value);
+    if(pts.length<2){ toast('Ingresa al menos 2 puntos','error'); return; }
+    const status = document.getElementById('lag-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    const n=pts.length;
+    let rows=[], P=0;
+    for(let i=0;i<n;i++){
+      let L=1;
+      for(let j=0;j<n;j++) if(j!==i) L *= (xi-pts[j][0])/(pts[i][0]-pts[j][0]);
+      const term = pts[i][1]*L;
+      P += term;
+      rows.push({i:i+1, x:pts[i][0], y:pts[i][1], L, term});
+    }
+    const tbody = document.getElementById('lag-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr><td>${r.i}</td><td>${fmtNum(r.x)}</td><td>${fmtNum(r.y)}</td><td>${fmtNum(r.L)}</td><td>${fmtNum(r.term)}</td></tr>`).join('');
+    document.getElementById('lag-result').textContent = fmtNum(P);
+    document.getElementById('lag-degree').textContent = n-1;
+    document.getElementById('lag-pts-n').textContent = n;
+    document.getElementById('lag-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    plotInterpolation(pts, xi, P);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   POLINOMIO DE NEWTON (DIFERENCIAS DIVIDIDAS)
+════════════════════════════════════════════════════ */
+function runNewtonInterp(){
+  try{
+    const pts = parsePoints(document.getElementById('ni-pts').value);
+    const xi = parseFloat(document.getElementById('ni-xi').value);
+    if(pts.length<2){ toast('Ingresa al menos 2 puntos','error'); return; }
+    const status = document.getElementById('ni-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    const n=pts.length;
+    const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]);
+    // tabla de diferencias divididas
+    let table=[ys.slice()];
+    for(let lvl=1; lvl<n; lvl++){
+      const prev=table[lvl-1];
+      let row=[];
+      for(let i=0;i<prev.length-1;i++) row.push((prev[i+1]-prev[i])/(xs[i+lvl]-xs[i]));
+      table.push(row);
+    }
+    // construir tabla visual
+    const thead = document.getElementById('ni-thead');
+    let headCols = ['xᵢ','f[xᵢ]'];
+    for(let lvl=1;lvl<n;lvl++) headCols.push(`Orden ${lvl}`);
+    thead.innerHTML = headCols.map(h=>`<th>${h}</th>`).join('');
+    const tbody = document.getElementById('ni-tbody');
+    let bodyRows='';
+    for(let i=0;i<n;i++){
+      let cells=`<td>${fmtNum(xs[i])}</td><td>${fmtNum(ys[i])}</td>`;
+      for(let lvl=1;lvl<n;lvl++){
+        if(i<=n-1-lvl) cells+=`<td>${fmtNum(table[lvl][i])}</td>`;
+        else cells+=`<td></td>`;
+      }
+      bodyRows+=`<tr>${cells}</tr>`;
+    }
+    tbody.innerHTML = bodyRows;
+    // evaluar polinomio en xi
+    let P = table[0][0], prodTerm=1, polyParts=[`${fmtNum(table[0][0])}`];
+    for(let lvl=1;lvl<n;lvl++){
+      prodTerm *= (xi - xs[lvl-1]);
+      P += table[lvl][0]*prodTerm;
+      let factorsStr = Array.from({length:lvl},(_,k)=>`(x-${fmtNum(xs[k])})`).join('');
+      polyParts.push(`${fmtNum(table[lvl][0])}·${factorsStr}`);
+    }
+    document.getElementById('ni-result').textContent = fmtNum(P);
+    document.getElementById('ni-degree').textContent = n-1;
+    document.getElementById('ni-pts-n').textContent = n;
+    document.getElementById('ni-poly').textContent = 'P(x) = ' + polyParts.join(' + ').replace(/\+ -/g,'- ');
+    document.getElementById('ni-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    plotInterpolation(pts, xi, P);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/** Grafica puntos + punto interpolado en GGB (sin función analítica) */
+function plotInterpolation(pts, xi, yi){
+  withGGB(()=>{
+    try{
+      ggbApplet.reset();
+      pts.forEach((p,i)=>{
+        ggbApplet.evalCommand(`P${i}=(${p[0]},${p[1]})`);
+        ggbApplet.setColor(`P${i}`,45,212,191);
+        ggbApplet.setPointSize(`P${i}`,4);
+      });
+      // polinomio interpolante mediante comando FitPoly si hay suficientes puntos
+      const list = pts.map((p,i)=>`P${i}`).join(',');
+      ggbApplet.evalCommand(`poly=FitPoly({${list}},${Math.min(pts.length-1,6)})`);
+      ggbApplet.setColor('poly',255,122,89);
+      ggbApplet.setLineThickness('poly',3);
+      ggbApplet.evalCommand(`X=(${xi},${yi})`);
+      ggbApplet.setColor('X',192,132,252);
+      ggbApplet.setPointSize('X',5);
+      ggbApplet.setLabelVisible('X',true);
+      const xsArr=pts.map(p=>p[0]);
+      const minX=Math.min(...xsArr,xi)-1, maxX=Math.max(...xsArr,xi)+1;
+      ggbApplet.setCoordSystem(minX,maxX,Math.min(...pts.map(p=>p[1]),yi)-2, Math.max(...pts.map(p=>p[1]),yi)+2);
+    }catch(e){ console.warn(e); }
+  });
+}
+</script>
+<script>
+/* ════════════════════════════════════════════════════
+   TRAZADORES CÚBICOS (SPLINE NATURAL)
+════════════════════════════════════════════════════ */
+function runSplines(){
+  try{
+    const pts = parsePoints(document.getElementById('sp-pts').value);
+    const xi = parseFloat(document.getElementById('sp-xi').value);
+    if(pts.length<3){ toast('Ingresa al menos 3 puntos','error'); return; }
+    pts.sort((a,b)=>a[0]-b[0]);
+    const status = document.getElementById('sp-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    const n=pts.length-1; // n tramos, n+1 puntos
+    const x=pts.map(p=>p[0]), y=pts.map(p=>p[1]);
+    const h=[];
+    for(let i=0;i<n;i++) h.push(x[i+1]-x[i]);
+    // sistema tridiagonal para c (segundas derivadas/2), natural: c0=cn=0
+    let alpha=new Array(n+1).fill(0), l=new Array(n+1).fill(0), mu=new Array(n+1).fill(0), z=new Array(n+1).fill(0);
+    for(let i=1;i<n;i++) alpha[i] = 3*(y[i+1]-y[i])/h[i] - 3*(y[i]-y[i-1])/h[i-1];
+    l[0]=1;
+    for(let i=1;i<n;i++){
+      l[i]=2*(x[i+1]-x[i-1]) - h[i-1]*mu[i-1];
+      mu[i]=h[i]/l[i];
+      z[i]=(alpha[i]-h[i-1]*z[i-1])/l[i];
+    }
+    l[n]=1;
+    let c=new Array(n+1).fill(0), b=new Array(n).fill(0), d=new Array(n).fill(0);
+    for(let j=n-1;j>=0;j--){
+      c[j]=z[j]-mu[j]*c[j+1];
+      b[j]=(y[j+1]-y[j])/h[j] - h[j]*(c[j+1]+2*c[j])/3;
+      d[j]=(c[j+1]-c[j])/(3*h[j]);
+    }
+    const a=y.slice(0,n);
+    const tbody = document.getElementById('sp-tbody');
+    tbody.innerHTML = Array.from({length:n},(_,i)=>`<tr><td>${i+1}</td><td>[${fmtNum(x[i])}, ${fmtNum(x[i+1])}]</td><td>${fmtNum(a[i])}</td><td>${fmtNum(b[i])}</td><td>${fmtNum(c[i])}</td><td>${fmtNum(d[i])}</td></tr>`).join('');
+    // evaluar S(xi)
+    let idx=0;
+    for(let i=0;i<n;i++) if(xi>=x[i] && xi<=x[i+1]) idx=i;
+    if(xi<x[0]) idx=0;
+    if(xi>x[n]) idx=n-1;
+    const dx=xi-x[idx];
+    const S = a[idx]+b[idx]*dx+c[idx]*dx*dx+d[idx]*dx*dx*dx;
+    document.getElementById('sp-result').textContent = fmtNum(S);
+    document.getElementById('sp-tramo').textContent = `[${fmtNum(x[idx])}, ${fmtNum(x[idx+1])}]`;
+    document.getElementById('sp-ntramos').textContent = n;
+    document.getElementById('sp-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    // graficar: aproximar con FitPoly + punto evaluado
+    plotInterpolation(pts, xi, S);
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   DIFERENCIACIÓN NUMÉRICA
+════════════════════════════════════════════════════ */
+function runDiferenciacion(){
+  try{
+    const fx = document.getElementById('df-fx').value;
+    const x0 = parseFloat(document.getElementById('df-x0').value);
+    const h = parseFloat(document.getElementById('df-h').value);
+    const tipo = document.getElementById('df-tipo').value;
+    const f = compileFn(fx);
+    const status = document.getElementById('df-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    // derivada simbólica exacta
+    const e = preprocessExpr(fx);
+    let exactNode = math.derivative(e,'x');
+    let order=1;
+    if(tipo==='segunda'){ exactNode = math.derivative(exactNode,'x'); order=2; }
+    const exact = exactNode.evaluate({x:x0});
+
+    function approx(hh){
+      if(tipo==='adelante') return (f.evaluate({x:x0+hh})-f.evaluate({x:x0}))/hh;
+      if(tipo==='atras') return (f.evaluate({x:x0})-f.evaluate({x:x0-hh}))/hh;
+      if(tipo==='segunda') return (f.evaluate({x:x0+hh})-2*f.evaluate({x:x0})+f.evaluate({x:x0-hh}))/(hh*hh);
+      return (f.evaluate({x:x0+hh})-f.evaluate({x:x0-hh}))/(2*hh); // central
+    }
+    const hs=[h, h/2, h/4, h/8];
+    let rows = hs.map(hh=>{
+      const ap=approx(hh);
+      return {h:hh, approx:ap, exact, err:Math.abs(exact-ap)};
+    });
+    const tbody = document.getElementById('df-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr><td>${fmtNum(r.h)}</td><td>${fmtNum(r.approx)}</td><td>${fmtNum(r.exact)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    const main=rows[0];
+    document.getElementById('df-result').textContent = fmtNum(main.approx);
+    document.getElementById('df-exact').textContent = fmtNum(exact);
+    document.getElementById('df-error').textContent = fmtNum(main.err);
+    document.getElementById('df-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    ggbPlotFunction(fx,[[x0, f.evaluate({x:x0}), true]],[`tangent: y=${f.evaluate({x:x0})}+${main.approx}*(x-(${x0}))`]);
+    withGGB(()=>{ try{ ggbApplet.setColor('tangent',45,212,191); ggbApplet.setLineThickness('tangent',2); }catch(e){} });
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   EXTRAPOLACIÓN DE RICHARDSON
+════════════════════════════════════════════════════ */
+function runRichardson(){
+  try{
+    const fx = document.getElementById('ri-fx').value;
+    const x0 = parseFloat(document.getElementById('ri-x0').value);
+    const h0 = parseFloat(document.getElementById('ri-h0').value);
+    const nLevels = parseInt(document.getElementById('ri-n').value);
+    const p = parseFloat(document.getElementById('ri-p').value);
+    const f = compileFn(fx);
+    const status = document.getElementById('ri-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    // D(h) usando diferencia central de orden p (p=2)
+    function D(h){ return (f.evaluate({x:x0+h})-f.evaluate({x:x0-h}))/(2*h); }
+    let hs=[], R=[];
+    for(let i=0;i<nLevels;i++) hs.push(h0/Math.pow(2,i));
+    for(let i=0;i<nLevels;i++){
+      R.push([D(hs[i])]);
+    }
+    for(let k=1;k<nLevels;k++){
+      for(let i=k;i<nLevels;i++){
+        const factor = Math.pow(2,p*k)-1;
+        const val = R[i][k-1] + (R[i][k-1]-R[i-1][k-1])/factor;
+        R[i].push(val);
+      }
+    }
+    // tabla
+    const thead = document.getElementById('ri-thead');
+    let headCols=['i','h'];
+    for(let k=0;k<nLevels;k++) headCols.push(`R(·,${k})`);
+    thead.innerHTML = headCols.map(h=>`<th>${h}</th>`).join('');
+    const tbody=document.getElementById('ri-tbody');
+    tbody.innerHTML = Array.from({length:nLevels},(_,i)=>{
+      let cells=`<td>${i}</td><td>${fmtNum(hs[i])}</td>`;
+      for(let k=0;k<nLevels;k++) cells += (k<=i) ? `<td>${fmtNum(R[i][k])}</td>` : `<td></td>`;
+      return `<tr>${cells}</tr>`;
+    }).join('');
+    const best = R[nLevels-1][nLevels-1];
+    document.getElementById('ri-best').textContent = fmtNum(best);
+    document.getElementById('ri-base').textContent = fmtNum(R[0][0]);
+    document.getElementById('ri-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    ggbPlotFunction(fx,[[x0, f.evaluate({x:x0}), true]],[`tangent: y=${f.evaluate({x:x0})}+${best}*(x-(${x0}))`]);
+    withGGB(()=>{ try{ ggbApplet.setColor('tangent',45,212,191); ggbApplet.setLineThickness('tangent',2); }catch(e){} });
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   REGLA DEL TRAPECIO
+════════════════════════════════════════════════════ */
+function runTrapecio(){
+  try{
+    const fx = document.getElementById('tr-fx').value;
+    const a = parseFloat(document.getElementById('tr-a').value);
+    const b = parseFloat(document.getElementById('tr-b').value);
+    const n = parseInt(document.getElementById('tr-n').value);
+    const f = compileFn(fx);
+    const status = document.getElementById('tr-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    const h=(b-a)/n;
+    let rows=[], sum=0;
+    for(let i=0;i<=n;i++){
+      const xi=a+i*h, fi=f.evaluate({x:xi});
+      const w = (i===0||i===n)?1:2;
+      sum += w*fi;
+      rows.push({i,xi,fi,w});
+    }
+    const I = h/2*sum;
+    const tbody=document.getElementById('tr-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr><td>${r.i}</td><td>${fmtNum(r.xi)}</td><td>${fmtNum(r.fi)}</td><td>${r.w}</td><td>${fmtNum(r.w*r.fi)}</td></tr>`).join('');
+    document.getElementById('tr-result').textContent = fmtNum(I);
+    document.getElementById('tr-h').textContent = fmtNum(h);
+    document.getElementById('tr-n-out').textContent = n;
+    document.getElementById('tr-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    ggbPlotFunction(fx,[],[
+      `region=Integral(f,${a},${b})`
+    ]);
+    withGGB(()=>{ try{ ggbApplet.setColor('region',45,212,191); ggbApplet.setFilling('region',0.25); }catch(e){} });
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+/* ════════════════════════════════════════════════════
+   SIMPSON 1/3 Y 3/8
+════════════════════════════════════════════════════ */
+function runSimpson(){
+  try{
+    const fx = document.getElementById('si-fx').value;
+    const a = parseFloat(document.getElementById('si-a').value);
+    const b = parseFloat(document.getElementById('si-b').value);
+    let n = parseInt(document.getElementById('si-n').value);
+    const f = compileFn(fx);
+    const status = document.getElementById('si-status');
+    status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let rule;
+    if(n%2===0) rule='1/3';
+    else if(n%3===0) rule='3/8';
+    else { n = n+1; rule='1/3'; toast('n ajustado a '+n+' para aplicar Simpson 1/3 (n debe ser par o múltiplo de 3)','info'); }
+    const h=(b-a)/n;
+    let rows=[], sum=0, I;
+    if(rule==='1/3'){
+      for(let i=0;i<=n;i++){
+        const xi=a+i*h, fi=f.evaluate({x:xi});
+        let w;
+        if(i===0||i===n) w=1; else if(i%2===1) w=4; else w=2;
+        sum += w*fi;
+        rows.push({i,xi,fi,w});
+      }
+      I = h/3*sum;
+    } else { // 3/8
+      for(let i=0;i<=n;i++){
+        const xi=a+i*h, fi=f.evaluate({x:xi});
+        let w;
+        if(i===0||i===n) w=1; else if(i%3===0) w=2; else w=3;
+        sum += w*fi;
+        rows.push({i,xi,fi,w});
+      }
+      I = (3*h/8)*sum;
+    }
+    const tbody=document.getElementById('si-tbody');
+    tbody.innerHTML = rows.map(r=>`<tr><td>${r.i}</td><td>${fmtNum(r.xi)}</td><td>${fmtNum(r.fi)}</td><td>${r.w}</td><td>${fmtNum(r.w*r.fi)}</td></tr>`).join('');
+    document.getElementById('si-result').textContent = fmtNum(I);
+    document.getElementById('si-rule').textContent = 'Simpson '+rule;
+    document.getElementById('si-h').textContent = fmtNum(h);
+    document.getElementById('si-summary').style.display='grid';
+    status.textContent='COMPLETADO';
+    status.className='results-badge rb-ok';
+    ggbPlotFunction(fx,[],[`region=Integral(f,${a},${b})`]);
+    withGGB(()=>{ try{ ggbApplet.setColor('region',45,212,191); ggbApplet.setFilling('region',0.25); }catch(e){} });
+    toast('Cálculo completado','success');
+  }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+</script>
+
+</body>
+</html>
