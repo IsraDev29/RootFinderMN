@@ -22,6 +22,14 @@
     {
       "src": "/auth\\.js$",
       "dest": "/auth.js"
+    },
+    {
+      "src": "/$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
