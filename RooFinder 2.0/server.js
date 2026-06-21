@@ -105,7 +105,11 @@ async function start() {
   });
 }
 
-start().catch(err => {
-  console.error('[SERVER] Failed to start:', err.message);
-  process.exit(1);
-});
+if (require.main === module) {
+  start().catch(err => {
+    console.error('[SERVER] Failed to start:', err.message);
+    process.exit(1);
+  });
+}
+
+module.exports = app;
