@@ -4,40 +4,12 @@
     {
       "src": "api/index.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.js",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "api/index.js"
-    },
-    {
-      "src": "/dashboard$",
-      "dest": "/dashboard.html"
-    },
-    {
-      "src": "/reset-password$",
-      "dest": "/reset-password.html"
-    },
-    {
-      "src": "/auth\\.js$",
-      "dest": "/auth.js"
-    },
-    {
-      "src": "/$",
-      "dest": "/index.html"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "api/index.js"
     }
   ]
 }
