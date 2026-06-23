@@ -238,6 +238,24 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
 .sum-value{font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--coral);word-break:break-all;}
 .sum-sub{font-size:10px;color:var(--text-ghost);margin-top:3px;}
 
+/* HORNER-NEWTON RESOLUTION */
+.hn-resolution{display:grid;gap:14px;margin-bottom:16px;}
+.hn-synth-card{border:1px solid rgba(251,191,36,0.18);background:linear-gradient(180deg,rgba(251,191,36,0.05),rgba(255,255,255,0.02));border-radius:var(--radius-lg);padding:18px;}
+.hn-synth-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px;}
+.hn-synth-kicker{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:6px;}
+.hn-synth-title{font-family:var(--font-display);font-size:15px;font-weight:800;color:var(--text-prime);}
+.hn-synth-root{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:var(--text-sub);padding:7px 10px;border:1px solid var(--border-base);border-radius:999px;background:rgba(255,255,255,0.03);}
+.hn-synth-grid{display:grid;gap:8px;}
+.hn-synth-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(52px,1fr);gap:8px;align-items:stretch;}
+.hn-synth-row .hn-cell{min-height:38px;border-radius:10px;border:1px solid var(--border-base);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;font-weight:700;background:rgba(255,255,255,0.03);color:var(--text-prime);padding:6px 8px;}
+.hn-synth-row.top .hn-cell{background:rgba(0,255,224,0.06);border-color:rgba(0,255,224,0.16);color:var(--coral);}
+.hn-synth-row.mid .hn-cell{background:rgba(124,58,237,0.07);border-color:rgba(124,58,237,0.16);color:var(--lilac);}
+.hn-synth-row.out .hn-cell{background:rgba(45,212,191,0.08);border-color:rgba(45,212,191,0.16);color:var(--teal);}
+.hn-synth-row .hn-cell.zero{opacity:0.55;}
+.hn-synth-footer{display:grid;grid-template-columns:1.2fr 0.8fr 0.8fr;gap:10px;margin-top:12px;}
+.hn-synth-note{padding:10px 12px;border-radius:12px;border:1px solid var(--border-base);background:rgba(255,255,255,0.03);font-family:var(--font-mono);font-size:11px;color:var(--text-sub);line-height:1.45;}
+.hn-synth-note strong{color:var(--text-prime);}
+
 /* GEOGEBRA CONTAINER */
 .ggb-wrap{background:var(--bg-card);border:1px solid var(--border-base);border-radius:var(--radius-lg);overflow:hidden;margin-top:0;grid-column:1 / -1;}
 .ggb-header{padding:14px 20px;border-bottom:1px solid var(--border-base);display:flex;align-items:center;gap:10px;}
@@ -270,6 +288,25 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
 .steps-box h4{margin:0 0 12px 0;color:var(--coral);font-family:var(--font-display);font-size:16px;font-weight:700;}
 .steps-box p{margin:0 0 10px 0;font-size:13px;color:var(--text-sub);}
 .steps-box .formula-line{font-family:var(--font-mono);font-size:14px;margin-bottom:15px;padding-left:12px;border-left:2px solid var(--coral);}
+.edo-import-card{margin-top:16px;margin-bottom:22px;padding:18px;border:1px solid rgba(45,212,191,0.18);border-radius:var(--radius-lg);background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015));}
+.edo-import-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text-prime);margin-bottom:14px;}
+.edo-import-head i{color:var(--amber);}
+.edo-import-head .chev{color:var(--text-ghost);font-size:12px;}
+.edo-import-help{font-size:13px;color:var(--text-sub);line-height:1.55;margin-bottom:16px;}
+.edo-import-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.edo-import-col{display:flex;flex-direction:column;gap:10px;}
+.edo-import-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-sub);}
+.edo-import-textarea{width:100%;min-height:128px;resize:vertical;background:var(--bg-input);border:1px solid var(--border-base);border-radius:var(--radius-md);padding:12px 14px;color:var(--text-prime);font-family:var(--font-mono);font-size:12px;line-height:1.6;outline:none;}
+.edo-import-textarea:focus{border-color:var(--border-accent);box-shadow:0 0 0 3px rgba(0,255,224,0.08);}
+.edo-upload-box{min-height:180px;border:1px dashed rgba(255,255,255,0.16);border-radius:var(--radius-lg);background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:18px;color:var(--text-sub);cursor:pointer;transition:all 0.2s;}
+.edo-upload-box:hover{border-color:var(--border-accent);background:rgba(0,255,224,0.05);color:var(--text-prime);}
+.edo-upload-box i{font-size:30px;color:var(--amber);}
+.edo-upload-box span{font-size:12px;line-height:1.5;max-width:220px;}
+.edo-file{display:none;}
+.edo-import-status{font-size:12px;color:var(--text-ghost);min-height:18px;font-family:var(--font-mono);}
+@media(max-width:900px){
+  .edo-import-grid{grid-template-columns:1fr;}
+}
 
 /* ANIMATIONS */
 .anim-in{opacity:0;transform:translateY(16px);animation:fadein 0.4s cubic-bezier(0.4,0,0.2,1) forwards;}
@@ -306,6 +343,16 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
 .matrix-cell.bvec{border-color:rgba(45,212,191,0.3);}
 .dim-controls{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
 .dim-controls input{width:60px;}
+
+/* POINT TABLES (Interpolación) */
+.points-builder{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.points-count{max-width:120px;margin-bottom:0;}
+.points-wrap{max-height:none;}
+.points-table{table-layout:fixed;}
+.points-table th,.points-table td{text-align:center;}
+.points-table td{padding:8px 10px;}
+.points-table .matrix-cell{width:100%;margin:0;padding:9px 10px;}
+.points-hint{font-size:11px;color:var(--text-ghost);font-family:var(--font-body);line-height:1.4;margin-top:-2px;}
 </style>
 </head>
 <body>
@@ -423,6 +470,12 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
   <div class="nav-item" onclick="openMethod('simpson')">
     <div class="ni bg-rose c-rose"><i class="fa-solid fa-chart-area"></i></div>
     Simpson 1/3 y 3/8
+  </div>
+
+  <div class="sidebar-section">Ecuaciones Diferenciales</div>
+  <div class="nav-item" onclick="openMethod('edo')">
+    <div class="ni bg-teal c-teal"><i class="fa-solid fa-calculator"></i></div>
+    Ecuaciones Diferenciales
   </div>
 
   <div class="sidebar-section">Teoremas</div>
@@ -887,8 +940,8 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       <div class="calc-layout">
         <div class="calc-form-card">
           <div class="calc-title">Parámetros</div>
-          <div class="calc-desc">Ingresa f(x) y tres aproximaciones iniciales cercanas a la raíz.</div>
-          <label class="field-lbl">Función f(x)</label>
+          <div class="calc-desc">Ingresa el polinomio P(x) y tres aproximaciones iniciales cercanas a la raíz.</div>
+          <label class="field-lbl">Polinomio P(x)</label>
           <input class="rf-input" id="mul-fx" placeholder="x^3 - x - 2" value="x^3 - x - 2"/>
           <label class="field-lbl">x₀</label>
           <input class="rf-input" id="mul-x0" placeholder="0.5" value="0.5"/>
@@ -941,14 +994,14 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       <div class="formula-box">
         <strong>Idea:</strong> divide P(x) por un factor cuadrático x²−rx−s usando división sintética; ajusta r,s con Newton hasta que el residuo (b,c) sea ≈0.<br/>
         <strong>Resultado:</strong> factores cuadráticos x²−rx−s ⇒ raíces (r ± √(r²+4s))/2, posiblemente complejas.<br/>
-        Ingresa los coeficientes del polinomio de mayor a menor grado, separados por comas.
+        Ingresa el polinomio P(x) para que la app calcule internamente sus coeficientes.
       </div>
       <div class="calc-layout">
         <div class="calc-form-card">
           <div class="calc-title">Parámetros</div>
-          <div class="calc-desc">Ej: para x³−x−2 ingresa: 1, 0, -1, -2</div>
-          <label class="field-lbl">Coeficientes (a₀..aₙ, de mayor a menor grado)</label>
-          <input class="rf-input" id="bw-coefs" placeholder="1, 0, -1, -2" value="1, 0, -1, -2"/>
+          <div class="calc-desc">Ej: para x³−x−2 ingresa: x^3 - x - 2</div>
+          <label class="field-lbl">Polinomio P(x)</label>
+          <input class="rf-input" id="bw-fx" placeholder="x^3 - x - 2" value="x^3 - x - 2"/>
           <label class="field-lbl">r₀ inicial</label>
           <input class="rf-input" id="bw-r0" placeholder="0" value="0"/>
           <label class="field-lbl">s₀ inicial</label>
@@ -1002,9 +1055,9 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       <div class="calc-layout">
         <div class="calc-form-card">
           <div class="calc-title">Parámetros</div>
-          <div class="calc-desc">Ingresa los coeficientes del polinomio (de mayor a menor grado) y un valor inicial x₀.</div>
-          <label class="field-lbl">Coeficientes (a₀..aₙ)</label>
-          <input class="rf-input" id="hn-coefs" placeholder="1, 0, -1, -2" value="1, 0, -1, -2"/>
+          <div class="calc-desc">Ingresa el polinomio P(x) y un valor inicial x₀.</div>
+          <label class="field-lbl">Polinomio P(x)</label>
+          <input class="rf-input" id="hn-fx" placeholder="2x^3 - 6x^2 + 2x - 1" value="2x^3 - 6x^2 + 2x - 1"/>
           <label class="field-lbl">Punto inicial x₀</label>
           <input class="rf-input" id="hn-x0" placeholder="1.5" value="1.5"/>
           <label class="field-lbl">Tolerancia</label>
@@ -1021,9 +1074,12 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
               <span class="results-badge rb-idle" id="hn-status">ESPERANDO</span>
             </div>
             <div class="table-wrap">
+              <div class="hn-resolution" id="hn-resolution" style="display:none;">
+                <div class="hn-synth-card" id="hn-synth-card"></div>
+              </div>
               <table class="iter-table">
-                <thead><tr><th>n</th><th>xₙ</th><th>P(xₙ)</th><th>P'(xₙ)</th><th>xₙ₊₁</th><th>|Error|</th></tr></thead>
-                <tbody id="hn-tbody"><tr><td colspan="6"><div class="state-idle"><i class="fa-solid fa-divide"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
+                <thead><tr><th>Iteración</th><th>xᵢ</th><th>P(xᵢ)</th><th>P'(xᵢ)</th><th>xᵢ₊₁</th><th>Error abs.</th><th>Error %</th></tr></thead>
+                <tbody id="hn-tbody"><tr><td colspan="7"><div class="state-idle"><i class="fa-solid fa-divide"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
               </table>
             </div>
             <div class="summary-box" id="hn-summary" style="display:none;">
@@ -1153,6 +1209,83 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       </div>
     </div>
 
+    <!-- ══════════════ ECUACIONES DIFERENCIALES ══════════════ -->
+    <div class="panel" id="panel-edo">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.3);">EDO</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Ecuaciones Diferenciales</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Objetivo:</strong> aproximar soluciones de y' = f(x,y) y sistemas de EDO con Euler, Euler Mejorado, RK4 y RK4 vectorial.<br/>
+        La lógica se mantiene académica; la interfaz agrupa los métodos en un solo módulo para navegar más rápido.
+      </div>
+      <div class="edo-import-card">
+        <div class="edo-import-head">
+          <span><i class="fa-solid fa-wand-magic-sparkles"></i> Importar desde Enunciado</span>
+          <span class="chev"><i class="fa-solid fa-chevron-up"></i></span>
+        </div>
+        <div class="edo-import-help">
+          Pega el texto del ejercicio o sube una foto del enunciado. Los campos se autocompletarán y luego podrás corregirlos antes de calcular.
+        </div>
+        <div class="edo-import-grid">
+          <div class="edo-import-col">
+            <div class="edo-import-label">Pegar texto del enunciado</div>
+            <textarea id="edo-import-text" class="edo-import-textarea" placeholder="Ej: dy/dt = -0.5*y, y(0)=100, h=1, xn=10"></textarea>
+            <button class="btn-calc" type="button" onclick="importEdoStatementFromText()"><i class="fa-solid fa-magnifying-glass"></i> Extraer datos</button>
+          </div>
+          <div class="edo-import-col">
+            <div class="edo-import-label">Subir foto del enunciado (OCR)</div>
+            <input id="edo-import-file" class="edo-file" type="file" accept="image/*" onchange="importEdoStatementFromFile(event)">
+            <div class="edo-upload-box" onclick="document.getElementById('edo-import-file').click()" ondragover="event.preventDefault()" ondrop="handleEdoFileDrop(event)">
+              <i class="fa-regular fa-image"></i>
+              <span>Haz clic o arrastra una imagen<br/>(JPG, PNG, WEBP)</span>
+            </div>
+            <div class="edo-import-status" id="edo-import-status">Listo para extraer datos del enunciado.</div>
+          </div>
+        </div>
+      </div>
+      <div class="steps-box">
+        <div class="formula-line">Selector de método</div>
+        <div class="history-chips" id="edo-mode-tabs">
+          <button type="button" class="history-chip active" id="edo-mode-euler-btn" onclick="setEdoMode('euler')">Euler</button>
+          <button type="button" class="history-chip" id="edo-mode-heun-btn" onclick="setEdoMode('heun')">Euler Mejorado</button>
+          <button type="button" class="history-chip" id="edo-mode-rk4-btn" onclick="setEdoMode('rk4')">Runge-Kutta 4</button>
+          <button type="button" class="history-chip" id="edo-mode-systems-btn" onclick="setEdoMode('systems')">Sistemas de EDO</button>
+        </div>
+        <p id="edo-help" style="margin-top:12px;">Elige un método para mostrar los parámetros correspondientes y ver el desarrollo numérico paso a paso.</p>
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title" id="edo-form-title">Método de Euler</div>
+          <div class="calc-desc" id="edo-form-desc">Aproxima y' = f(x,y) con la recta tangente en cada paso.</div>
+          <div id="edo-form-container"></div>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title" id="edo-results-title">Tabla de iteraciones</div>
+              <span class="results-badge rb-idle" id="edo-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap">
+              <table class="iter-table" id="edo-table">
+                <thead id="edo-thead"><tr><th>i</th></tr></thead>
+                <tbody id="edo-tbody"><tr><td colspan="2"><div class="state-idle"><i class="fa-solid fa-calculator"></i><p>Selecciona un método y presiona Calcular</p></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="edo-summary" style="display:none;grid-template-columns:repeat(3,1fr);"></div>
+            <div id="edo-note" style="margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--text-sub);"></div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-edo"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ══════════════ BOLZANO ══════════════ -->
     <div class="panel" id="panel-bolzano">
       <div class="method-header">
@@ -1165,6 +1298,12 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       <div class="formula-box">
         <strong>Teorema:</strong> si f es continua en [a,b] y f(a)·f(b) &lt; 0, entonces existe c ∈ (a,b) tal que f(c)=0.<br/>
         Esta herramienta verifica la condición de signo y, si se pide, escanea subintervalos en busca de cambios de signo.
+      </div>
+      <div class="steps-box">
+        <div class="formula-line">Análisis Matemático y Recomendación</div>
+        <p id="bz-analysis" style="margin-bottom:10px;">Ingresa el intervalo para evaluar continuidad y cambios de signo.</p>
+        <div id="bz-suggested" style="display:none;gap:10px;"></div>
+        <div id="bz-method" style="margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--text-sub);"></div>
       </div>
       <div class="calc-layout">
         <div class="calc-form-card">
@@ -1184,12 +1323,12 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
         <div>
           <div class="results-card">
             <div class="results-header">
-              <div class="results-title">Subintervalos evaluados</div>
+              <div class="results-title">Tabla de subintervalos</div>
               <span class="results-badge rb-idle" id="bz-status">ESPERANDO</span>
             </div>
             <div class="table-wrap">
-              <table class="iter-table">
-                <thead><tr><th>i</th><th>xᵢ</th><th>xᵢ₊₁</th><th>f(xᵢ)</th><th>f(xᵢ₊₁)</th><th>f(xᵢ)·f(xᵢ₊₁)</th><th>¿Cambio?</th></tr></thead>
+              <table class="iter-table" id="bz-table">
+                <thead><tr><th>i</th><th>Intervalo</th><th>f(xᵢ)</th><th>f(xᵢ₊₁)</th><th>Producto</th><th>Bolzano</th></tr></thead>
                 <tbody id="bz-tbody"><tr><td colspan="7"><div class="state-idle"><i class="fa-solid fa-scale-balanced"></i><p>Ingresa los parámetros y presiona Verificar</p></div></td></tr></tbody>
               </table>
             </div>
@@ -1328,14 +1467,26 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       </div>
       <div class="formula-box">
         <strong>P(x) = f[x₀] + f[x₀,x₁](x−x₀) + f[x₀,x₁,x₂](x−x₀)(x−x₁) + ...</strong><br/>
-        Tabla de diferencias divididas: f[xᵢ,...,xⱼ] = (f[xᵢ₊₁,...,xⱼ] − f[xᵢ,...,xⱼ₋₁]) / (xⱼ−xᵢ)
+        Ingresa los puntos en la tabla y la app construirá las diferencias divididas automáticamente.
       </div>
       <div class="calc-layout">
         <div class="calc-form-card">
           <div class="calc-title">Parámetros</div>
-          <div class="calc-desc">Ingresa los puntos conocidos (x,y separados por ;) y el valor x donde interpolar.</div>
-          <label class="field-lbl">Puntos (x,y separados por ;)</label>
-          <input class="rf-input" id="ni-pts" placeholder="0,1; 1,3; 2,2; 4,5" value="0,1; 1,3; 2,2; 4,5"/>
+          <div class="calc-desc">Ingresa los puntos conocidos en formato de tabla y el valor x donde interpolar.</div>
+          <div class="points-builder" id="ni-points-builder">
+            <div class="dim-controls">
+              <label class="field-lbl" style="margin:0;">Número de puntos</label>
+              <input class="rf-input points-count" id="ni-n" type="number" min="2" max="12" value="4" style="margin:0;" oninput="buildPointsGrid('ni')"/>
+            </div>
+            <label class="field-lbl">Tabla de puntos (X, Y)</label>
+            <div class="table-wrap points-wrap">
+              <table class="iter-table points-table">
+                <thead><tr><th>X</th><th>Y</th></tr></thead>
+                <tbody id="ni-points-body"></tbody>
+              </table>
+            </div>
+            <div class="points-hint">Ingresa las coordenadas de los puntos conocidos.</div>
+          </div>
           <label class="field-lbl">Valor a interpolar x*</label>
           <input class="rf-input" id="ni-xi" placeholder="2.5" value="2.5"/>
           <button class="btn-calc" onclick="runNewtonInterp()"><i class="fa-solid fa-play"></i> Calcular</button>
@@ -1379,14 +1530,26 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       </div>
       <div class="formula-box">
         <strong>P(x) = Σ yᵢ · Lᵢ(x)</strong> &nbsp;donde&nbsp; <strong>Lᵢ(x) = Π (x−xⱼ)/(xᵢ−xⱼ), j≠i</strong><br/>
-        Ingresa los puntos como pares x,y separados por punto y coma. Ej: 0,1; 1,3; 2,2; 4,5
+        Ingresa los puntos en la tabla para construir el polinomio de forma más intuitiva.
       </div>
       <div class="calc-layout">
         <div class="calc-form-card">
           <div class="calc-title">Parámetros</div>
           <div class="calc-desc">Ingresa los puntos conocidos y el valor x donde deseas interpolar.</div>
-          <label class="field-lbl">Puntos (x,y separados por ;)</label>
-          <input class="rf-input" id="lag-pts" placeholder="0,1; 1,3; 2,2; 4,5" value="0,1; 1,3; 2,2; 4,5"/>
+          <div class="points-builder" id="lag-points-builder">
+            <div class="dim-controls">
+              <label class="field-lbl" style="margin:0;">Número de puntos</label>
+              <input class="rf-input points-count" id="lag-n" type="number" min="2" max="12" value="4" style="margin:0;" oninput="buildPointsGrid('lag')"/>
+            </div>
+            <label class="field-lbl">Tabla de puntos (X, Y)</label>
+            <div class="table-wrap points-wrap">
+              <table class="iter-table points-table">
+                <thead><tr><th>X</th><th>Y</th></tr></thead>
+                <tbody id="lag-points-body"></tbody>
+              </table>
+            </div>
+            <div class="points-hint">Ingresa las coordenadas de los puntos conocidos.</div>
+          </div>
           <label class="field-lbl">Valor a interpolar x*</label>
           <input class="rf-input" id="lag-xi" placeholder="2.5" value="2.5"/>
           <button class="btn-calc" onclick="runLagrange()"><i class="fa-solid fa-play"></i> Calcular</button>
@@ -1434,9 +1597,21 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       <div class="calc-layout">
         <div class="calc-form-card">
           <div class="calc-title">Parámetros</div>
-          <div class="calc-desc">Ingresa los puntos (x,y separados por ;), ordenados por x creciente, y el valor x donde evaluar el spline.</div>
-          <label class="field-lbl">Puntos (x,y separados por ;)</label>
-          <input class="rf-input" id="sp-pts" placeholder="0,1; 1,3; 2,2; 4,5" value="0,1; 1,3; 2,2; 4,5"/>
+          <div class="calc-desc">Ingresa los puntos ordenados por x creciente en formato de tabla y el valor x donde evaluar el spline.</div>
+          <div class="points-builder" id="sp-points-builder">
+            <div class="dim-controls">
+              <label class="field-lbl" style="margin:0;">Número de puntos</label>
+              <input class="rf-input points-count" id="sp-n" type="number" min="3" max="12" value="4" style="margin:0;" oninput="buildPointsGrid('sp')"/>
+            </div>
+            <label class="field-lbl">Tabla de puntos (X, Y)</label>
+            <div class="table-wrap points-wrap">
+              <table class="iter-table points-table">
+                <thead><tr><th>X</th><th>Y</th></tr></thead>
+                <tbody id="sp-points-body"></tbody>
+              </table>
+            </div>
+            <div class="points-hint">Ingresa las coordenadas de los puntos conocidos.</div>
+          </div>
           <label class="field-lbl">Valor a evaluar x*</label>
           <input class="rf-input" id="sp-xi" placeholder="2.5" value="2.5"/>
           <button class="btn-calc" onclick="runSplines()"><i class="fa-solid fa-play"></i> Calcular</button>
@@ -1485,39 +1660,68 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       <div class="calc-layout">
         <div class="calc-form-card">
           <div class="calc-title">Parámetros</div>
-          <div class="calc-desc">Ingresa f(x), el punto x₀, el paso h, y el tipo de diferencia.</div>
-          <label class="field-lbl">Función f(x)</label>
-          <input class="rf-input" id="df-fx" placeholder="sin(x)" value="sin(x)"/>
-          <label class="field-lbl">Punto x₀</label>
-          <input class="rf-input" id="df-x0" placeholder="1" value="1"/>
-          <label class="field-lbl">Paso h</label>
-          <input class="rf-input" id="df-h" placeholder="0.1" value="0.1"/>
-          <label class="field-lbl">Tipo de diferencia</label>
-          <select class="rf-select" id="df-tipo">
-            <option value="central">Central (1ra derivada)</option>
-            <option value="adelante">Adelante (1ra derivada)</option>
-            <option value="atras">Atrás (1ra derivada)</option>
-            <option value="segunda">Central (2da derivada)</option>
-          </select>
+          <div class="calc-desc">Usa una función analítica o una tabla de puntos manuales para aproximar derivadas.</div>
+          <div class="mode-tabs" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:14px;">
+            <button type="button" class="history-chip active" id="df-mode-fx-btn" onclick="setDfMode('fx')">f(x) Función</button>
+            <button type="button" class="history-chip" id="df-mode-points-btn" onclick="setDfMode('points')">Puntos manuales</button>
+          </div>
+          <div id="df-mode-fx">
+            <label class="field-lbl">Función f(x)</label>
+            <input class="rf-input" id="df-fx" placeholder="sin(x)" value="sin(x)"/>
+            <label class="field-lbl">Punto x₀</label>
+            <input class="rf-input" id="df-x0" placeholder="1" value="1"/>
+            <label class="field-lbl">Paso h</label>
+            <input class="rf-input" id="df-h" placeholder="0.1" value="0.1"/>
+            <label class="field-lbl">Tipo de diferencia</label>
+            <select class="rf-select" id="df-tipo">
+              <option value="central">Central (1ra derivada)</option>
+              <option value="adelante">Adelante (1ra derivada)</option>
+              <option value="atras">Atrás (1ra derivada)</option>
+              <option value="segunda">Central (2da derivada)</option>
+            </select>
+          </div>
+          <div id="df-mode-points" style="display:none;">
+            <div class="dim-controls">
+              <label class="field-lbl" style="margin:0;">Número de puntos</label>
+              <input class="rf-input points-count" id="df-n" type="number" min="3" max="12" value="5" style="margin:0;" oninput="buildPointsGrid('df')"/>
+            </div>
+            <label class="field-lbl">Tabla de puntos (X, Y)</label>
+            <div class="table-wrap points-wrap">
+              <table class="iter-table points-table">
+                <thead><tr><th>X</th><th>Y</th></tr></thead>
+                <tbody id="df-points-body"></tbody>
+              </table>
+            </div>
+            <div class="points-hint">Usa puntos igualmente espaciados. x₀ debe coincidir con uno de los valores X.</div>
+            <label class="field-lbl">Punto x₀</label>
+            <input class="rf-input" id="df-x0-manual" placeholder="1" value="1"/>
+            <label class="field-lbl">Tipo de diferencia</label>
+            <select class="rf-select" id="df-tipo-manual">
+              <option value="central">Central (1ra derivada)</option>
+              <option value="adelante">Adelante (1ra derivada)</option>
+              <option value="atras">Atrás (1ra derivada)</option>
+              <option value="segunda">Central (2da derivada)</option>
+            </select>
+          </div>
           <button class="btn-calc" onclick="runDiferenciacion()"><i class="fa-solid fa-play"></i> Calcular</button>
           <button class="btn-secondary" onclick="resetMethod('df')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
         </div>
         <div>
           <div class="results-card">
             <div class="results-header">
-              <div class="results-title">Comparación de pasos h</div>
+              <div class="results-title" id="df-results-title">Comparación de pasos h</div>
               <span class="results-badge rb-idle" id="df-status">ESPERANDO</span>
             </div>
             <div class="table-wrap">
-              <table class="iter-table">
-                <thead><tr><th>h</th><th>f'(x₀) aprox.</th><th>f'(x₀) exacta (sim.)</th><th>|Error|</th></tr></thead>
+              <table class="iter-table" id="df-table">
+                <thead id="df-thead"><tr><th>h</th><th>f'(x₀) aprox.</th><th>f'(x₀) exacta (sim.)</th><th>|Error|</th></tr></thead>
                 <tbody id="df-tbody"><tr><td colspan="4"><div class="state-idle"><i class="fa-solid fa-chart-line"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr></tbody>
               </table>
             </div>
             <div class="summary-box" id="df-summary" style="display:none;">
-              <div class="sum-item"><div class="sum-label">f'(x₀) ≈</div><div class="sum-value" id="df-result">—</div></div>
-              <div class="sum-item"><div class="sum-label">Valor exacto (simbólico)</div><div class="sum-value" id="df-exact">—</div></div>
-              <div class="sum-item"><div class="sum-label">Error absoluto</div><div class="sum-value" id="df-error">—</div></div>
+              <div class="sum-item"><div class="sum-label" id="df-sum-label-1">f'(x₀) ≈</div><div class="sum-value" id="df-result">—</div></div>
+              <div class="sum-item"><div class="sum-label" id="df-sum-label-2">Valor exacto (simbólico)</div><div class="sum-value" id="df-exact">—</div></div>
+              <div class="sum-item"><div class="sum-label" id="df-sum-label-3">Error absoluto</div><div class="sum-value" id="df-error">—</div></div>
             </div>
           </div>
           <div class="ggb-wrap">
@@ -1544,9 +1748,29 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       <div class="calc-layout">
         <div class="calc-form-card">
           <div class="calc-title">Parámetros</div>
-          <div class="calc-desc">Ingresa f(x), el punto x₀, el paso inicial h₀, el número de niveles, el orden base p de la fórmula y qué derivada estimar.</div>
-          <label class="field-lbl">Función f(x)</label>
-          <input class="rf-input" id="ri-fx" placeholder="sin(x)" value="sin(x)"/>
+          <div class="calc-desc">Usa una función analítica o una tabla de puntos manuales para construir la extrapolación.</div>
+          <div class="mode-tabs" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:14px;">
+            <button type="button" class="history-chip active" id="ri-mode-fx-btn" onclick="setRiMode('fx')">f(x) Función</button>
+            <button type="button" class="history-chip" id="ri-mode-points-btn" onclick="setRiMode('points')">Puntos manuales</button>
+          </div>
+          <div id="ri-mode-fx">
+            <label class="field-lbl">Función f(x)</label>
+            <input class="rf-input" id="ri-fx" placeholder="sin(x)" value="sin(x)"/>
+          </div>
+          <div id="ri-mode-points" style="display:none;">
+            <div class="dim-controls">
+              <label class="field-lbl" style="margin:0;">Número de puntos</label>
+              <input class="rf-input points-count" id="ri-m" type="number" min="3" max="12" value="5" style="margin:0;" oninput="buildPointsGrid('ri')"/>
+            </div>
+            <label class="field-lbl">Tabla de puntos (X, Y)</label>
+            <div class="table-wrap points-wrap">
+              <table class="iter-table points-table">
+                <thead><tr><th>X</th><th>Y</th></tr></thead>
+                <tbody id="ri-points-body"></tbody>
+              </table>
+            </div>
+            <div class="points-hint">Los valores se interpolan internamente para formar D(h).</div>
+          </div>
           <label class="field-lbl">Punto x₀</label>
           <input class="rf-input" id="ri-x0" placeholder="1" value="1"/>
           <label class="field-lbl">Paso inicial h₀</label>
@@ -1648,7 +1872,7 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       <div class="formula-box">
         <strong>Simpson 1/3 (n par):</strong> ∫ₐᵇf(x)dx ≈ h/3·[f(x₀)+4Σf(xᵢ impar)+2Σf(xᵢ par)+f(xₙ)]<br/>
         <strong>Simpson 3/8 (n múltiplo de 3):</strong> ∫ₐᵇf(x)dx ≈ 3h/8·[f(x₀)+3f(x₁)+3f(x₂)+2f(x₃)+...+f(xₙ)]<br/>
-        El programa elige automáticamente 1/3 si n es par, o 3/8 si n es múltiplo de 3 (y no par).
+        Elige la regla que quieras usar. Si n no cumple la condición, el programa lo ajusta al mínimo necesario.
       </div>
       <div class="calc-layout">
         <div class="calc-form-card">
@@ -1662,6 +1886,11 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
           <input class="rf-input" id="si-b" placeholder="2" value="2"/>
           <label class="field-lbl">Subintervalos n</label>
           <input class="rf-input" id="si-n" placeholder="4" value="4"/>
+          <label class="field-lbl">Regla de Simpson</label>
+          <select class="rf-select" id="si-rule-select">
+            <option value="13">Simpson 1/3</option>
+            <option value="38">Simpson 3/8</option>
+          </select>
           <button class="btn-calc" onclick="runSimpson()"><i class="fa-solid fa-play"></i> Calcular</button>
           <button class="btn-secondary" onclick="resetMethod('si')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
         </div>
@@ -1757,6 +1986,7 @@ const panelMeta = {
   richardson:{title:'Extrapolación de Richardson', path:'ROOTFINDER / DIFERENCIACIÓN / RICHARDSON'},
   trapecio:{title:'Regla del Trapecio', path:'ROOTFINDER / INTEGRACIÓN / TRAPECIO'},
   simpson:{title:'Simpson 1/3 y 3/8', path:'ROOTFINDER / INTEGRACIÓN / SIMPSON'},
+  edo:{title:'Ecuaciones Diferenciales', path:'ROOTFINDER / EDO'},
   bolzano:{title:'Teorema de Bolzano', path:'ROOTFINDER / TEOREMAS / BOLZANO'},
 };
 
@@ -1787,12 +2017,27 @@ function resetMethod(prefix){
   const tbody = document.getElementById(prefix+'-tbody');
   const status = document.getElementById(prefix+'-status');
   const summary = document.getElementById(prefix+'-summary');
+  const resolution = document.getElementById(prefix+'-resolution');
+  const synthCard = document.getElementById(prefix+'-synth-card');
+  const analysis = document.getElementById(prefix+'-analysis');
+  const suggested = document.getElementById(prefix+'-suggested');
+  const method = document.getElementById(prefix+'-method');
   if(status){ status.textContent='ESPERANDO'; status.className='results-badge rb-idle'; }
   if(summary) summary.style.display='none';
+  if(resolution) resolution.style.display='none';
+  if(synthCard) synthCard.innerHTML = '';
+  if(analysis) analysis.textContent = 'Ingresa el intervalo para evaluar continuidad y cambios de signo.';
+  if(suggested){ suggested.style.display='none'; suggested.innerHTML=''; }
+  if(method) method.textContent = '';
   if(tbody){
     const cols = tbody.parentElement.querySelector('thead tr').children.length;
     tbody.innerHTML = `<tr><td colspan="${cols}"><div class="state-idle"><i class="fa-solid fa-flask-vial"></i><p>Listo para un nuevo cálculo</p></div></td></tr>`;
   }
+  if(prefix==='df') setDfMode('fx');
+  if(prefix==='df') buildPointsGrid('df');
+  if(prefix==='ri') setRiMode('fx');
+  if(prefix==='ri') buildPointsGrid('ri');
+  if(['lag','ni','sp'].includes(prefix)) buildPointsGrid(prefix);
   toast('Formulario reiniciado','info');
 }
 
@@ -1844,6 +2089,8 @@ function derivativeFn(expr, variable='x'){
 
 function fmtNum(x, d=6){
   if(x===null || x===undefined || isNaN(x)) return '—';
+  if(typeof x === 'string') x = parseFloat(x);
+  if(!Number.isFinite(x) && !(typeof x==='object' && x.re!==undefined)) return '—';
   if(typeof x==='object' && x.re!==undefined){
     // número complejo de math.js
     const re = x.re, im = x.im;
@@ -1853,6 +2100,167 @@ function fmtNum(x, d=6){
   if(Math.abs(x) < 1e-12) return '0';
   if(Math.abs(x) > 1e9 || (Math.abs(x) < 1e-4 && x!==0)) return x.toExponential(d-2);
   return Number(x.toFixed(d)).toString();
+}
+
+function polyTrimAsc(coeffs){
+  const out = coeffs.slice();
+  while(out.length > 1 && Math.abs(out[out.length-1]) < 1e-12) out.pop();
+  return out.length ? out : [0];
+}
+
+function polyAddAsc(a, b){
+  const len = Math.max(a.length, b.length);
+  const out = new Array(len).fill(0);
+  for(let i=0;i<len;i++){
+    out[i] = (a[i] || 0) + (b[i] || 0);
+  }
+  return polyTrimAsc(out);
+}
+
+function polyScaleAsc(a, k){
+  return polyTrimAsc(a.map(v=>v*k));
+}
+
+function polyMulAsc(a, b){
+  const out = new Array(a.length + b.length - 1).fill(0);
+  for(let i=0;i<a.length;i++){
+    for(let j=0;j<b.length;j++){
+      out[i+j] += a[i] * b[j];
+    }
+  }
+  return polyTrimAsc(out);
+}
+
+function polyPowAsc(a, n){
+  let out = [1];
+  for(let i=0;i<n;i++) out = polyMulAsc(out, a);
+  return out;
+}
+
+function polyFromNode(node, variable='x'){
+  if(!node) throw new Error('Expresión vacía');
+  if(node.isParenthesisNode) return polyFromNode(node.content, variable);
+  if(node.type === 'ConstantNode'){
+    return [parseFloat(node.value)];
+  }
+  if(node.type === 'SymbolNode'){
+    if(node.name === variable) return [0, 1];
+    throw new Error(`Variable no permitida: ${node.name}`);
+  }
+  if(node.type === 'OperatorNode'){
+    if(node.fn === 'unaryMinus' || (node.args.length === 1 && node.op === '-')){
+      return polyScaleAsc(polyFromNode(node.args[0], variable), -1);
+    }
+    if(node.op === '+'){
+      return node.args.reduce((acc, arg)=>polyAddAsc(acc, polyFromNode(arg, variable)), [0]);
+    }
+    if(node.op === '-'){
+      const first = polyFromNode(node.args[0], variable);
+      return node.args.slice(1).reduce((acc, arg)=>polyAddAsc(acc, polyScaleAsc(polyFromNode(arg, variable), -1)), first);
+    }
+    if(node.op === '*'){
+      return node.args.reduce((acc, arg)=>polyMulAsc(acc, polyFromNode(arg, variable)), [1]);
+    }
+    if(node.op === '^'){
+      if(node.args.length !== 2) throw new Error('Potencia inválida');
+      const base = polyFromNode(node.args[0], variable);
+      const expNode = node.args[1];
+      if(expNode.type !== 'ConstantNode') throw new Error('El exponente debe ser constante');
+      const exp = parseInt(expNode.value, 10);
+      if(!Number.isInteger(exp) || exp < 0) throw new Error('El exponente debe ser entero no negativo');
+      return polyPowAsc(base, exp);
+    }
+  }
+  if(node.type === 'ParenthesisNode'){
+    return polyFromNode(node.content, variable);
+  }
+  if(node.type === 'FunctionNode'){
+    throw new Error('La expresión debe ser un polinomio en x');
+  }
+  throw new Error(`No se puede convertir ${node.type} a polinomio`);
+}
+
+function parsePolynomialCoefficients(expr){
+  const tree = math.parse(preprocessExpr(expr));
+  const asc = polyTrimAsc(polyFromNode(tree, 'x'));
+  return asc.slice().reverse();
+}
+
+function polynomialToString(coeffs, variable='x'){
+  const clean = coeffs.slice();
+  const deg = clean.length - 1;
+  const parts = [];
+  for(let i=0;i<clean.length;i++){
+    const c = clean[i];
+    if(Math.abs(c) < 1e-12) continue;
+    const power = deg - i;
+    const sign = c < 0 ? '-' : '+';
+    const abs = Math.abs(c);
+    let body = '';
+    if(power === 0) body = fmtNum(abs);
+    else if(power === 1) body = `${abs === 1 ? '' : fmtNum(abs)}${variable}`;
+    else body = `${abs === 1 ? '' : fmtNum(abs)}${variable}^${power}`;
+    parts.push({sign, body});
+  }
+  if(!parts.length) return '0';
+  let text = parts[0].sign === '-' ? `-${parts[0].body}` : parts[0].body;
+  for(let i=1;i<parts.length;i++) text += ` ${parts[i].sign} ${parts[i].body}`;
+  return text;
+}
+
+function syntheticDivisionDetails(coeffs, root){
+  const n = coeffs.length - 1;
+  if(n < 1) return {quotient:[0], remainder: coeffs[0] || 0, derivative: 0, products: [], synthetic: [coeffs[0] || 0]};
+  const synthetic = [coeffs[0]];
+  const products = [];
+  for(let i=1;i<coeffs.length;i++){
+    products[i] = root * synthetic[i-1];
+    synthetic[i] = coeffs[i] + products[i];
+  }
+  const quotient = synthetic.slice(0, -1);
+  const remainder = synthetic[synthetic.length - 1];
+  const derivAux = [synthetic[0]];
+  for(let i=1;i<quotient.length;i++){
+    derivAux[i] = synthetic[i] + root * derivAux[i-1];
+  }
+  const derivative = quotient.length > 1 ? derivAux[derivAux.length - 1] : synthetic[0];
+  return {quotient, remainder, derivative, products, synthetic};
+}
+
+function renderSyntheticDivisionCard(coeffs, root){
+  const details = syntheticDivisionDetails(coeffs, root);
+  const degree = coeffs.length - 1;
+  const divisor = root >= 0 ? `(x - ${fmtNum(root)})` : `(x + ${fmtNum(Math.abs(root))})`;
+  const coeffGrid = coeffs.map(v=>`<span class="hn-cell">${fmtNum(v)}</span>`).join('');
+  const prodGrid = coeffs.map((_, i)=> {
+    if(i===0) return `<span class="hn-cell zero">·</span>`;
+    return `<span class="hn-cell">${fmtNum(details.products[i])}</span>`;
+  }).join('');
+  const resultGrid = details.synthetic.map((v, i)=>{
+    const isRemainder = i === details.synthetic.length - 1;
+    const cls = isRemainder ? 'hn-cell zero' : 'hn-cell';
+    return `<span class="${cls}">${fmtNum(v)}</span>`;
+  }).join('');
+  const quotientStr = polynomialToString(details.quotient.length ? details.quotient : [0]);
+  return `
+    <div class="hn-synth-head">
+      <div>
+        <div class="hn-synth-kicker">División sintética</div>
+        <div class="hn-synth-title">P(x) ÷ ${divisor}</div>
+      </div>
+      <div class="hn-synth-root">Evaluando en x = ${fmtNum(root)} · grado ${degree}</div>
+    </div>
+    <div class="hn-synth-grid">
+      <div class="hn-synth-row top">${coeffGrid}</div>
+      <div class="hn-synth-row mid">${prodGrid}</div>
+      <div class="hn-synth-row out">${resultGrid}</div>
+    </div>
+    <div class="hn-synth-footer">
+      <div class="hn-synth-note"><strong>Q(x):</strong> ${quotientStr}</div>
+      <div class="hn-synth-note"><strong>Residuo:</strong> ${fmtNum(details.remainder)}</div>
+      <div class="hn-synth-note"><strong>P'(x):</strong> ${fmtNum(details.derivative)}</div>
+    </div>
+  `;
 }
 
 /* ════════════════════════════════════════════════════
@@ -1873,6 +2281,7 @@ const ggbSlotMap = {
   horner_newton: 'graph-panel-hn',
   newton_multi: 'graph-panel-nm',
   taylor: 'graph-panel-tay',
+  edo: 'graph-panel-edo',
   bolzano: 'graph-panel-bz',
   gauss_seidel: 'graph-panel-gs',
   jacobi: 'graph-panel-ja',
@@ -2041,6 +2450,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   buildMatrixGrid('gs');
   buildMatrixGrid('ja');
   buildNewtonMultiGrid();
+  buildPointsGrid('df');
+  buildPointsGrid('ri');
+  buildPointsGrid('ni');
+  buildPointsGrid('lag');
+  buildPointsGrid('sp');
+  setDfMode('fx');
+  setRiMode('fx');
+  setEdoMode('euler');
 });
 
 /* ════════════════════════════════════════════════════
@@ -2066,6 +2483,7 @@ const methodMeta = [
   {id:'richardson', cat:'Diferenciación', title:'Extrapolación de Richardson', desc:'Combina aproximaciones de distinto paso h para mayor precisión.', icon:'fa-layer-group', color:'teal', tag:'Nuevo'},
   {id:'trapecio', cat:'Integración', title:'Regla del Trapecio', desc:'Aproxima integrales definidas usando trapecios.', icon:'fa-square', color:'amber', tag:'Integral'},
   {id:'simpson', cat:'Integración', title:'Simpson 1/3 y 3/8', desc:'Reglas de Simpson para mayor precisión en integración numérica.', icon:'fa-chart-area', color:'rose', tag:'Integral'},
+  {id:'edo', cat:'Ecuaciones Diferenciales', title:'Ecuaciones Diferenciales', desc:'Euler, Euler Mejorado, RK4 y sistemas de EDO en un solo módulo.', icon:'fa-calculator', color:'teal', tag:'EDO'},
   {id:'bolzano', cat:'Teoremas', title:'Teorema de Bolzano', desc:'Verifica existencia de raíces por cambio de signo en un intervalo.', icon:'fa-scale-balanced', color:'coral', tag:'Teorema'},
 ];
 
@@ -2102,6 +2520,7 @@ const HISTORY_SECTIONS = [
   {id:'interpolacion', label:'Interpolación'},
   {id:'diferenciacion', label:'Diferenciación'},
   {id:'integracion', label:'Integración'},
+  {id:'edo', label:'Ecuaciones Diferenciales'},
   {id:'teoremas', label:'Teoremas'},
 ];
 const METHOD_HISTORY_META = {
@@ -2124,6 +2543,7 @@ const METHOD_HISTORY_META = {
   richardson: {section:'diferenciacion', title:'Extrapolación de Richardson'},
   trapecio: {section:'integracion', title:'Regla del Trapecio'},
   simpson: {section:'integracion', title:'Simpson 1/3 y 3/8'},
+  edo: {section:'edo', title:'Ecuaciones Diferenciales'},
   bolzano: {section:'teoremas', title:'Teorema de Bolzano'},
 };
 let historyState = {filter:'all', editingId:null, sort:'updated_desc', from:'', to:''};
@@ -2937,9 +3357,10 @@ function runMuller(){
 ════════════════════════════════════════════════════ */
 function runBairstow(){
   try{
-    const coefsStr = document.getElementById('bw-coefs').value;
-    let coefs = coefsStr.split(',').map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v));
-    if(coefs.length<3){ toast('Ingresa al menos 3 coeficientes (grado ≥ 2)','error'); return; }
+    const fx = document.getElementById('bw-fx').value.trim();
+    if(!fx){ toast('Ingresa un polinomio P(x)','error'); return; }
+    let coefs = parsePolynomialCoefficients(fx);
+    if(coefs.length<3){ toast('El polinomio debe tener grado ≥ 2','error'); return; }
     let r = parseFloat(document.getElementById('bw-r0').value)||0;
     let s = parseFloat(document.getElementById('bw-s0').value)||0;
     const tol = parseFloat(document.getElementById('bw-tol').value);
@@ -3021,7 +3442,7 @@ function runBairstow(){
     status.className='results-badge rb-ok';
     ggbPlotPoly(coefs, allRoots);
     historyAutoRecord('bairstow', {
-      summary: `Coeficientes: ${coefsStr} | r0=${fmtNum(document.getElementById('bw-r0').value)} | s0=${fmtNum(document.getElementById('bw-s0').value)}`,
+      summary: `P(x) = ${fx} | r0=${fmtNum(document.getElementById('bw-r0').value)} | s0=${fmtNum(document.getElementById('bw-s0').value)}`,
       result: `Raíces: ${lastRootsStr || 'N/D'} | factor ${lastFactor}`,
     });
     toast('Cálculo completado','success');
@@ -3044,37 +3465,48 @@ function hornerEval(coefs, x){
 }
 function runHornerNewton(){
   try{
-    const coefsStr = document.getElementById('hn-coefs').value;
-    let coefs = coefsStr.split(',').map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v));
-    if(coefs.length<2){ toast('Ingresa al menos 2 coeficientes','error'); return; }
+    const fx = document.getElementById('hn-fx').value.trim();
+    if(!fx){ toast('Ingresa un polinomio P(x)','error'); return; }
     let x = parseFloat(document.getElementById('hn-x0').value);
     const tol = parseFloat(document.getElementById('hn-tol').value);
     const maxIt = parseInt(document.getElementById('hn-max').value);
     const status = document.getElementById('hn-status');
     status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    const coeffs = parsePolynomialCoefficients(fx);
+    if(coeffs.length < 2){ toast('El polinomio debe tener grado al menos 1','error'); return; }
+    const synthCard = document.getElementById('hn-synth-card');
+    const synthWrap = document.getElementById('hn-resolution');
+    if(synthCard && synthWrap){
+      synthCard.innerHTML = renderSyntheticDivisionCard(coeffs, x);
+      synthWrap.style.display = 'grid';
+    }
     let rows=[], err=Infinity;
     for(let i=1;i<=maxIt;i++){
-      const [Px,Ppx] = hornerEval(coefs, x);
+      const syn = syntheticDivisionDetails(coeffs, x);
+      const Px = syn.remainder;
+      const Ppx = syn.derivative;
       if(Math.abs(Ppx)<1e-14){ toast('P\'(x) ≈ 0, no se puede continuar','error'); break; }
       const xNext = x - Px/Ppx;
       err = Math.abs(xNext-x);
-      rows.push({n:i,x,Px,Ppx,xNext,err});
+      const relErr = Math.abs(xNext) > 1e-14 ? (err / Math.abs(xNext)) * 100 : 0;
+      rows.push({n:i, x, Px, Ppx, xNext, absErr:err, relErr});
       x=xNext;
       if(err<tol || Math.abs(Px)<1e-14) break;
     }
+    if(!rows.length){ status.textContent='ERROR'; status.className='results-badge rb-err'; return; }
     const tbody = document.getElementById('hn-tbody');
-    tbody.innerHTML = rows.map(r=>`<tr${r.err<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.x)}</td><td>${fmtNum(r.Px)}</td><td>${fmtNum(r.Ppx)}</td><td>${fmtNum(r.xNext)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+    tbody.innerHTML = rows.map(r=>`<tr${r.absErr<tol?' class="converged"':''}><td>${r.n}</td><td>${fmtNum(r.x)}</td><td>${fmtNum(r.Px)}</td><td>${fmtNum(r.Ppx)}</td><td>${fmtNum(r.xNext)}</td><td>${fmtNum(r.absErr)}</td><td>${fmtNum(r.relErr)}%</td></tr>`).join('');
     const last = rows[rows.length-1];
     document.getElementById('hn-root').textContent = fmtNum(last.xNext);
     document.getElementById('hn-iters').textContent = rows.length;
-    document.getElementById('hn-err').textContent = fmtNum(last.err);
+    document.getElementById('hn-err').textContent = fmtNum(last.absErr);
     document.getElementById('hn-summary').style.display='grid';
-    status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
-    status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
-    ggbPlotPoly(coefs, [{re:last.xNext, im:0}]);
+    status.textContent = last.absErr<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
+    status.className = last.absErr<tol ? 'results-badge rb-ok':'results-badge rb-err';
+    ggbPlotFunction(fx, [[last.xNext, 0, true]]);
     historyAutoRecord('horner_newton', {
-      summary: `Coeficientes: ${coefsStr} | x0 = ${fmtNum(document.getElementById('hn-x0').value)}`,
-      result: `Raíz ≈ ${fmtNum(last.xNext)} | error ${fmtNum(last.err)}`,
+      summary: `P(x) = ${fx} | x0 = ${fmtNum(document.getElementById('hn-x0').value)}`,
+      result: `Raíz ≈ ${fmtNum(last.xNext)} | error ${fmtNum(last.absErr)}`,
     });
     toast('Cálculo completado','success');
   }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
@@ -3247,6 +3679,716 @@ function runTaylor(){
 }
 
 /* ════════════════════════════════════════════════════
+   ECUACIONES DIFERENCIALES
+════════════════════════════════════════════════════ */
+const EDO_MODES = {
+  euler: {
+    title: 'Método de Euler',
+    desc: "Aproxima y' = f(x, y) con una recta tangente en cada paso.",
+    help: 'Usa la pendiente instantánea para avanzar con el paso h.',
+    resultTitle: 'Tabla de iteraciones',
+    note: 'El esquema de Euler suele ser el más simple, pero también el menos preciso.',
+    head: '<tr><th>i</th><th>xᵢ</th><th>yᵢ</th><th>f(xᵢ, yᵢ)</th><th>yᵢ₊₁</th></tr>',
+    colspan: 5,
+    summaryCols: 'repeat(3,1fr)',
+  },
+  heun: {
+    title: 'Euler Mejorado (Heun)',
+    desc: 'Aplica predictor-corrector promediando la pendiente inicial y la corregida.',
+    help: 'Primero predice, luego corrige con la pendiente evaluada en el punto siguiente.',
+    resultTitle: 'Tabla de iteraciones',
+    note: 'Heun mejora la precisión respecto a Euler sin subir demasiado el costo computacional.',
+    head: '<tr><th>i</th><th>xᵢ</th><th>yᵢ</th><th>Predictor</th><th>f(xᵢ, yᵢ)</th><th>f(xᵢ₊₁, Pred.)</th><th>yᵢ₊₁</th></tr>',
+    colspan: 7,
+    summaryCols: 'repeat(3,1fr)',
+  },
+  rk4: {
+    title: 'Runge-Kutta 4 (RK4)',
+    desc: 'Combina cuatro pendientes ponderadas para obtener una aproximación de 4to orden.',
+    help: 'Es el método clásico más balanceado cuando se busca buena precisión y estabilidad.',
+    resultTitle: 'Tabla de iteraciones',
+    note: 'RK4 suele ofrecer un salto notable de precisión frente a Euler y Heun.',
+    head: '<tr><th>i</th><th>xᵢ</th><th>yᵢ</th><th>k1</th><th>k2</th><th>k3</th><th>k4</th><th>yᵢ₊₁</th></tr>',
+    colspan: 8,
+    summaryCols: 'repeat(3,1fr)',
+  },
+  systems: {
+    title: 'Sistemas de EDO (RK4 Vectorial)',
+    desc: 'Resuelve sistemas de EDO de primer orden usando Euler, Heun y RK4 vectorial para comparar resultados.',
+    help: 'Ingresa las derivadas del sistema separadas por coma y sus condiciones iniciales.',
+    resultTitle: 'Comparación de métodos',
+    note: 'La comparación final ayuda a elegir un método estable cuando el sistema tiene varias variables.',
+    head: '<tr><th>Método</th><th>Estado final</th><th>Norma final</th><th>Iteraciones</th></tr>',
+    colspan: 4,
+    summaryCols: 'repeat(2,1fr)',
+  },
+};
+let edoMode = 'euler';
+
+function edoScalarFormHtml(){
+  return `
+    <label class="field-lbl">Función f(x, y) = dy/dx</label>
+    <input class="rf-input" id="ode_f" placeholder="x + y" value="x + y"/>
+    <label class="field-lbl">Condición inicial x0</label>
+    <input class="rf-input" id="ode_x0" type="number" step="any" placeholder="0" value="0"/>
+    <label class="field-lbl">Condición inicial y0</label>
+    <input class="rf-input" id="ode_y0" type="number" step="any" placeholder="1" value="1"/>
+    <label class="field-lbl">Tamaño de paso h</label>
+    <input class="rf-input" id="ode_h" type="number" step="any" placeholder="0.1" value="0.1"/>
+    <label class="field-lbl">Valor final xn</label>
+    <input class="rf-input" id="ode_xn" type="number" step="any" placeholder="0.5" value="0.5"/>
+    <label class="field-lbl">Solución exacta y(x) [opcional]</label>
+    <input class="rf-input" id="ode_exact" placeholder="2*exp(x) - x - 1" value="2*exp(x) - x - 1"/>
+    <button class="btn-calc" onclick="runEdo()"><i class="fa-solid fa-play"></i> Calcular</button>
+    <button class="btn-secondary" onclick="resetEdo()"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+  `;
+}
+
+function edoSystemsFormHtml(){
+  return `
+    <label class="field-lbl">Variables de estado</label>
+    <input class="rf-input" id="sys_vars" placeholder="x, y" value="x, y"/>
+    <label class="field-lbl">Variable independiente</label>
+    <input class="rf-input" id="sys_indep" placeholder="t" value="t"/>
+    <label class="field-lbl">Derivadas (separadas por coma)</label>
+    <input class="rf-input" id="sys_eqs" placeholder="y, -x" value="y, -x"/>
+    <label class="field-lbl">Valores iniciales</label>
+    <input class="rf-input" id="sys_init" placeholder="1, 0" value="1, 0"/>
+    <label class="field-lbl">Valor inicial t0</label>
+    <input class="rf-input" id="sys_t0" type="number" step="any" placeholder="0" value="0"/>
+    <label class="field-lbl">Tamaño de paso h</label>
+    <input class="rf-input" id="sys_h" type="number" step="any" placeholder="0.1" value="0.1"/>
+    <label class="field-lbl">Valor final tn</label>
+    <input class="rf-input" id="sys_tn" type="number" step="any" placeholder="1" value="1"/>
+    <label class="field-lbl">Soluciones exactas [opcional]</label>
+    <input class="rf-input" id="sys_exact" placeholder="cos(t), -sin(t)" value="cos(t), -sin(t)"/>
+    <button class="btn-calc" onclick="runEdo()"><i class="fa-solid fa-play"></i> Calcular</button>
+    <button class="btn-secondary" onclick="resetEdo()"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+  `;
+}
+
+function setEdoMode(mode){
+  edoMode = EDO_MODES[mode] ? mode : 'euler';
+  ['euler', 'heun', 'rk4', 'systems'].forEach(key=>{
+    const btn = document.getElementById(`edo-mode-${key}-btn`);
+    if(btn) btn.classList.toggle('active', key === edoMode);
+  });
+  renderEdoForm(edoMode);
+}
+
+function resetEdo(){
+  renderEdoForm(edoMode);
+}
+
+function renderEdoForm(mode){
+  const cfg = EDO_MODES[mode] || EDO_MODES.euler;
+  const formTitle = document.getElementById('edo-form-title');
+  const formDesc = document.getElementById('edo-form-desc');
+  const resultsTitle = document.getElementById('edo-results-title');
+  const help = document.getElementById('edo-help');
+  const container = document.getElementById('edo-form-container');
+  const thead = document.getElementById('edo-thead');
+  const tbody = document.getElementById('edo-tbody');
+  const summary = document.getElementById('edo-summary');
+  const status = document.getElementById('edo-status');
+  const note = document.getElementById('edo-note');
+  if(formTitle) formTitle.textContent = cfg.title;
+  if(formDesc) formDesc.textContent = cfg.desc;
+  if(resultsTitle) resultsTitle.textContent = cfg.resultTitle;
+  if(help) help.textContent = cfg.help;
+  if(container) container.innerHTML = mode === 'systems' ? edoSystemsFormHtml() : edoScalarFormHtml();
+  if(thead) thead.innerHTML = cfg.head;
+  if(tbody) tbody.innerHTML = `<tr><td colspan="${cfg.colspan}"><div class="state-idle"><i class="fa-solid fa-calculator"></i><p>Selecciona un método y presiona Calcular</p></div></td></tr>`;
+  if(summary){
+    summary.style.display = 'none';
+    summary.style.gridTemplateColumns = cfg.summaryCols;
+    summary.innerHTML = '';
+  }
+  if(status){
+    status.textContent = 'ESPERANDO';
+    status.className = 'results-badge rb-idle';
+  }
+  if(note) note.textContent = cfg.note;
+}
+
+function runEdo(){
+  if(edoMode === 'systems') return runEdoSystems();
+  return runEdoScalar(edoMode);
+}
+
+function runEdoScalar(mode){
+  try{
+    clearFieldErrors('ode_f', 'ode_x0', 'ode_y0', 'ode_h', 'ode_xn', 'ode_exact');
+    const cfg = EDO_MODES[mode] || EDO_MODES.euler;
+    const fx = document.getElementById('ode_f').value.trim();
+    const x0 = parseFloat(document.getElementById('ode_x0').value);
+    const y0 = parseFloat(document.getElementById('ode_y0').value);
+    const h = parseFloat(document.getElementById('ode_h').value);
+    const xn = parseFloat(document.getElementById('ode_xn').value);
+    const exactStr = document.getElementById('ode_exact').value.trim();
+    if(!fx){ showFieldError('ode_f', 'Ingrese la función f(x, y).'); return; }
+    if(isNaN(x0)){ showFieldError('ode_x0', 'Ingrese un valor numérico.'); return; }
+    if(isNaN(y0)){ showFieldError('ode_y0', 'Ingrese un valor numérico.'); return; }
+    if(isNaN(h) || h <= 0){ showFieldError('ode_h', 'El tamaño del paso h debe ser positivo.'); return; }
+    if(isNaN(xn)){ showFieldError('ode_xn', 'Ingrese un valor numérico.'); return; }
+    if(xn <= x0){ showFieldError('ode_xn', 'El valor final xn debe ser mayor que x0.'); return; }
+
+    const f = compileFn(fx);
+    f.evaluate({x:x0, y:y0});
+
+    let exactFn = null;
+    if(exactStr){
+      try{
+        exactFn = compileFn(exactStr);
+        exactFn.evaluate({x:x0});
+      }catch(e){
+        showFieldError('ode_exact', 'Error al procesar la solución exacta: ' + e.message);
+        return;
+      }
+    }
+
+    const steps = Math.round((xn - x0) / h);
+    if(steps > 1000){ toast('El número de pasos excede 1000. Usa un h mayor.','error'); return; }
+
+    const headerMap = {
+      euler: ['i', 'xᵢ', 'yᵢ', 'f(xᵢ, yᵢ)', 'yᵢ₊₁'],
+      heun: ['i', 'xᵢ', 'yᵢ', 'Predictor', 'f(xᵢ, yᵢ)', 'f(xᵢ₊₁, Pred.)', 'yᵢ₊₁'],
+      rk4: ['i', 'xᵢ', 'yᵢ', 'k1', 'k2', 'k3', 'k4', 'yᵢ₊₁'],
+    };
+    const headers = [...(headerMap[mode] || headerMap.euler)];
+    if(exactFn) headers.push('y exacta', 'Error abs.');
+    const thead = document.getElementById('edo-thead');
+    if(thead) thead.innerHTML = `<tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+
+    const rows = [];
+    const points = [{x:x0, y:y0}];
+    let x = x0, y = y0;
+    for(let i=0;i<steps;i++){
+      const xNext = x + h;
+      const fCurr = f.evaluate({x, y});
+      let row = [i, fmtNum(x), fmtNum(y)];
+      let yNext;
+      if(mode === 'euler'){
+        yNext = y + h * fCurr;
+        row.push(fmtNum(fCurr), fmtNum(yNext));
+      }else if(mode === 'heun'){
+        const yPred = y + h * fCurr;
+        const fPred = f.evaluate({x:xNext, y:yPred});
+        yNext = y + (h / 2) * (fCurr + fPred);
+        row.push(fmtNum(yPred), fmtNum(fCurr), fmtNum(fPred), fmtNum(yNext));
+      }else{
+        const k1 = fCurr;
+        const k2 = f.evaluate({x:x + h / 2, y:y + (h / 2) * k1});
+        const k3 = f.evaluate({x:x + h / 2, y:y + (h / 2) * k2});
+        const k4 = f.evaluate({x:x + h, y:y + h * k3});
+        yNext = y + (h / 6) * (k1 + 2 * k2 + 2 * k3 + k4);
+        row.push(fmtNum(k1), fmtNum(k2), fmtNum(k3), fmtNum(k4), fmtNum(yNext));
+      }
+      if(exactFn){
+        const yExact = exactFn.evaluate({x:xNext});
+        row.push(fmtNum(yExact), fmtNum(Math.abs(yNext - yExact)));
+      }
+      rows.push(row);
+      points.push({x:xNext, y:yNext});
+      x = xNext;
+      y = yNext;
+    }
+
+    const tbody = document.getElementById('edo-tbody');
+    if(tbody) tbody.innerHTML = rows.map(r=>`<tr>${r.map((cell, idx)=>`<td${idx===0 ? '' : ' style="text-align:right;"'}>${cell}</td>`).join('')}</tr>`).join('');
+    const status = document.getElementById('edo-status');
+    if(status){
+      status.textContent = 'COMPLETADO';
+      status.className = 'results-badge rb-ok';
+    }
+    const summary = document.getElementById('edo-summary');
+    if(summary){
+      const yExactFinal = exactFn ? exactFn.evaluate({x:xn}) : null;
+      const finalErr = exactFn ? Math.abs(y - yExactFinal) : null;
+      summary.innerHTML = `
+        <div class="sum-item"><div class="sum-label">Resultado final</div><div class="sum-value">${fmtNum(y)}</div></div>
+        <div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value">${rows.length}</div></div>
+        <div class="sum-item"><div class="sum-label">${exactFn ? 'Error final' : 'Paso h'}</div><div class="sum-value">${exactFn ? fmtNum(finalErr) : fmtNum(h)}</div></div>
+      `;
+      summary.style.gridTemplateColumns = 'repeat(3,1fr)';
+      summary.style.display = 'grid';
+    }
+    const note = document.getElementById('edo-note');
+    if(note) note.textContent = `${cfg.note} | Intervalo [${fmtNum(x0)}, ${fmtNum(xn)}] con h = ${fmtNum(h)}.`;
+    updateGeoGebraEDO({mode:'scalar', method:mode, fx, points, exactStr});
+    historyAutoRecord('edo', {
+      summary: `${cfg.title} | f(x, y) = ${fx} | x0 = ${fmtNum(x0)} | y0 = ${fmtNum(y0)} | h = ${fmtNum(h)}`,
+      result: `y(${fmtNum(xn)}) ≈ ${fmtNum(y)}${exactFn ? ` | error ${fmtNum(Math.abs(y - exactFn.evaluate({x:xn})) )}` : ''}`,
+    });
+    toast('Cálculo completado','success');
+  }catch(err){
+    toast('Error: '+err.message,'error');
+    console.error(err);
+  }
+}
+
+function runEdoSystems(){
+  try{
+    clearFieldErrors('sys_vars', 'sys_indep', 'sys_eqs', 'sys_init', 'sys_t0', 'sys_h', 'sys_tn', 'sys_exact');
+    const cfg = EDO_MODES.systems;
+    const varsStr = document.getElementById('sys_vars').value.trim();
+    const indep = document.getElementById('sys_indep').value.trim();
+    const eqsStr = document.getElementById('sys_eqs').value.trim();
+    const initStr = document.getElementById('sys_init').value.trim();
+    const t0 = parseFloat(document.getElementById('sys_t0').value);
+    const h = parseFloat(document.getElementById('sys_h').value);
+    const tn = parseFloat(document.getElementById('sys_tn').value);
+    const exactStr = document.getElementById('sys_exact').value.trim();
+    if(!varsStr){ showFieldError('sys_vars', 'Ingrese las variables dependientes.'); return; }
+    if(!indep){ showFieldError('sys_indep', 'Ingrese la variable independiente.'); return; }
+    if(!eqsStr){ showFieldError('sys_eqs', 'Ingrese las funciones derivadas.'); return; }
+    if(!initStr){ showFieldError('sys_init', 'Ingrese las condiciones iniciales.'); return; }
+    if(isNaN(t0)){ showFieldError('sys_t0', 'Ingrese un valor numérico.'); return; }
+    if(isNaN(h) || h <= 0){ showFieldError('sys_h', 'El paso h debe ser positivo.'); return; }
+    if(isNaN(tn)){ showFieldError('sys_tn', 'Ingrese un valor numérico.'); return; }
+    if(tn <= t0){ showFieldError('sys_tn', 'El valor final tn debe ser mayor que t0.'); return; }
+
+    const vars = varsStr.split(',').map(v=>v.trim()).filter(Boolean);
+    const eqs = eqsStr.split(',').map(e=>e.trim()).filter(Boolean);
+    const initVals = initStr.split(',').map(v=>parseFloat(v.trim()));
+    if(vars.length !== eqs.length){
+      showFieldError('sys_eqs', `El número de ecuaciones (${eqs.length}) debe ser igual al de variables (${vars.length}).`);
+      return;
+    }
+    if(vars.length !== initVals.length || initVals.some(isNaN)){
+      showFieldError('sys_init', `Las condiciones iniciales deben tener exactamente ${vars.length} números válidos.`);
+      return;
+    }
+
+    let eqNodes = [];
+    try{
+      eqNodes = eqs.map(eq => math.parse(preprocessExpr(eq)));
+      const testScope = { [indep]: t0 };
+      vars.forEach((v, i)=>{ testScope[v] = initVals[i]; });
+      eqNodes.forEach(node=>node.evaluate(testScope));
+    }catch(e){
+      showFieldError('sys_eqs', 'Error de sintaxis en las ecuaciones: ' + e.message);
+      return;
+    }
+
+    const exactParts = exactStr ? exactStr.split(',').map(s=>s.trim()) : [];
+    let exactFns = [];
+    if(exactParts.length){
+      if(exactParts.length !== vars.length){
+        showFieldError('sys_exact', `Se requieren exactamente ${vars.length} soluciones exactas.`);
+        return;
+      }
+      try{
+        exactFns = exactParts.map(s => compileFn(s));
+      }catch(e){
+        showFieldError('sys_exact', 'Error al procesar las soluciones exactas: ' + e.message);
+        return;
+      }
+    }
+
+    const N = Math.round((tn - t0) / h);
+    if(N > 1000){ toast('El número de pasos excede 1000. Usa un h mayor.','error'); return; }
+
+    const evalSys = (tVal, yVec) => {
+      const scope = { [indep]: tVal };
+      vars.forEach((v, i)=>{ scope[v] = yVec[i]; });
+      return eqNodes.map(node => node.evaluate(scope));
+    };
+    const vadd = (a, b) => a.map((x, i)=>x + b[i]);
+    const vscale = (a, s) => a.map(x=>x*s);
+    const fmtV = vec => `[${vec.map(v=>fmtNum(v)).join(', ')}]`;
+
+    const solveEuler = () => {
+      let t = t0, Y = [...initVals];
+      const tVals = [t0], states = [[...initVals]], rows = [];
+      for(let i=0;i<N;i++){
+        const F = evalSys(t, Y);
+        const YNext = vadd(Y, vscale(F, h));
+        const tNext = t + h;
+        rows.push({method:'Euler', state:YNext, err: exactFns.length ? Math.sqrt(YNext.reduce((s,v,j)=>s + (v - exactFns[j].evaluate({[indep]: tNext}))**2, 0)) : null, steps:i+1});
+        tVals.push(tNext); states.push(YNext);
+        t = tNext; Y = YNext;
+      }
+      return { tVals, states, YFinal: Y, rows };
+    };
+
+    const solveHeun = () => {
+      let t = t0, Y = [...initVals];
+      const tVals = [t0], states = [[...initVals]], rows = [];
+      for(let i=0;i<N;i++){
+        const F0 = evalSys(t, Y);
+        const YPred = vadd(Y, vscale(F0, h));
+        const tNext = t + h;
+        const F1 = evalSys(tNext, YPred);
+        const YNext = vadd(Y, vscale(vscale(vadd(F0, F1), 0.5), h));
+        rows.push({method:'Heun', state:YNext, err: exactFns.length ? Math.sqrt(YNext.reduce((s,v,j)=>s + (v - exactFns[j].evaluate({[indep]: tNext}))**2, 0)) : null, steps:i+1});
+        tVals.push(tNext); states.push(YNext);
+        t = tNext; Y = YNext;
+      }
+      return { tVals, states, YFinal: Y, rows };
+    };
+
+    const solveRK4 = () => {
+      let t = t0, Y = [...initVals];
+      const tVals = [t0], states = [[...initVals]], rows = [];
+      for(let i=0;i<N;i++){
+        const k1 = evalSys(t, Y);
+        const k2 = evalSys(t + h / 2, vadd(Y, vscale(k1, h / 2)));
+        const k3 = evalSys(t + h / 2, vadd(Y, vscale(k2, h / 2)));
+        const k4 = evalSys(t + h, vadd(Y, vscale(k3, h)));
+        const YNext = vadd(Y, vscale(vadd(vadd(k1, vscale(k2, 2)), vadd(vscale(k3, 2), k4)), h / 6));
+        const tNext = t + h;
+        rows.push({method:'RK4', state:YNext, err: exactFns.length ? Math.sqrt(YNext.reduce((s,v,j)=>s + (v - exactFns[j].evaluate({[indep]: tNext}))**2, 0)) : null, steps:i+1});
+        tVals.push(tNext); states.push(YNext);
+        t = tNext; Y = YNext;
+      }
+      return { tVals, states, YFinal: Y, rows };
+    };
+
+    const resEuler = solveEuler();
+    const resHeun = solveHeun();
+    const resRK4 = solveRK4();
+
+    const finalRows = [resEuler, resHeun, resRK4].map((res, idx) => {
+      const method = idx === 0 ? 'Euler' : idx === 1 ? 'Heun' : 'RK4';
+      const err = res.rows[res.rows.length - 1]?.err;
+      const bestVec = fmtV(res.YFinal);
+      return `<tr${idx===2?' class="converged"':''}><td>${method}</td><td>${bestVec}</td><td>${err === null || err === undefined ? '—' : fmtNum(err)}</td><td>${res.rows.length}</td></tr>`;
+    }).join('');
+
+    const tbody = document.getElementById('edo-tbody');
+    if(tbody) tbody.innerHTML = finalRows;
+    const summary = document.getElementById('edo-summary');
+    if(summary){
+      const best = resRK4.YFinal;
+      const exactVec = exactFns.length ? exactFns.map(fn => fn.evaluate({[indep]: tn})) : null;
+      const err = exactVec ? Math.sqrt(best.reduce((s,v,i)=>s + (v - exactVec[i])**2, 0)) : null;
+      const cards = [
+        `<div class="sum-item"><div class="sum-label">RK4 final</div><div class="sum-value">${fmtV(best)}</div></div>`,
+        `<div class="sum-item"><div class="sum-label">Iteraciones</div><div class="sum-value">${N}</div></div>`,
+      ];
+      if(exactVec){
+        cards.push(`<div class="sum-item"><div class="sum-label">Error global</div><div class="sum-value">${fmtNum(err)}</div></div>`);
+      }
+      summary.innerHTML = cards.join('');
+      summary.style.gridTemplateColumns = exactVec ? 'repeat(3,1fr)' : 'repeat(2,1fr)';
+      summary.style.display = 'grid';
+    }
+    const status = document.getElementById('edo-status');
+    if(status){
+      status.textContent = 'COMPLETADO';
+      status.className = 'results-badge rb-ok';
+    }
+    const note = document.getElementById('edo-note');
+    if(note){
+      note.textContent = `${cfg.note} | Intervalo [${fmtNum(t0)}, ${fmtNum(tn)}] con h = ${fmtNum(h)} y ${vars.length} variable(s).`;
+    }
+    updateGeoGebraEDO({
+      mode: 'systems',
+      indep,
+      vars,
+      exactParts,
+      euler: resEuler,
+      heun: resHeun,
+      rk4: resRK4,
+    });
+    historyAutoRecord('edo', {
+      summary: `Sistemas EDO | variables = ${vars.join(', ')} | ecuaciones = ${eqs.join(' | ')} | t0 = ${fmtNum(t0)} | tn = ${fmtNum(tn)}`,
+      result: `RK4 final ${fmtV(resRK4.YFinal)}${exactFns.length ? ` | norma ${fmtNum(Math.sqrt(resRK4.YFinal.reduce((s,v,i)=>s + (v - exactFns[i].evaluate({[indep]: tn}))**2, 0)))}` : ''}`,
+    });
+    toast('Cálculo completado','success');
+  }catch(err){
+    toast('Error: '+err.message,'error');
+    console.error(err);
+  }
+}
+
+function updateGeoGebraEDO(payload){
+  moveGGBTo('edo');
+  const doPlot = () => {
+    if(!window.ggbApplet) return;
+    try{
+      window.ggbApplet.setPerspective('G');
+      window.ggbApplet.reset();
+      window.ggbApplet.setGridVisible(true);
+      if(payload.mode === 'scalar'){
+        const pts = payload.points || [];
+        if(pts.length){
+          const names = pts.map((p, i)=>`(${p.x}, ${p.y})`);
+          window.ggbApplet.evalCommand(`EDOPts = {${names.join(', ')}}`);
+          window.ggbApplet.evalCommand(`EDOCurve = Polyline[EDOPts]`);
+          window.ggbApplet.setColor('EDOCurve', 74, 140, 106);
+          window.ggbApplet.setLineThickness('EDOCurve', 4);
+        }
+        if(payload.exactStr){
+          const exact = preprocessExpr(payload.exactStr).replace(/\bx\b/g, 'x');
+          try{
+            window.ggbApplet.evalCommand(`EDOExact(x) = ${exact}`);
+            window.ggbApplet.setColor('EDOExact', 176, 96, 32);
+            window.ggbApplet.setLineStyle('EDOExact', 2);
+            window.ggbApplet.setLineThickness('EDOExact', 2);
+          }catch(e){}
+        }
+        const xs = pts.map(p=>p.x);
+        const ys = pts.map(p=>p.y);
+        if(xs.length && ys.length){
+          const xMin = Math.min(...xs), xMax = Math.max(...xs);
+          const yMin = Math.min(...ys), yMax = Math.max(...ys);
+          const mx = (xMax - xMin || 1) * 0.2;
+          const my = (yMax - yMin || 1) * 0.25;
+          window.ggbApplet.setCoordSystem(xMin - mx, xMax + mx, yMin - my, yMax + my);
+        }
+      }else{
+        const methodColors = {
+          euler: [74, 140, 106],
+          heun: [176, 96, 32],
+          rk4: [74, 93, 156],
+        };
+        const methodData = [
+          {key:'euler', data: payload.euler},
+          {key:'heun', data: payload.heun},
+          {key:'rk4', data: payload.rk4},
+        ];
+        const allVals = [];
+        methodData.forEach(({key, data}, idx)=>{
+          const color = methodColors[key];
+          if(!data || !data.tVals || !data.states) return;
+          data.states[0].forEach((_, vIdx)=>{
+            const pts = data.tVals.map((t, i)=>{
+              const val = data.states[i][vIdx];
+              allVals.push(val);
+              return `(${t}, ${val})`;
+            });
+            const ptsName = `EDO_${key}_${vIdx}`;
+            const lineName = `EDO_Line_${key}_${vIdx}`;
+            window.ggbApplet.evalCommand(`${ptsName} = {${pts.join(', ')}}`);
+            window.ggbApplet.evalCommand(`${lineName} = Polyline[${ptsName}]`);
+            window.ggbApplet.setColor(lineName, color[0], color[1], color[2]);
+            window.ggbApplet.setLineThickness(lineName, idx === 2 ? 4 : 3);
+            window.ggbApplet.setLineStyle(lineName, idx);
+            window.ggbApplet.setPointSize(ptsName, 3);
+            window.ggbApplet.setColor(ptsName, color[0], color[1], color[2]);
+          });
+        });
+        if(payload.exactParts && payload.exactParts.length){
+          payload.exactParts.forEach((expr, idx)=>{
+            if(!expr) return;
+            try{
+              const exact = preprocessExpr(expr).replace(new RegExp('\\b' + payload.indep + '\\b', 'g'), 'x');
+              const name = `EDO_Exact_${idx}`;
+              window.ggbApplet.evalCommand(`${name}(x) = ${exact}`);
+              window.ggbApplet.setColor(name, 120, 60, 60);
+              window.ggbApplet.setLineThickness(name, 2);
+              window.ggbApplet.setLineStyle(name, 2);
+            }catch(e){}
+          });
+        }
+        const tVals = payload.rk4?.tVals || [];
+        if(tVals.length && allVals.length){
+          const tMin = Math.min(...tVals), tMax = Math.max(...tVals);
+          const yMin = Math.min(...allVals), yMax = Math.max(...allVals);
+          const tM = (tMax - tMin || 1) * 0.15;
+          const yM = (yMax - yMin || 2) * 0.3;
+          window.ggbApplet.setCoordSystem(tMin - tM, tMax + tM, yMin - yM, yMax + yM);
+        }
+      }
+    }catch(e){
+      console.error('GeoGebra EDO error:', e);
+    }
+  };
+  if(typeof ggbReady !== 'undefined' && ggbReady && window.ggbApplet) doPlot(); else initGeoGebra(doPlot);
+}
+
+let edoOcrLoader = null;
+function loadEdoOcr(){
+  if(window.Tesseract) return Promise.resolve(window.Tesseract);
+  if(edoOcrLoader) return edoOcrLoader;
+  edoOcrLoader = new Promise((resolve, reject)=>{
+    const existing = document.querySelector('script[data-edo-ocr="1"]');
+    if(existing){
+      existing.addEventListener('load', ()=>resolve(window.Tesseract));
+      existing.addEventListener('error', err=>{ edoOcrLoader = null; reject(err); });
+      return;
+    }
+    const script = document.createElement('script');
+    script.dataset.edoOcr = '1';
+    script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    script.onload = ()=>resolve(window.Tesseract);
+    script.onerror = ()=>{ edoOcrLoader = null; reject(new Error('No se pudo cargar la librería OCR.')); };
+    document.head.appendChild(script);
+  });
+  return edoOcrLoader;
+}
+
+function normalizeEdoImportText(text){
+  return String(text || '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[−–—]/g, '-')
+    .replace(/(\d),(\d)/g, '$1.$2')
+    .replace(/\u00A0/g, ' ')
+    .trim();
+}
+
+function parseEdoImport(text){
+  const raw = normalizeEdoImportText(text);
+  const compact = raw.replace(/\s+/g, ' ');
+  const lower = compact.toLowerCase();
+
+  const readNum = (pattern) => {
+    const m = compact.match(pattern);
+    if(!m) return null;
+    const value = parseFloat(m[1]);
+    return Number.isFinite(value) ? value : null;
+  };
+
+  const sysMatches = [...raw.matchAll(/\b([a-z])\s*\/\s*d([a-z])\s*(?:=|:)\s*([\s\S]*?)(?=\b[a-z]\s*\/\s*d[a-z]\s*(?:=|:)|$)/gi)];
+  if(sysMatches.length >= 2){
+    const vars = sysMatches.map(m => m[1].trim());
+    const indep = sysMatches[0][2].trim() || 't';
+    const eqs = sysMatches.map(m => m[3].trim());
+    const initMatches = [...raw.matchAll(/\b([a-z])\s*\(\s*([^)]+?)\s*\)\s*=\s*([-\d.]+)/gi)];
+    const initMap = new Map(initMatches.map(m => [m[1].trim(), parseFloat(m[3])]).filter(([,v]) => Number.isFinite(v)));
+    const t0Match = raw.match(/\bt0\s*(?:=|:)\s*([-\d.]+)/i);
+    const t0 = t0Match ? parseFloat(t0Match[1]) : (initMatches[0] ? parseFloat(initMatches[0][2]) : 0);
+    const h = readNum(/\bh\s*(?:=|:)\s*([-\d.]+)/i) ?? 0.1;
+    const tn = readNum(/\b(?:tn|xn|t_f|tfinal|valor final t|valor final x)\s*(?:=|:)\s*([-\d.]+)/i) ?? null;
+    const exactMatches = [...raw.matchAll(/\b([a-z])\s*\(\s*[^)]+?\s*\)\s*=\s*([^\n;]+)/gi)].filter(m => /[a-z]/i.test(m[1]));
+    const exacts = exactMatches.length === vars.length ? vars.map(v => {
+      const found = exactMatches.find(m => m[1].trim() === v);
+      return found ? found[2].trim() : '';
+    }) : [];
+    return {
+      type: 'systems',
+      vars,
+      indep,
+      eqs,
+      init: vars.map(v => initMap.get(v) ?? 0).join(', '),
+      t0,
+      h,
+      tn: tn ?? (t0 + 1),
+      exacts: exacts.length === vars.length ? exacts.join(', ') : '',
+    };
+  }
+
+  let fx = '';
+  const fxPatterns = [
+    /(?:dy\s*\/\s*d[xt]|y['´’]?)\s*(?:=|:)\s*([^\n;]+)/i,
+    /(?:ecuaci[oó]n|edo|diferencial)\s*[:=]\s*([^\n;]+)/i,
+  ];
+  for(const pattern of fxPatterns){
+    const m = raw.match(pattern);
+    if(m){ fx = m[1].trim(); break; }
+  }
+  if(!fx && lower.includes('=')){
+    const firstEq = compact.split('=');
+    if(firstEq.length > 1) fx = firstEq[1].split(/[;\n,]/)[0].trim();
+  }
+  const x0Match = raw.match(/\by\s*\(\s*([-\d.]+)\s*\)\s*=\s*([-\d.]+)/i) || raw.match(/\by0\s*(?:=|:)\s*([-\d.]+)/i);
+  const x0 = x0Match ? parseFloat(x0Match[1]) : 0;
+  const y0 = x0Match && x0Match[2] !== undefined ? parseFloat(x0Match[2]) : (readNum(/\by0\s*(?:=|:)\s*([-\d.]+)/i) ?? 1);
+  const h = readNum(/\bh\s*(?:=|:)\s*([-\d.]+)/i) ?? 0.1;
+  const xn = readNum(/\b(?:xn|xn\w*|x_f|xfinal|valor final x|evaluar en x|hasta x)\s*(?:=|:)\s*([-\d.]+)/i) ?? (x0 + 0.5);
+  const exactMatch = raw.match(/\bsoluci[oó]n exacta\s*(?:=|:)\s*([^\n;]+)/i);
+  return {
+    type: 'scalar',
+    fx,
+    x0,
+    y0,
+    h,
+    xn,
+    exact: exactMatch ? exactMatch[1].trim() : '',
+  };
+}
+
+function applyEdoImport(parsed){
+  const status = document.getElementById('edo-import-status');
+  if(!parsed) return;
+  if(parsed.type === 'systems'){
+    setEdoMode('systems');
+    renderEdoForm('systems');
+    const vars = parsed.vars || ['x', 'y'];
+    const eqs = parsed.eqs || [];
+    const init = parsed.init || '';
+    const exacts = parsed.exacts || '';
+    const indep = parsed.indep || 't';
+    const setIf = (id, value) => { const el = document.getElementById(id); if(el && value !== undefined && value !== null && value !== '') el.value = value; };
+    setIf('sys_vars', vars.join(', '));
+    setIf('sys_indep', indep);
+    setIf('sys_eqs', eqs.join(', '));
+    setIf('sys_init', init);
+    setIf('sys_t0', parsed.t0);
+    setIf('sys_h', parsed.h);
+    setIf('sys_tn', parsed.tn);
+    setIf('sys_exact', exacts);
+    if(status) status.textContent = 'Datos de sistema importados. Revisa y ajusta si hace falta.';
+    return;
+  }
+  setEdoMode('euler');
+  renderEdoForm('euler');
+  const setIf = (id, value) => { const el = document.getElementById(id); if(el && value !== undefined && value !== null && value !== '') el.value = value; };
+  setIf('ode_f', parsed.fx);
+  setIf('ode_x0', parsed.x0);
+  setIf('ode_y0', parsed.y0);
+  setIf('ode_h', parsed.h);
+  setIf('ode_xn', parsed.xn);
+  setIf('ode_exact', parsed.exact);
+  if(status) status.textContent = 'Datos importados. Revisa la función y los valores antes de calcular.';
+}
+
+function importEdoStatementFromText(){
+  const textarea = document.getElementById('edo-import-text');
+  const status = document.getElementById('edo-import-status');
+  const text = textarea ? textarea.value.trim() : '';
+  if(!text){
+    if(status) status.textContent = 'Pega un enunciado primero.';
+    toast('Pega o sube un enunciado para extraer los datos.','info');
+    return;
+  }
+  try{
+    applyEdoImport(parseEdoImport(text));
+    toast('Datos extraídos del enunciado','success');
+  }catch(err){
+    if(status) status.textContent = 'No se pudo interpretar el enunciado.';
+    toast('No se pudo interpretar el enunciado: ' + err.message, 'error');
+  }
+}
+
+async function importEdoStatementFromFile(event){
+  const file = event?.target?.files?.[0];
+  const status = document.getElementById('edo-import-status');
+  if(!file) return;
+  if(status) status.textContent = 'Leyendo imagen y ejecutando OCR...';
+  try{
+    const Tesseract = await loadEdoOcr();
+    const result = await Tesseract.recognize(file, 'spa+eng');
+    const text = result?.data?.text || '';
+    const textarea = document.getElementById('edo-import-text');
+    if(textarea) textarea.value = text.trim();
+    applyEdoImport(parseEdoImport(text));
+    if(status) status.textContent = 'OCR completado. Revisa los datos importados antes de calcular.';
+    toast('OCR completado','success');
+  }catch(err){
+    if(status) status.textContent = 'OCR no disponible. Puedes pegar el texto manualmente.';
+    toast('No se pudo leer la imagen: ' + err.message, 'error');
+  }finally{
+    if(event?.target) event.target.value = '';
+  }
+}
+
+function handleEdoFileDrop(event){
+  event.preventDefault();
+  const files = event.dataTransfer?.files || [];
+  if(!files.length) return;
+  const fileInput = document.getElementById('edo-import-file');
+  if(fileInput){
+    const dt = new DataTransfer();
+    dt.items.add(files[0]);
+    fileInput.files = dt.files;
+  }
+  importEdoStatementFromFile({ target: { files } });
+}
+
+/* ════════════════════════════════════════════════════
    TEOREMA DE BOLZANO
 ════════════════════════════════════════════════════ */
 function runBolzano(){
@@ -3260,6 +4402,9 @@ function runBolzano(){
     status.textContent='CALCULANDO'; status.className='results-badge rb-running';
     const h=(b-a)/n;
     let rows=[], changes=[];
+    const analysis = document.getElementById('bz-analysis');
+    const suggested = document.getElementById('bz-suggested');
+    const method = document.getElementById('bz-method');
     for(let i=0;i<n;i++){
       const xi=a+i*h, xi1=a+(i+1)*h;
       const fi=f.evaluate({x:xi}), fi1=f.evaluate({x:xi1});
@@ -3269,7 +4414,7 @@ function runBolzano(){
       rows.push({i:i+1,xi,xi1,fi,fi1,prod,change});
     }
     const tbody = document.getElementById('bz-tbody');
-    tbody.innerHTML = rows.map(r=>`<tr${r.change?' class="converged"':''}><td>${r.i}</td><td>${fmtNum(r.xi)}</td><td>${fmtNum(r.xi1)}</td><td>${fmtNum(r.fi)}</td><td>${fmtNum(r.fi1)}</td><td>${fmtNum(r.prod)}</td><td>${r.change?'✔ Sí':'No'}</td></tr>`).join('');
+    tbody.innerHTML = rows.map(r=>`<tr${r.change?' class="converged"':''}><td>${r.i}</td><td>[${fmtNum(r.xi)}, ${fmtNum(r.xi1)}]</td><td>${fmtNum(r.fi)}</td><td>${fmtNum(r.fi1)}</td><td>${fmtNum(r.prod)}</td><td>${r.change ? 'Sí' : 'No'}</td></tr>`).join('');
     const fa=f.evaluate({x:a}), fb=f.evaluate({x:b});
     document.getElementById('bz-prod').textContent = fmtNum(fa*fb);
     let concl;
@@ -3277,6 +4422,43 @@ function runBolzano(){
     else concl = `f(a)·f(b) ≥ 0 ⇒ Bolzano no garantiza raíz en [a,b], pero se detectaron ${changes.length} subintervalo(s) con cambio de signo.`;
     document.getElementById('bz-concl').textContent = concl;
     document.getElementById('bz-summary').style.display='grid';
+    if(analysis){
+      if(fa*fb<0){
+        analysis.textContent = `Se confirma la hipótesis de Bolzano en el intervalo [${fmtNum(a)}, ${fmtNum(b)}].`;
+        analysis.className = '';
+      } else {
+        analysis.textContent = `No hay cambio de signo en los extremos. Se sugiere dividir el intervalo para localizar raíces potenciales.`;
+        analysis.className = '';
+      }
+    }
+    if(suggested){
+      if(changes.length){
+        const items = changes.map((c,idx)=>{
+          const mid = (c[0]+c[1])/2;
+          return `
+            <div class="sum-item" style="grid-column:1 / -1;">
+              <div class="sum-label">Intervalo #${idx+1}</div>
+              <div class="sum-value" style="font-size:14px;">[${fmtNum(c[0])}, ${fmtNum(c[1])}]</div>
+              <div class="sum-sub">Para Bisección/Regla Falsa: a = ${fmtNum(c[0])}, b = ${fmtNum(c[1])}. Para Newton/Secante: x0 ≈ ${fmtNum(mid)}.</div>
+            </div>
+          `;
+        }).join('');
+        suggested.innerHTML = items;
+        suggested.style.display = 'grid';
+      } else {
+        suggested.style.display = 'none';
+        suggested.innerHTML = '';
+      }
+    }
+    if(method){
+      if(/x\^\d+/.test(fx) || /x\*\*\d+/.test(fx)){
+        method.textContent = 'Método recomendado: la función luce polinómica; prueba Horner, Müller o Bairstow si buscas raíces del polinomio completo.';
+      } else if(changes.length){
+        method.textContent = 'Método recomendado: usa Bisección o Regla Falsa en cada intervalo con cambio de signo.';
+      } else {
+        method.textContent = 'Método recomendado: no hay evidencia de raíz en el intervalo; intenta ampliar [a,b] o revisar la función.';
+      }
+    }
     status.textContent='COMPLETADO';
     status.className='results-badge rb-ok';
     const pts = changes.map(c=>[(c[0]+c[1])/2, 0, false]);
@@ -3444,8 +4626,105 @@ function runJacobi(){
 }
 
 /* ════════════════════════════════════════════════════
-   PARSEO DE PUNTOS "x,y; x,y; ..."
+   TABLA DE PUNTOS PARA INTERPOLACIÓN
 ════════════════════════════════════════════════════ */
+function defaultPointRows(prefix, n){
+  const presets = {
+    lag: [[0,1],[1,3],[2,2],[4,5]],
+    ni: [[0,1],[1,3],[2,2],[4,5]],
+    sp: [[0,0],[1,1],[2,0],[3,1]],
+    df: [[0,0],[1,0.84],[2,0.91],[3,0.14],[4,-0.76]],
+    ri: [[0,0],[1,0.84],[2,0.91],[3,0.14],[4,-0.76]],
+  };
+  const sample = presets[prefix] || [];
+  return Array.from({length:n}, (_,i)=>({
+    x: sample[i]?.[0] ?? i,
+    y: sample[i]?.[1] ?? (prefix === 'sp' ? i % 2 : i),
+  }));
+}
+
+function buildPointsGrid(prefix){
+  const countInput = document.getElementById(prefix+'-n');
+  const body = document.getElementById(prefix+'-points-body');
+  if(!countInput || !body) return;
+  const minRows = prefix === 'sp' ? 3 : (prefix === 'df' || prefix === 'ri' ? 3 : 2);
+  const n = Math.max(minRows, Math.min(12, parseInt(countInput.value, 10) || 4));
+  countInput.value = n;
+  const currentRows = Array.from(body.querySelectorAll('tr')).map(tr=>({
+    x: tr.querySelector(`input[id^="${prefix}-x-"]`)?.value ?? '',
+    y: tr.querySelector(`input[id^="${prefix}-y-"]`)?.value ?? '',
+  }));
+  const fallback = defaultPointRows(prefix, n);
+  body.innerHTML = Array.from({length:n}, (_,i)=>{
+    const xVal = currentRows[i]?.x ?? fallback[i].x;
+    const yVal = currentRows[i]?.y ?? fallback[i].y;
+    return `
+      <tr>
+        <td><input class="matrix-cell" id="${prefix}-x-${i}" type="number" step="any" value="${escapeHtml(xVal)}" /></td>
+        <td><input class="matrix-cell" id="${prefix}-y-${i}" type="number" step="any" value="${escapeHtml(yVal)}" /></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function setDfMode(mode){
+  const fxBtn = document.getElementById('df-mode-fx-btn');
+  const pointsBtn = document.getElementById('df-mode-points-btn');
+  const fxPanel = document.getElementById('df-mode-fx');
+  const pointsPanel = document.getElementById('df-mode-points');
+  const title = document.getElementById('df-results-title');
+  const thead = document.getElementById('df-thead');
+  const summary1 = document.getElementById('df-sum-label-1');
+  const summary2 = document.getElementById('df-sum-label-2');
+  const summary3 = document.getElementById('df-sum-label-3');
+  if(fxPanel) fxPanel.style.display = mode === 'fx' ? 'block' : 'none';
+  if(pointsPanel) pointsPanel.style.display = mode === 'points' ? 'block' : 'none';
+  if(fxBtn) fxBtn.classList.toggle('active', mode === 'fx');
+  if(pointsBtn) pointsBtn.classList.toggle('active', mode === 'points');
+  if(mode === 'fx'){
+    if(title) title.textContent = 'Comparación de pasos h';
+    if(thead) thead.innerHTML = '<tr><th>h</th><th>f\'(x₀) aprox.</th><th>f\'(x₀) exacta (sim.)</th><th>|Error|</th></tr>';
+    if(summary1) summary1.textContent = "f'(x₀) ≈";
+    if(summary2) summary2.textContent = 'Valor exacto (simbólico)';
+    if(summary3) summary3.textContent = 'Error absoluto';
+  } else {
+    if(title) title.textContent = 'Tabla de puntos manuales';
+    if(thead) thead.innerHTML = '<tr><th>i</th><th>xᵢ</th><th>f(xᵢ)</th><th>Uso</th></tr>';
+    if(summary1) summary1.textContent = "f'(x₀) ≈";
+    if(summary2) summary2.textContent = 'Puntos usados';
+    if(summary3) summary3.textContent = 'Paso h';
+  }
+}
+
+function setRiMode(mode){
+  const fxBtn = document.getElementById('ri-mode-fx-btn');
+  const pointsBtn = document.getElementById('ri-mode-points-btn');
+  const fxPanel = document.getElementById('ri-mode-fx');
+  const pointsPanel = document.getElementById('ri-mode-points');
+  if(fxPanel) fxPanel.style.display = mode === 'fx' ? 'block' : 'none';
+  if(pointsPanel) pointsPanel.style.display = mode === 'points' ? 'block' : 'none';
+  if(fxBtn) fxBtn.classList.toggle('active', mode === 'fx');
+  if(pointsBtn) pointsBtn.classList.toggle('active', mode === 'points');
+}
+
+function readPointsGrid(prefix){
+  const body = document.getElementById(prefix+'-points-body');
+  if(!body) return [];
+  const rows = [];
+  body.querySelectorAll('tr').forEach((tr, i)=>{
+    const xEl = tr.querySelector(`input[id^="${prefix}-x-"]`);
+    const yEl = tr.querySelector(`input[id^="${prefix}-y-"]`);
+    const x = parseFloat(xEl?.value);
+    const y = parseFloat(yEl?.value);
+    if(Number.isFinite(x) && Number.isFinite(y)) rows.push([x, y]);
+  });
+  return rows;
+}
+
+function pointsToList(pts){
+  return pts.map(([x,y])=>`(${fmtNum(x)}, ${fmtNum(y)})`).join(', ');
+}
+
 function parsePoints(str){
   return str.split(';').map(s=>s.trim()).filter(Boolean).map(pair=>{
     const [x,y] = pair.split(',').map(v=>parseFloat(v.trim()));
@@ -3458,7 +4737,7 @@ function parsePoints(str){
 ════════════════════════════════════════════════════ */
 function runLagrange(){
   try{
-    const pts = parsePoints(document.getElementById('lag-pts').value);
+    const pts = readPointsGrid('lag');
     const xi = parseFloat(document.getElementById('lag-xi').value);
     if(pts.length<2){ toast('Ingresa al menos 2 puntos','error'); return; }
     const status = document.getElementById('lag-status');
@@ -3482,7 +4761,7 @@ function runLagrange(){
     status.className='results-badge rb-ok';
     plotInterpolation(pts, xi, P);
     historyAutoRecord('lagrange', {
-      summary: `Puntos = ${document.getElementById('lag-pts').value} | x* = ${fmtNum(xi)}`,
+      summary: `Puntos = ${pointsToList(pts)} | x* = ${fmtNum(xi)}`,
       result: `P(x*) ≈ ${fmtNum(P)} | grado ${n-1}`,
     });
     toast('Cálculo completado','success');
@@ -3494,7 +4773,7 @@ function runLagrange(){
 ════════════════════════════════════════════════════ */
 function runNewtonInterp(){
   try{
-    const pts = parsePoints(document.getElementById('ni-pts').value);
+    const pts = readPointsGrid('ni');
     const xi = parseFloat(document.getElementById('ni-xi').value);
     if(pts.length<2){ toast('Ingresa al menos 2 puntos','error'); return; }
     const status = document.getElementById('ni-status');
@@ -3542,7 +4821,7 @@ function runNewtonInterp(){
     status.className='results-badge rb-ok';
     plotInterpolation(pts, xi, P);
     historyAutoRecord('newton_interp', {
-      summary: `Puntos = ${document.getElementById('ni-pts').value} | x* = ${fmtNum(xi)}`,
+      summary: `Puntos = ${pointsToList(pts)} | x* = ${fmtNum(xi)}`,
       result: `P(x*) ≈ ${fmtNum(P)} | grado ${n-1}`,
     });
     toast('Cálculo completado','success');
@@ -3581,7 +4860,7 @@ function plotInterpolation(pts, xi, yi){
 ════════════════════════════════════════════════════ */
 function runSplines(){
   try{
-    const pts = parsePoints(document.getElementById('sp-pts').value);
+    const pts = readPointsGrid('sp');
     const xi = parseFloat(document.getElementById('sp-xi').value);
     if(pts.length<3){ toast('Ingresa al menos 3 puntos','error'); return; }
     pts.sort((a,b)=>a[0]-b[0]);
@@ -3626,7 +4905,7 @@ function runSplines(){
     // graficar: aproximar con FitPoly + punto evaluado
     plotInterpolation(pts, xi, S);
     historyAutoRecord('splines', {
-      summary: `Puntos = ${document.getElementById('sp-pts').value} | x* = ${fmtNum(xi)}`,
+      summary: `Puntos = ${pointsToList(pts)} | x* = ${fmtNum(xi)}`,
       result: `S(x*) ≈ ${fmtNum(S)} | tramo ${fmtNum(x[idx])}..${fmtNum(x[idx+1])}`,
     });
     toast('Cálculo completado','success');
@@ -3638,45 +4917,98 @@ function runSplines(){
 ════════════════════════════════════════════════════ */
 function runDiferenciacion(){
   try{
-    const fx = document.getElementById('df-fx').value;
-    const x0 = parseFloat(document.getElementById('df-x0').value);
-    const h = parseFloat(document.getElementById('df-h').value);
-    const tipo = document.getElementById('df-tipo').value;
-    const f = compileFn(fx);
+    const mode = document.getElementById('df-mode-points')?.style.display === 'block' ? 'points' : 'fx';
     const status = document.getElementById('df-status');
     status.textContent='CALCULANDO'; status.className='results-badge rb-running';
-    // derivada simbólica exacta
-    const e = preprocessExpr(fx);
-    let exactNode = math.derivative(e,'x');
-    let order=1;
-    if(tipo==='segunda'){ exactNode = math.derivative(exactNode,'x'); order=2; }
-    const exact = exactNode.evaluate({x:x0});
-
-    function approx(hh){
-      if(tipo==='adelante') return (f.evaluate({x:x0+hh})-f.evaluate({x:x0}))/hh;
-      if(tipo==='atras') return (f.evaluate({x:x0})-f.evaluate({x:x0-hh}))/hh;
-      if(tipo==='segunda') return (f.evaluate({x:x0+hh})-2*f.evaluate({x:x0})+f.evaluate({x:x0-hh}))/(hh*hh);
-      return (f.evaluate({x:x0+hh})-f.evaluate({x:x0-hh}))/(2*hh); // central
-    }
-    const hs=[h, h/2, h/4, h/8];
-    let rows = hs.map(hh=>{
-      const ap=approx(hh);
-      return {h:hh, approx:ap, exact, err:Math.abs(exact-ap)};
-    });
     const tbody = document.getElementById('df-tbody');
-    tbody.innerHTML = rows.map(r=>`<tr><td>${fmtNum(r.h)}</td><td>${fmtNum(r.approx)}</td><td>${fmtNum(r.exact)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
-    const main=rows[0];
-    document.getElementById('df-result').textContent = fmtNum(main.approx);
-    document.getElementById('df-exact').textContent = fmtNum(exact);
-    document.getElementById('df-error').textContent = fmtNum(main.err);
-    document.getElementById('df-summary').style.display='grid';
+    const summary = document.getElementById('df-summary');
+    const fLabel2 = document.getElementById('df-sum-label-2');
+    const fLabel3 = document.getElementById('df-sum-label-3');
+    if(mode === 'fx'){
+      const fx = document.getElementById('df-fx').value;
+      const x0 = parseFloat(document.getElementById('df-x0').value);
+      const h = parseFloat(document.getElementById('df-h').value);
+      const tipo = document.getElementById('df-tipo').value;
+      const f = compileFn(fx);
+      const e = preprocessExpr(fx);
+      let exactNode = math.derivative(e,'x');
+      if(tipo==='segunda') exactNode = math.derivative(exactNode,'x');
+      const exact = exactNode.evaluate({x:x0});
+      function approx(hh){
+        if(tipo==='adelante') return (f.evaluate({x:x0+hh})-f.evaluate({x:x0}))/hh;
+        if(tipo==='atras') return (f.evaluate({x:x0})-f.evaluate({x:x0-hh}))/hh;
+        if(tipo==='segunda') return (f.evaluate({x:x0+hh})-2*f.evaluate({x:x0})+f.evaluate({x:x0-hh}))/(hh*hh);
+        return (f.evaluate({x:x0+hh})-f.evaluate({x:x0-hh}))/(2*hh);
+      }
+      const hs=[h, h/2, h/4, h/8];
+      const rows = hs.map(hh=>{
+        const ap=approx(hh);
+        return {h:hh, approx:ap, exact, err:Math.abs(exact-ap)};
+      });
+      tbody.innerHTML = rows.map(r=>`<tr><td>${fmtNum(r.h)}</td><td>${fmtNum(r.approx)}</td><td>${fmtNum(r.exact)}</td><td>${fmtNum(r.err)}</td></tr>`).join('');
+      const main=rows[0];
+      document.getElementById('df-result').textContent = fmtNum(main.approx);
+      document.getElementById('df-exact').textContent = fmtNum(exact);
+      document.getElementById('df-error').textContent = fmtNum(main.err);
+      if(fLabel2) fLabel2.textContent = 'Valor exacto (simbólico)';
+      if(fLabel3) fLabel3.textContent = 'Error absoluto';
+      summary.style.display='grid';
+      status.textContent='COMPLETADO';
+      status.className='results-badge rb-ok';
+      ggbPlotFunction(fx,[[x0, f.evaluate({x:x0}), true]],[`tangent: y=${f.evaluate({x:x0})}+${main.approx}*(x-(${x0}))`]);
+      withGGB(()=>{ try{ ggbApplet.setColor('tangent',45,212,191); ggbApplet.setLineThickness('tangent',2); }catch(e){} });
+      historyAutoRecord('diferenciacion', {
+        summary: `f(x) = ${fx} | x0 = ${fmtNum(x0)} | h = ${fmtNum(h)} | tipo = ${tipo}`,
+        result: `Derivada ≈ ${fmtNum(main.approx)} | exacta ${fmtNum(exact)} | error ${fmtNum(main.err)}`,
+      });
+      toast('Cálculo completado','success');
+      return;
+    }
+
+    const pts = readPointsGrid('df');
+    const x0 = parseFloat(document.getElementById('df-x0-manual').value);
+    const tipo = document.getElementById('df-tipo-manual').value;
+    if(pts.length < 3){ toast('Ingresa al menos 3 puntos','error'); return; }
+    pts.sort((a,b)=>a[0]-b[0]);
+    const hs = [];
+    for(let i=1;i<pts.length;i++) hs.push(pts[i][0]-pts[i-1][0]);
+    const h = hs[0];
+    if(hs.some(v=>Math.abs(v-h) > 1e-8)){ toast('Los puntos manuales deben estar igualmente espaciados','error'); return; }
+    const idx = pts.findIndex(p=>Math.abs(p[0]-x0) < 1e-8);
+    if(idx === -1){ toast('x₀ debe coincidir con uno de los puntos de la tabla','error'); return; }
+    let approx = null;
+    const used = new Set();
+    if(tipo === 'adelante'){
+      if(idx+1 >= pts.length){ toast('No hay punto siguiente para diferencia hacia adelante','error'); return; }
+      approx = (pts[idx+1][1] - pts[idx][1]) / h;
+      used.add(idx); used.add(idx+1);
+    } else if(tipo === 'atras'){
+      if(idx-1 < 0){ toast('No hay punto anterior para diferencia hacia atrás','error'); return; }
+      approx = (pts[idx][1] - pts[idx-1][1]) / h;
+      used.add(idx-1); used.add(idx);
+    } else if(tipo === 'segunda'){
+      if(idx-1 < 0 || idx+1 >= pts.length){ toast('Necesitas un punto anterior y uno posterior para la segunda derivada','error'); return; }
+      approx = (pts[idx+1][1] - 2*pts[idx][1] + pts[idx-1][1]) / (h*h);
+      used.add(idx-1); used.add(idx); used.add(idx+1);
+    } else {
+      if(idx-1 < 0 || idx+1 >= pts.length){ toast('Necesitas un punto anterior y uno posterior para la diferencia central','error'); return; }
+      approx = (pts[idx+1][1] - pts[idx-1][1]) / (2*h);
+      used.add(idx-1); used.add(idx+1);
+    }
+    const rows = pts.map((p,i)=>({i:i+1, x:p[0], y:p[1], use: used.has(i) ? 'USADO' : ''}));
+    tbody.innerHTML = rows.map(r=>`<tr${r.use?' class="converged"':''}><td>${r.i}</td><td>${fmtNum(r.x)}</td><td>${fmtNum(r.y)}</td><td>${r.use}</td></tr>`).join('');
+    document.getElementById('df-result').textContent = fmtNum(approx);
+    document.getElementById('df-exact').textContent = `${used.size} pts`;
+    document.getElementById('df-error').textContent = fmtNum(h);
+    if(fLabel2) fLabel2.textContent = 'Puntos usados';
+    if(fLabel3) fLabel3.textContent = 'Paso h';
+    summary.style.display='grid';
     status.textContent='COMPLETADO';
     status.className='results-badge rb-ok';
-    ggbPlotFunction(fx,[[x0, f.evaluate({x:x0}), true]],[`tangent: y=${f.evaluate({x:x0})}+${main.approx}*(x-(${x0}))`]);
-    withGGB(()=>{ try{ ggbApplet.setColor('tangent',45,212,191); ggbApplet.setLineThickness('tangent',2); }catch(e){} });
+    document.getElementById('df-results-title').textContent = 'Tabla de puntos manuales';
     historyAutoRecord('diferenciacion', {
-      summary: `f(x) = ${fx} | x0 = ${fmtNum(x0)} | h = ${fmtNum(h)} | tipo = ${tipo}`,
-      result: `Derivada ≈ ${fmtNum(main.approx)} | exacta ${fmtNum(exact)} | error ${fmtNum(main.err)}`,
+      summary: `Puntos manuales | x0 = ${fmtNum(x0)} | tipo = ${tipo} | h = ${fmtNum(h)}`,
+      result: `Derivada ≈ ${fmtNum(approx)} | puntos usados ${used.size}`,
     });
     toast('Cálculo completado','success');
   }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
@@ -3687,16 +5019,45 @@ function runDiferenciacion(){
 ════════════════════════════════════════════════════ */
 function runRichardson(){
   try{
+    const mode = document.getElementById('ri-mode-points')?.style.display === 'block' ? 'points' : 'fx';
     const fx = document.getElementById('ri-fx').value;
     const x0 = parseFloat(document.getElementById('ri-x0').value);
     const h0 = parseFloat(document.getElementById('ri-h0').value);
     const nLevels = parseInt(document.getElementById('ri-n').value);
     const p = parseFloat(document.getElementById('ri-p').value);
-    const f = compileFn(fx);
     const status = document.getElementById('ri-status');
     status.textContent='CALCULANDO'; status.className='results-badge rb-running';
+    let evaluator;
+    let plotExpr = fx;
+    let y0 = null;
+    if(mode === 'fx'){
+      const f = compileFn(fx);
+      evaluator = (x) => f.evaluate({x});
+      y0 = evaluator(x0);
+    } else {
+      const pts = readPointsGrid('ri');
+      if(pts.length < 3){ toast('Ingresa al menos 3 puntos','error'); return; }
+      pts.sort((a,b)=>a[0]-b[0]);
+      const xs = pts.map(p=>p[0]);
+      const hs = xs.slice(1).map((v,i)=>v-xs[i]);
+      if(hs.some(v=>Math.abs(v-hs[0]) > 1e-8)){ toast('Los puntos manuales deben estar igualmente espaciados','error'); return; }
+      evaluator = (x) => {
+        let sum = 0;
+        for(let i=0;i<pts.length;i++){
+          let term = pts[i][1];
+          for(let j=0;j<pts.length;j++){
+            if(i===j) continue;
+            term *= (x - pts[j][0]) / (pts[i][0] - pts[j][0]);
+          }
+          sum += term;
+        }
+        return sum;
+      };
+      y0 = evaluator(x0);
+      plotExpr = null;
+    }
     // D(h) usando diferencia central de orden p (p=2)
-    function D(h){ return (f.evaluate({x:x0+h})-f.evaluate({x:x0-h}))/(2*h); }
+    function D(h){ return (evaluator(x0+h)-evaluator(x0-h))/(2*h); }
     let hs=[], R=[];
     for(let i=0;i<nLevels;i++) hs.push(h0/Math.pow(2,i));
     for(let i=0;i<nLevels;i++){
@@ -3726,10 +5087,33 @@ function runRichardson(){
     document.getElementById('ri-summary').style.display='grid';
     status.textContent='COMPLETADO';
     status.className='results-badge rb-ok';
-    ggbPlotFunction(fx,[[x0, f.evaluate({x:x0}), true]],[`tangent: y=${f.evaluate({x:x0})}+${best}*(x-(${x0}))`]);
-    withGGB(()=>{ try{ ggbApplet.setColor('tangent',45,212,191); ggbApplet.setLineThickness('tangent',2); }catch(e){} });
+    if(mode === 'fx'){
+      ggbPlotFunction(fx,[[x0, y0, true]],[`tangent: y=${y0}+${best}*(x-(${x0}))`]);
+      withGGB(()=>{ try{ ggbApplet.setColor('tangent',45,212,191); ggbApplet.setLineThickness('tangent',2); }catch(e){} });
+    } else {
+      withGGB(()=>{
+        try{
+          ggbApplet.reset();
+          const pts = readPointsGrid('ri').sort((a,b)=>a[0]-b[0]);
+          pts.forEach((p,i)=>{
+            ggbApplet.evalCommand(`P${i}=(${p[0]},${p[1]})`);
+            ggbApplet.setColor(`P${i}`,45,212,191);
+            ggbApplet.setPointSize(`P${i}`,4);
+          });
+          ggbApplet.evalCommand(`X=(${x0},${y0})`);
+          ggbApplet.setColor('X',192,132,252);
+          ggbApplet.setPointSize('X',5);
+          ggbApplet.setLabelVisible('X',true);
+          ggbApplet.evalCommand(`tangent: y=${y0}+${best}*(x-(${x0}))`);
+          ggbApplet.setColor('tangent',45,212,191);
+          ggbApplet.setLineThickness('tangent',2);
+          const xs = pts.map(p=>p[0]);
+          ggbApplet.setCoordSystem(Math.min(...xs)-1, Math.max(...xs)+1, Math.min(...pts.map(p=>p[1]),y0)-2, Math.max(...pts.map(p=>p[1]),y0)+2);
+        }catch(e){}
+      });
+    }
     historyAutoRecord('richardson', {
-      summary: `f(x) = ${fx} | x0 = ${fmtNum(x0)} | h0 = ${fmtNum(h0)} | niveles = ${nLevels}`,
+      summary: `${mode === 'fx' ? `f(x) = ${fx}` : 'Puntos manuales'} | x0 = ${fmtNum(x0)} | h0 = ${fmtNum(h0)} | niveles = ${nLevels}`,
       result: `Mejor estimación ≈ ${fmtNum(best)} | base ${fmtNum(R[0][0])}`,
     });
     toast('Cálculo completado','success');
@@ -3786,38 +5170,49 @@ function runSimpson(){
     const a = parseFloat(document.getElementById('si-a').value);
     const b = parseFloat(document.getElementById('si-b').value);
     let n = parseInt(document.getElementById('si-n').value);
+    const selectedRule = document.getElementById('si-rule-select').value;
     const f = compileFn(fx);
     const status = document.getElementById('si-status');
     status.textContent='CALCULANDO'; status.className='results-badge rb-running';
-    let rule;
-    if(n%2===0) rule='1/3';
-    else if(n%3===0) rule='3/8';
-    else { n = n+1; rule='1/3'; toast('n ajustado a '+n+' para aplicar Simpson 1/3 (n debe ser par o múltiplo de 3)','info'); }
-    const h=(b-a)/n;
-    let rows=[], sum=0, I;
-    if(rule==='1/3'){
+    const rows = [];
+    let rule = selectedRule === '38' ? 'Simpson 3/8' : 'Simpson 1/3';
+    let h = (b-a)/n;
+    let integral = null;
+    if(selectedRule === '13'){
+      if(n % 2 !== 0){
+        n += 1;
+        h = (b-a)/n;
+        toast(`n ajustado a ${n} para aplicar Simpson 1/3`, 'info');
+      }
+      let sum = 0;
       for(let i=0;i<=n;i++){
-        const xi=a+i*h, fi=f.evaluate({x:xi});
-        let w;
-        if(i===0||i===n) w=1; else if(i%2===1) w=4; else w=2;
+        const xi = a + i*h;
+        const fi = f.evaluate({x:xi});
+        const w = (i===0||i===n) ? 1 : (i%2===1 ? 4 : 2);
         sum += w*fi;
         rows.push({i,xi,fi,w});
       }
-      I = h/3*sum;
-    } else { // 3/8
+      integral = h/3 * sum;
+    } else {
+      if(n % 3 !== 0){
+        n += 3 - (n % 3);
+        h = (b-a)/n;
+        toast(`n ajustado a ${n} para aplicar Simpson 3/8`, 'info');
+      }
+      let sum = 0;
       for(let i=0;i<=n;i++){
-        const xi=a+i*h, fi=f.evaluate({x:xi});
-        let w;
-        if(i===0||i===n) w=1; else if(i%3===0) w=2; else w=3;
+        const xi = a + i*h;
+        const fi = f.evaluate({x:xi});
+        const w = (i===0||i===n) ? 1 : (i%3===0 ? 2 : 3);
         sum += w*fi;
         rows.push({i,xi,fi,w});
       }
-      I = (3*h/8)*sum;
+      integral = 3*h/8 * sum;
     }
     const tbody=document.getElementById('si-tbody');
     tbody.innerHTML = rows.map(r=>`<tr><td>${r.i}</td><td>${fmtNum(r.xi)}</td><td>${fmtNum(r.fi)}</td><td>${r.w}</td><td>${fmtNum(r.w*r.fi)}</td></tr>`).join('');
-    document.getElementById('si-result').textContent = fmtNum(I);
-    document.getElementById('si-rule').textContent = 'Simpson '+rule;
+    document.getElementById('si-result').textContent = fmtNum(integral);
+    document.getElementById('si-rule').textContent = rule;
     document.getElementById('si-h').textContent = fmtNum(h);
     document.getElementById('si-summary').style.display='grid';
     status.textContent='COMPLETADO';
@@ -3826,7 +5221,7 @@ function runSimpson(){
     withGGB(()=>{ try{ ggbApplet.setColor('region',45,212,191); ggbApplet.setFilling('region',0.25); }catch(e){} });
     historyAutoRecord('simpson', {
       summary: `f(x) = ${fx} | intervalo [${fmtNum(a)}, ${fmtNum(b)}] | n = ${n} | regla = ${rule}`,
-      result: `Integral ≈ ${fmtNum(I)} | h = ${fmtNum(h)}`,
+      result: `Integral ≈ ${fmtNum(integral)} | h = ${fmtNum(h)}`,
     });
     toast('Cálculo completado','success');
   }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }

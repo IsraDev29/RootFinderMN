@@ -78,13 +78,14 @@ async function initDB() {
       )
     `;
 
-    await sql`ALTER TABLE history_entries ADD COLUMN IF NOT EXISTS user_id UUID NOT NULL DEFAULT gen_random_uuid()`;
+    await sql`ALTER TABLE history_entries ADD COLUMN IF NOT EXISTS user_id UUID`;
     await sql`ALTER TABLE history_entries ALTER COLUMN id SET NOT NULL`;
     await sql`ALTER TABLE history_entries ALTER COLUMN title SET NOT NULL`;
     await sql`ALTER TABLE history_entries ALTER COLUMN section SET DEFAULT 'panel'`;
     await sql`ALTER TABLE history_entries ALTER COLUMN status SET DEFAULT 'info'`;
     await sql`ALTER TABLE history_entries ALTER COLUMN created_at SET DEFAULT NOW()`;
     await sql`ALTER TABLE history_entries ALTER COLUMN updated_at SET DEFAULT NOW()`;
+    await sql`UPDATE history_entries SET user_id = NULL WHERE user_id IS NULL`;
     await sql`CREATE INDEX IF NOT EXISTS idx_history_entries_user_updated ON history_entries (user_id, updated_at DESC)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_history_entries_user_section ON history_entries (user_id, section)`;
 

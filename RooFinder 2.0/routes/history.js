@@ -13,6 +13,7 @@ const ALLOWED_SECTIONS = new Set([
   'interpolacion',
   'diferenciacion',
   'integracion',
+  'edo',
   'teoremas',
 ]);
 
