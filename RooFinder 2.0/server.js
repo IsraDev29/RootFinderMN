@@ -99,10 +99,19 @@ async function start() {
 
   await initDB();
 
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`[SERVER] Running on http://localhost:${PORT}`);
     console.log(`[SERVER] API available at http://localhost:${PORT}/api`);
     console.log(`[SERVER] Health check: http://localhost:${PORT}/api/health\n`);
+  });
+
+  server.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE') {
+      console.error(`[SERVER] Port ${PORT} is already in use. Another instance may already be running.`);
+      process.exit(1);
+      return;
+    }
+    throw err;
   });
 }
 

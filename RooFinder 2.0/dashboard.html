@@ -471,6 +471,10 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
     <div class="ni bg-rose c-rose"><i class="fa-solid fa-chart-area"></i></div>
     Simpson 1/3 y 3/8
   </div>
+  <div class="nav-item" onclick="openMethod('romberg')">
+    <div class="ni bg-teal c-teal"><i class="fa-solid fa-table"></i></div>
+    Método de Romberg
+  </div>
 
   <div class="sidebar-section">Ecuaciones Diferenciales</div>
   <div class="nav-item" onclick="openMethod('edo')">
@@ -570,6 +574,7 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
           <div class="history-actions">
             <button class="history-action" onclick="historyOpenEditor()"><i class="fa-solid fa-plus"></i> Nuevo registro</button>
             <button class="history-action ghost" onclick="historyExport()"><i class="fa-solid fa-file-export"></i> Exportar</button>
+            <button class="history-action ghost" onclick="historyOpenExcelModal()"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
             <button class="history-action ghost" onclick="historyClearAll()"><i class="fa-solid fa-trash-can"></i> Limpiar todo</button>
           </div>
         </div>
@@ -636,6 +641,43 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
             <div class="history-form-actions">
               <button class="history-btn cancel" type="button" onclick="historyCloseEditor()">Cancelar</button>
               <button class="history-btn save" type="button" onclick="historySaveFromModal()"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="history-modal" id="excelModal" aria-hidden="true">
+        <div class="history-modal-card" role="dialog" aria-modal="true" style="max-width:520px;">
+          <div class="history-modal-head">
+            <div>
+              <div class="history-kicker">EXPORTAR</div>
+              <h3 class="history-modal-title">Exportar Excel por método</h3>
+            </div>
+            <button class="history-close" onclick="historyCloseExcelModal()" aria-label="Cerrar exportador"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div style="margin-bottom:16px;">
+            <p style="font-size:13px;color:var(--text-sub);margin-bottom:14px;line-height:1.6;">
+              Elige el método que quieres exportar. Se usará el registro más reciente guardado en el historial.
+            </p>
+            <label class="field-lbl">Método</label>
+            <select class="rf-select" id="excelMethodSelect" style="margin-bottom:14px;" onchange="historyRefreshExcelPreview()"></select>
+            <div id="excelPreview" style="display:none;background:var(--bg-input);border:1px solid var(--border-base);border-radius:var(--radius-md);padding:14px;font-size:12px;color:var(--text-sub);line-height:1.7;">
+              <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-ghost);margin-bottom:8px;">REGISTRO A EXPORTAR</div>
+              <div id="excelPreviewTitle" style="font-weight:700;color:var(--text-prime);margin-bottom:4px;"></div>
+              <div id="excelPreviewSummary"></div>
+              <div id="excelPreviewResult" style="color:var(--coral);margin-top:4px;"></div>
+              <div id="excelPreviewDate" style="font-family:var(--font-mono);font-size:10px;margin-top:6px;color:var(--text-ghost);"></div>
+            </div>
+            <div id="excelNoRecord" style="display:none;font-size:12px;color:var(--rose);padding:10px 0;">
+              No hay registros de este método en el historial. Ejecuta el método primero.
+            </div>
+          </div>
+          <div class="history-modal-foot">
+            <div class="history-hint">Incluye función, puntos de evaluación, tabla de iteraciones y gráfica como imagen cuando GeoGebra la entregue.</div>
+            <div class="history-form-actions">
+              <button class="history-btn cancel" type="button" onclick="historyCloseExcelModal()">Cancelar</button>
+              <button class="history-btn save" type="button" id="excelDownloadBtn" onclick="historyDoExportExcel()" disabled style="opacity:0.5;cursor:not-allowed;">
+                <i class="fa-solid fa-file-excel"></i> Descargar Excel
+              </button>
             </div>
           </div>
         </div>
@@ -1920,6 +1962,65 @@ body{font-family:var(--font-body);background:var(--bg-void);color:var(--text-pri
       </div>
     </div>
 
+    <!-- ══════════════ ROMBERG ══════════════ -->
+    <div class="panel" id="panel-romberg">
+      <div class="method-header">
+        <div class="method-back" onclick="showPanel('home')"><i class="fa-solid fa-arrow-left"></i></div>
+        <div>
+          <span class="method-badge" style="background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.3);">Integración</span>
+          <div class="section-title" style="margin-top:6px;margin-bottom:0;">Método de Romberg</div>
+        </div>
+      </div>
+      <div class="formula-box">
+        <strong>Columna 1:</strong> trapecio compuesto con n = 2^j subintervalos.<br/>
+        <strong>Columnas siguientes:</strong> I[j,k] = (4^(k−1)·I[j+1,k−1] − I[j,k−1]) / (4^(k−1)−1).<br/>
+        <strong>Resultado final:</strong> la esquina superior derecha de la tabla.
+      </div>
+      <div class="calc-layout">
+        <div class="calc-form-card">
+          <div class="calc-title">Parámetros</div>
+          <div class="calc-desc">Ingresa f(x), el intervalo [a,b], la tolerancia y el máximo de filas de la tabla.</div>
+          <label class="field-lbl">Función f(x)</label>
+          <input class="rf-input" id="rb-fx" placeholder="x^2" value="x^2"/>
+          <label class="field-lbl">Límite inferior a</label>
+          <input class="rf-input" id="rb-a" placeholder="0" value="0"/>
+          <label class="field-lbl">Límite superior b</label>
+          <input class="rf-input" id="rb-b" placeholder="2" value="2"/>
+          <label class="field-lbl">Tolerancia</label>
+          <input class="rf-input" id="rb-tol" placeholder="0.0001" value="0.0001"/>
+          <label class="field-lbl">Máx. filas</label>
+          <input class="rf-input" id="rb-max" placeholder="10" value="10"/>
+          <button class="btn-calc" onclick="runRomberg()"><i class="fa-solid fa-play"></i> Calcular</button>
+          <button class="btn-secondary" onclick="resetMethod('rb')"><i class="fa-solid fa-rotate-left"></i> &nbsp;Limpiar</button>
+        </div>
+        <div>
+          <div class="results-card">
+            <div class="results-header">
+              <div class="results-title">Tabla de Romberg I[j,k]</div>
+              <span class="results-badge rb-idle" id="rb-status">ESPERANDO</span>
+            </div>
+            <div class="table-wrap" style="overflow-x:auto;">
+              <table class="iter-table" id="rb-table">
+                <thead id="rb-thead"></thead>
+                <tbody id="rb-tbody">
+                  <tr><td colspan="2"><div class="state-idle"><i class="fa-solid fa-table"></i><p>Ingresa los parámetros y presiona Calcular</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="summary-box" id="rb-summary" style="display:none;">
+              <div class="sum-item"><div class="sum-label">∫f(x)dx ≈ I[1,k]</div><div class="sum-value" id="rb-result">—</div></div>
+              <div class="sum-item"><div class="sum-label">Columnas calculadas</div><div class="sum-value" id="rb-iters">—</div></div>
+              <div class="sum-item"><div class="sum-label">Error estimado</div><div class="sum-value" id="rb-err">—</div></div>
+            </div>
+          </div>
+          <div class="ggb-wrap">
+            <div class="ggb-header"><div class="ggb-dot"></div><div class="ggb-title">VISUALIZACIÓN — GEOGEBRA</div></div>
+            <div class="ggb-body" id="graph-panel-rb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /.content -->
 </main>
 </div><!-- /.app-shell -->
@@ -1986,6 +2087,7 @@ const panelMeta = {
   richardson:{title:'Extrapolación de Richardson', path:'ROOTFINDER / DIFERENCIACIÓN / RICHARDSON'},
   trapecio:{title:'Regla del Trapecio', path:'ROOTFINDER / INTEGRACIÓN / TRAPECIO'},
   simpson:{title:'Simpson 1/3 y 3/8', path:'ROOTFINDER / INTEGRACIÓN / SIMPSON'},
+  romberg:{title:'Método de Romberg', path:'ROOTFINDER / INTEGRACIÓN / ROMBERG'},
   edo:{title:'Ecuaciones Diferenciales', path:'ROOTFINDER / EDO'},
   bolzano:{title:'Teorema de Bolzano', path:'ROOTFINDER / TEOREMAS / BOLZANO'},
 };
@@ -2015,6 +2117,7 @@ function openMethod(name){
 function resetMethod(prefix){
   // limpia tablas/resúmenes de un panel sin recargar
   const tbody = document.getElementById(prefix+'-tbody');
+  const thead = document.getElementById(prefix+'-thead');
   const status = document.getElementById(prefix+'-status');
   const summary = document.getElementById(prefix+'-summary');
   const resolution = document.getElementById(prefix+'-resolution');
@@ -2030,9 +2133,11 @@ function resetMethod(prefix){
   if(suggested){ suggested.style.display='none'; suggested.innerHTML=''; }
   if(method) method.textContent = '';
   if(tbody){
-    const cols = tbody.parentElement.querySelector('thead tr').children.length;
+    const headRow = tbody.parentElement.querySelector('thead tr');
+    const cols = headRow ? headRow.children.length : 2;
     tbody.innerHTML = `<tr><td colspan="${cols}"><div class="state-idle"><i class="fa-solid fa-flask-vial"></i><p>Listo para un nuevo cálculo</p></div></td></tr>`;
   }
+  if(thead) thead.innerHTML = '';
   if(prefix==='df') setDfMode('fx');
   if(prefix==='df') buildPointsGrid('df');
   if(prefix==='ri') setRiMode('fx');
@@ -2054,10 +2159,20 @@ function preprocessExpr(expr){
     .replace(/[−–—]/g,'-')
     .replace(/[×·]/g,'*')
     .replace(/\u00A0/g,' ');
-  // reemplazos de notación común
-  e = e.replace(/ln\(/gi,'log(');     // ln -> log natural en math.js es "log"
-  e = e.replace(/log10\(/gi,'log10(');
-  e = e.replace(/√\(/g,'sqrt(');
+  // Convención escolar:
+  //   ln(x)  -> log natural
+  //   log(x) -> logaritmo en base 10
+  // Se usan marcadores temporales para no mezclar ambas funciones.
+  e = e.replace(/ln\s*\(/gi,'__LN__(');
+  e = e.replace(/log10\s*\(/gi,'__LOG10__(');
+  e = e.replace(/\blog\s*\(/gi,'log10(');
+  e = e.replace(/__LN__\(/g,'log(');
+  e = e.replace(/__LOG10__\(/g,'log10(');
+  e = e.replace(/ra[ií]z\s+cuadrada\s*\(/gi,'sqrt(');
+  e = e.replace(/ra[ií]z\s*\(/gi,'sqrt(');
+  e = e.replace(/\bsqrt\s*\(/gi,'sqrt(');
+  e = e.replace(/√\s*\(/g,'sqrt(');
+  e = e.replace(/√\s*([a-zA-Z0-9_.]+)/g,'sqrt($1)');
   e = e.replace(/π/g,'pi');
   e = e.replace(/\be\^\(([^)]+)\)/gi,'exp($1)');
   e = e.replace(/\be\^([a-zA-Z0-9_]+)/gi,'exp($1)');
@@ -2068,10 +2183,82 @@ function preprocessExpr(expr){
   return e;
 }
 
+function preprocessGeoGebraExpr(expr){
+  if(!expr) return expr;
+  let e = expr.trim();
+  e = e
+    .replace(/[−–—]/g,'-')
+    .replace(/[×·]/g,'*')
+    .replace(/\u00A0/g,' ');
+  e = e.replace(/ln\s*\(/gi,'__LN__(');
+  e = e.replace(/log10\s*\(/gi,'__LOG10__(');
+  e = e.replace(/\blog\s*\(/gi,'log10(');
+  e = e.replace(/__LN__\(/g,'ln(');
+  e = e.replace(/__LOG10__\(/g,'log10(');
+  e = e.replace(/ra[ií]z\s+cuadrada\s*\(/gi,'sqrt(');
+  e = e.replace(/ra[ií]z\s*\(/gi,'sqrt(');
+  e = e.replace(/\bsqrt\s*\(/gi,'sqrt(');
+  e = e.replace(/√\s*\(/g,'sqrt(');
+  e = e.replace(/√\s*([a-zA-Z0-9_.]+)/g,'sqrt($1)');
+  e = e.replace(/π/g,'pi');
+  e = e.replace(/\be\^\(([^)]+)\)/gi,'exp($1)');
+  e = e.replace(/\be\^([a-zA-Z0-9_]+)/gi,'exp($1)');
+  e = e.replace(/(\d)(\s*)([a-zA-Z(])/g,'$1*$3');
+  e = e.replace(/\)(\s*)(\()/g,')*(');
+  e = e.replace(/\)(\s*)([a-zA-Z0-9])/g,')*$2');
+  return e;
+}
+
 /** Evalúa f(x) numéricamente usando math.js. scope adicional permite x,y,etc */
 function evalFn(expr, scope){
   const e = preprocessExpr(expr);
   return math.evaluate(e, scope);
+}
+
+function parseNumericInput(raw, label='valor'){
+  const value = math.evaluate(preprocessExpr(String(raw ?? '')));
+  if(typeof value === 'number' && Number.isFinite(value)) return value;
+  throw new Error(`El ${label} debe ser un número o una expresión numérica válida.`);
+}
+
+function asRealNumber(value, label='resultado'){
+  if(typeof value === 'number' && Number.isFinite(value)) return value;
+  if(value && typeof value === 'object' && value.re !== undefined && Math.abs(value.im || 0) < 1e-10 && Number.isFinite(value.re)){
+    return value.re;
+  }
+  throw new Error(`${label} no es un número real válido.`);
+}
+
+function evalRealWithRemovableCheck(compiledFn, xVal, label='f(x)'){
+  try{
+    return asRealNumber(compiledFn.evaluate({x:xVal}), label);
+  }catch(err){
+    const base = Math.max(1, Math.abs(xVal));
+    const epsA = base * 1e-6;
+    const epsB = base * 1e-7;
+    const tryEval = x => {
+      try{ return asRealNumber(compiledFn.evaluate({x}), `f(${fmtNum(x)})`); }
+      catch(e){ return null; }
+    };
+    const candidates = [];
+    [[epsA, epsB], [-epsA, -epsB]].forEach(([d1, d2])=>{
+      const v1 = tryEval(xVal + d1);
+      const v2 = tryEval(xVal + d2);
+      if(v1 !== null && v2 !== null && Math.abs(v1 - v2) <= Math.max(1e-5, 1e-4 * Math.max(1, Math.abs(v2)))){
+        candidates.push(v2);
+      }
+    });
+    const right = tryEval(xVal + epsB);
+    const left = tryEval(xVal - epsB);
+    if(right !== null && left !== null && Math.abs(right - left) <= Math.max(1e-5, 1e-4 * Math.max(1, Math.abs(right), Math.abs(left)))){
+      candidates.push((right + left) / 2);
+    }
+    if(candidates.length){
+      const avg = candidates.reduce((s,v)=>s+v,0) / candidates.length;
+      if(Number.isFinite(avg)) return avg;
+    }
+    throw err;
+  }
 }
 
 /** Devuelve un compilador reutilizable para evaluar muchas veces (más rápido) */
@@ -2292,6 +2479,7 @@ const ggbSlotMap = {
   richardson: 'graph-panel-ri',
   trapecio: 'graph-panel-tr',
   simpson: 'graph-panel-si',
+  romberg: 'graph-panel-rb',
 };
 
 function initGeoGebra(){
@@ -2374,7 +2562,7 @@ function ggbPlotFunction(expr, points=[], extraCmds=[]){
   withGGB(()=>{
     try{
       ggbApplet.reset();
-      const e = preprocessExpr(expr).replace(/\bx\b/g,'x');
+      const e = preprocessGeoGebraExpr(expr).replace(/\bx\b/g,'x');
       ggbApplet.evalCommand(`f(x)=${e}`);
       ggbApplet.setColor('f', 255,122,89);
       ggbApplet.setLineThickness('f', 3);
@@ -2396,8 +2584,8 @@ function ggbPlotImplicit(expr1, expr2, point=null){
   withGGB(()=>{
     try{
       ggbApplet.reset();
-      ggbApplet.evalCommand(`curve1: ${preprocessExpr(expr1)}=0`);
-      ggbApplet.evalCommand(`curve2: ${preprocessExpr(expr2)}=0`);
+      ggbApplet.evalCommand(`curve1: ${preprocessGeoGebraExpr(expr1)}=0`);
+      ggbApplet.evalCommand(`curve2: ${preprocessGeoGebraExpr(expr2)}=0`);
       ggbApplet.setColor('curve1', 255,122,89);
       ggbApplet.setColor('curve2', 45,212,191);
       ggbApplet.setLineThickness('curve1', 3);
@@ -2483,6 +2671,7 @@ const methodMeta = [
   {id:'richardson', cat:'Diferenciación', title:'Extrapolación de Richardson', desc:'Combina aproximaciones de distinto paso h para mayor precisión.', icon:'fa-layer-group', color:'teal', tag:'Nuevo'},
   {id:'trapecio', cat:'Integración', title:'Regla del Trapecio', desc:'Aproxima integrales definidas usando trapecios.', icon:'fa-square', color:'amber', tag:'Integral'},
   {id:'simpson', cat:'Integración', title:'Simpson 1/3 y 3/8', desc:'Reglas de Simpson para mayor precisión en integración numérica.', icon:'fa-chart-area', color:'rose', tag:'Integral'},
+  {id:'romberg', cat:'Integración', title:'Romberg', desc:'Integración de alta precisión combinando trapecios y extrapolación de Richardson.', icon:'fa-table', color:'teal', tag:'Integral'},
   {id:'edo', cat:'Ecuaciones Diferenciales', title:'Ecuaciones Diferenciales', desc:'Euler, Euler Mejorado, RK4 y sistemas de EDO en un solo módulo.', icon:'fa-calculator', color:'teal', tag:'EDO'},
   {id:'bolzano', cat:'Teoremas', title:'Teorema de Bolzano', desc:'Verifica existencia de raíces por cambio de signo en un intervalo.', icon:'fa-scale-balanced', color:'coral', tag:'Teorema'},
 ];
@@ -2543,6 +2732,7 @@ const METHOD_HISTORY_META = {
   richardson: {section:'diferenciacion', title:'Extrapolación de Richardson'},
   trapecio: {section:'integracion', title:'Regla del Trapecio'},
   simpson: {section:'integracion', title:'Simpson 1/3 y 3/8'},
+  romberg: {section:'integracion', title:'Método de Romberg'},
   edo: {section:'edo', title:'Ecuaciones Diferenciales'},
   bolzano: {section:'teoremas', title:'Teorema de Bolzano'},
 };
@@ -2924,6 +3114,216 @@ function historyExport(){
   toast('Historial exportado','success');
 }
 
+const HISTORY_TABLE_MAP = {
+  biseccion:'bis-tbody',
+  regula:'reg-tbody',
+  newton:'nwt-tbody',
+  secante:'sec-tbody',
+  punto_fijo:'pf-tbody',
+  taylor:'tay-tbody',
+  muller:'mul-tbody',
+  bairstow:'bw-tbody',
+  horner_newton:'hn-tbody',
+  newton_multi:'nm-tbody',
+  gauss_seidel:'gs-tbody',
+  jacobi:'ja-tbody',
+  newton_interp:'ni-tbody',
+  lagrange:'lag-tbody',
+  splines:'sp-tbody',
+  diferenciacion:'df-tbody',
+  richardson:'ri-tbody',
+  trapecio:'tr-tbody',
+  simpson:'si-tbody',
+  romberg:'rb-tbody',
+  edo:'edo-tbody',
+  bolzano:'bz-tbody',
+};
+
+function historyOpenExcelModal(methodId=''){
+  const modal = document.getElementById('excelModal');
+  const select = document.getElementById('excelMethodSelect');
+  if(!modal || !select) return;
+  const methods = Object.entries(METHOD_HISTORY_META)
+    .sort((a,b)=>a[1].title.localeCompare(b[1].title, 'es', {sensitivity:'base'}));
+  select.innerHTML = methods.map(([id, meta])=>`<option value="${id}">${escapeHtml(meta.title)}</option>`).join('');
+  const available = getHistory().find(item=>item.methodId)?.methodId || methods[0]?.[0] || '';
+  select.value = methodId || available;
+  modal.classList.add('open');
+  historyRefreshExcelPreview();
+}
+
+function historyCloseExcelModal(){
+  const modal = document.getElementById('excelModal');
+  if(modal) modal.classList.remove('open');
+}
+
+function historyLatestMethodRecord(methodId){
+  return getHistory()
+    .filter(item=>item.methodId === methodId)
+    .sort((a,b)=>new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))[0] || null;
+}
+
+function historyRefreshExcelPreview(){
+  const select = document.getElementById('excelMethodSelect');
+  const preview = document.getElementById('excelPreview');
+  const noRecord = document.getElementById('excelNoRecord');
+  const btn = document.getElementById('excelDownloadBtn');
+  const item = select ? historyLatestMethodRecord(select.value) : null;
+  if(preview) preview.style.display = item ? 'block' : 'none';
+  if(noRecord) noRecord.style.display = item ? 'none' : 'block';
+  if(btn){
+    btn.disabled = !item;
+    btn.style.opacity = item ? '1' : '0.5';
+    btn.style.cursor = item ? 'pointer' : 'not-allowed';
+  }
+  if(!item) return;
+  document.getElementById('excelPreviewTitle').textContent = item.title || METHOD_HISTORY_META[item.methodId]?.title || 'Registro';
+  document.getElementById('excelPreviewSummary').textContent = item.summary || 'Sin resumen';
+  document.getElementById('excelPreviewResult').textContent = item.result || 'Sin resultado';
+  document.getElementById('excelPreviewDate').textContent = `Guardado: ${formatHistoryDate(item.updatedAt)}`;
+}
+
+function historyExtractFunction(summary=''){
+  const match = String(summary).match(/(?:f\(x\)|g\(x\)|P\(x\))\s*=\s*([^|]+)/i);
+  return match ? match[1].trim() : '';
+}
+
+function historyExtractInterval(summary=''){
+  const match = String(summary).match(/intervalo\s*\[\s*([^,\]]+)\s*,\s*([^\]]+)\]/i);
+  if(!match) return null;
+  try{
+    return [parseNumericInput(match[1], 'límite inferior'), parseNumericInput(match[2], 'límite superior')];
+  }catch(err){
+    return null;
+  }
+}
+
+function historyGetTableData(methodId){
+  const tbodyId = HISTORY_TABLE_MAP[methodId];
+  const tbody = tbodyId ? document.getElementById(tbodyId) : null;
+  if(!tbody) return {headers:[], rows:[]};
+  const table = tbody.closest('table');
+  const headers = Array.from(table?.querySelectorAll('thead th') || []).map(th=>th.textContent.trim());
+  const rows = Array.from(tbody.querySelectorAll('tr')).map(tr=>{
+    const cells = Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.trim());
+    return cells;
+  }).filter(row => row.length > 1 && !row.join(' ').includes('Ingresa los parámetros') && !row.join(' ').includes('Listo para'));
+  return {headers, rows};
+}
+
+function historyBuildEvaluationPoints(headers, rows){
+  const normalized = headers.map(h=>normalizeSearchText(h));
+  const xIdx = normalized.findIndex(h=>h === 'xi' || h === 'xᵢ' || h === 'x' || h.includes('x_i') || h.includes('x('));
+  const fIdx = normalized.findIndex(h=>h.includes('f(x') || h.includes('p(x') || h.includes('valor'));
+  if(xIdx < 0 && fIdx < 0) return [];
+  return rows.map(row=>[
+    xIdx >= 0 ? row[xIdx] : '',
+    fIdx >= 0 ? row[fIdx] : '',
+  ]).filter(row=>row.some(Boolean));
+}
+
+function historyCaptureGeoGebraImage(){
+  try{
+    if(!ggbApplet) return '';
+    if(typeof ggbApplet.getPNGBase64 === 'function'){
+      const raw = ggbApplet.getPNGBase64(1, true, 96);
+      return raw ? `data:image/png;base64,${raw.replace(/^data:image\/png;base64,/, '')}` : '';
+    }
+    if(typeof ggbApplet.getScreenshotBase64 === 'function'){
+      const raw = ggbApplet.getScreenshotBase64();
+      return raw ? `data:image/png;base64,${raw.replace(/^data:image\/png;base64,/, '')}` : '';
+    }
+  }catch(err){
+    console.warn('No se pudo capturar GeoGebra', err);
+  }
+  return '';
+}
+
+function historyDelay(ms){
+  return new Promise(resolve=>setTimeout(resolve, ms));
+}
+
+async function historyPrepareGraphForExport(item){
+  const fx = historyExtractFunction(item.summary);
+  if(!fx) return '';
+  const interval = historyExtractInterval(item.summary);
+  moveGGBTo('home');
+  const extra = interval ? [`region=Integral(f,${interval[0]},${interval[1]})`] : [];
+  ggbPlotFunction(fx, [], extra);
+  await historyDelay(650);
+  return historyCaptureGeoGebraImage();
+}
+
+function historyHtmlTable(headers, rows){
+  if(!rows.length) return '<p>No hay tabla disponible. Abre el método y ejecuta el cálculo para exportar sus iteraciones.</p>';
+  const head = headers.length ? `<tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr>` : '';
+  const body = rows.map(row=>`<tr>${row.map(cell=>`<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('');
+  return `<table>${head}${body}</table>`;
+}
+
+function historyDownloadWordHtml(filename, html){
+  const blob = new Blob([html], {type:'application/msword;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
+async function historyDoExportExcel(){
+  const select = document.getElementById('excelMethodSelect');
+  const item = select ? historyLatestMethodRecord(select.value) : null;
+  if(!item){ toast('No hay registro para exportar','error'); return; }
+  const meta = METHOD_HISTORY_META[item.methodId] || {title:item.title || 'Método'};
+  const table = historyGetTableData(item.methodId);
+  const points = historyBuildEvaluationPoints(table.headers, table.rows);
+  const graphImage = await historyPrepareGraphForExport(item);
+  const fx = historyExtractFunction(item.summary) || 'No detectada en el resumen';
+  const filename = `RootFinder_${meta.title.replace(/\s+/g,'_').replace(/[^\w_]/g,'')}.xls`;
+  const html = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+body{font-family:Arial,sans-serif;color:#111;}
+h1{font-size:20px;color:#0f766e;}
+h2{font-size:15px;margin-top:22px;color:#111827;}
+table{border-collapse:collapse;margin:8px 0 16px 0;width:100%;}
+th{background:#0f766e;color:#fff;font-weight:700;}
+td,th{border:1px solid #94a3b8;padding:6px;text-align:left;font-size:12px;}
+.muted{color:#64748b;}
+.result{color:#0f766e;font-weight:700;}
+img{max-width:860px;border:1px solid #94a3b8;}
+</style>
+</head>
+<body>
+<h1>RootFinder - Exportación de ${escapeHtml(meta.title)}</h1>
+<p class="muted">Generado: ${escapeHtml(new Date().toLocaleString('es-ES'))}</p>
+<h2>Función y Registro</h2>
+<table>
+<tr><th>Campo</th><th>Valor</th></tr>
+<tr><td>Método</td><td>${escapeHtml(meta.title)}</td></tr>
+<tr><td>Función</td><td>${escapeHtml(fx)}</td></tr>
+<tr><td>Resumen</td><td>${escapeHtml(item.summary || '')}</td></tr>
+<tr><td>Resultado</td><td class="result">${escapeHtml(item.result || '')}</td></tr>
+<tr><td>Fecha</td><td>${escapeHtml(formatHistoryDate(item.updatedAt))}</td></tr>
+</table>
+<h2>Puntos de Evaluación</h2>
+${historyHtmlTable(['x', 'f(x)'], points)}
+<h2>Tabla de Iteraciones</h2>
+${historyHtmlTable(table.headers, table.rows)}
+<h2>Gráfica de GeoGebra</h2>
+${graphImage ? `<img src="${graphImage}" alt="Gráfica de GeoGebra"/>` : '<p>No se pudo capturar la gráfica desde GeoGebra en este navegador.</p>'}
+</body>
+</html>`;
+  historyDownloadWordHtml(filename, html);
+  historyCloseExcelModal();
+  toast(`Excel exportado: ${filename}`, 'success');
+}
+
 function historyOpenEditor(id=null){
   const modal = document.getElementById('historyModal');
   const form = document.getElementById('historyForm');
@@ -3073,7 +3473,10 @@ function historyGoToMethod(methodId){
 }
 
 document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape') historyCloseEditor();
+  if(e.key === 'Escape'){
+    historyCloseEditor();
+    historyCloseExcelModal();
+  }
 });
 </script>
 <script>
@@ -3109,7 +3512,7 @@ function runBiseccion(){
     document.getElementById('bis-summary').style.display='grid';
     status.textContent = last.err<tol ? 'CONVERGIÓ':'MÁX. ITERACIONES';
     status.className = last.err<tol ? 'results-badge rb-ok':'results-badge rb-err';
-    ggbPlotFunction(fx, [[last.c, 0, true]], [`SetValue(f,${preprocessExpr(fx)})`]);
+    ggbPlotFunction(fx, [[last.c, 0, true]], [`SetValue(f,${preprocessGeoGebraExpr(fx)})`]);
     historyAutoRecord('biseccion', {
       summary: `f(x) = ${fx} | intervalo [${document.getElementById('bis-a').value}, ${document.getElementById('bis-b').value}]`,
       result: `Raíz ≈ ${fmtNum(last.c)} | error ${fmtNum(last.err)}`,
@@ -4121,7 +4524,7 @@ function updateGeoGebraEDO(payload){
           window.ggbApplet.setLineThickness('EDOCurve', 4);
         }
         if(payload.exactStr){
-          const exact = preprocessExpr(payload.exactStr).replace(/\bx\b/g, 'x');
+          const exact = preprocessGeoGebraExpr(payload.exactStr).replace(/\bx\b/g, 'x');
           try{
             window.ggbApplet.evalCommand(`EDOExact(x) = ${exact}`);
             window.ggbApplet.setColor('EDOExact', 176, 96, 32);
@@ -4174,7 +4577,7 @@ function updateGeoGebraEDO(payload){
           payload.exactParts.forEach((expr, idx)=>{
             if(!expr) return;
             try{
-              const exact = preprocessExpr(expr).replace(new RegExp('\\b' + payload.indep + '\\b', 'g'), 'x');
+              const exact = preprocessGeoGebraExpr(expr).replace(new RegExp('\\b' + payload.indep + '\\b', 'g'), 'x');
               const name = `EDO_Exact_${idx}`;
               window.ggbApplet.evalCommand(`${name}(x) = ${exact}`);
               window.ggbApplet.setColor(name, 120, 60, 60);
@@ -5126,9 +5529,9 @@ function runRichardson(){
 function runTrapecio(){
   try{
     const fx = document.getElementById('tr-fx').value;
-    const a = parseFloat(document.getElementById('tr-a').value);
-    const b = parseFloat(document.getElementById('tr-b').value);
-    const n = parseInt(document.getElementById('tr-n').value);
+    const a = parseNumericInput(document.getElementById('tr-a').value, 'límite inferior a');
+    const b = parseNumericInput(document.getElementById('tr-b').value, 'límite superior b');
+    const n = Math.trunc(parseNumericInput(document.getElementById('tr-n').value, 'número de subintervalos'));
     const f = compileFn(fx);
     const status = document.getElementById('tr-status');
     status.textContent='CALCULANDO'; status.className='results-badge rb-running';
@@ -5167,9 +5570,9 @@ function runTrapecio(){
 function runSimpson(){
   try{
     const fx = document.getElementById('si-fx').value;
-    const a = parseFloat(document.getElementById('si-a').value);
-    const b = parseFloat(document.getElementById('si-b').value);
-    let n = parseInt(document.getElementById('si-n').value);
+    const a = parseNumericInput(document.getElementById('si-a').value, 'límite inferior a');
+    const b = parseNumericInput(document.getElementById('si-b').value, 'límite superior b');
+    let n = Math.trunc(parseNumericInput(document.getElementById('si-n').value, 'número de subintervalos'));
     const selectedRule = document.getElementById('si-rule-select').value;
     const f = compileFn(fx);
     const status = document.getElementById('si-status');
@@ -5225,6 +5628,112 @@ function runSimpson(){
     });
     toast('Cálculo completado','success');
   }catch(err){ toast('Error: '+err.message,'error'); console.error(err); }
+}
+
+function runRomberg(){
+  try{
+    const fx = document.getElementById('rb-fx').value;
+    const a = parseNumericInput(document.getElementById('rb-a').value, 'límite inferior a');
+    const b = parseNumericInput(document.getElementById('rb-b').value, 'límite superior b');
+    const tol = parseNumericInput(document.getElementById('rb-tol').value, 'tolerancia');
+    const maxN = Math.trunc(parseNumericInput(document.getElementById('rb-max').value, 'máximo de filas'));
+    const f = compileFn(fx);
+    const status = document.getElementById('rb-status');
+    status.textContent = 'CALCULANDO';
+    status.className = 'results-badge rb-running';
+
+    if(!(Number.isFinite(a) && Number.isFinite(b) && Number.isFinite(tol) && Number.isFinite(maxN)) || maxN < 1){
+      throw new Error('Ingresa parámetros válidos para Romberg.');
+    }
+
+    const evalReal = (xVal) => evalRealWithRemovableCheck(f, xVal, `f(${fmtNum(xVal)})`);
+    const I = Array.from({length:maxN}, () => new Array(maxN).fill(null));
+
+    for(let j = 0; j < maxN; j++){
+      const n = Math.pow(2, j + 1);
+      const h = (b - a) / n;
+      let sum = evalReal(a) + evalReal(b);
+      for(let i = 1; i < n; i++){
+        sum += 2 * evalReal(a + i * h);
+      }
+      I[j][0] = (h / 2) * sum;
+    }
+
+    let finalK = 0;
+    let estimErr = Infinity;
+    for(let k = 1; k < maxN; k++){
+      const factor = Math.pow(4, k);
+      for(let j = 0; j < maxN - k; j++){
+        I[j][k] = (factor * I[j + 1][k - 1] - I[j][k - 1]) / (factor - 1);
+      }
+      estimErr = Math.abs(I[0][k] - I[0][k - 1]);
+      finalK = k;
+      if(estimErr < tol) break;
+    }
+
+    const integral = I[0][finalK];
+    const usedRows = maxN - finalK;
+    const thead = document.getElementById('rb-thead');
+    let hdr = '<tr><th>j</th>';
+    for(let k = 0; k <= finalK; k++){
+      hdr += `<th>I[j,${k + 1}]</th>`;
+    }
+    hdr += '</tr>';
+    thead.innerHTML = hdr;
+
+    const tbody = document.getElementById('rb-tbody');
+    let rowsHtml = '';
+    for(let j = 0; j < usedRows; j++){
+      let cells = `<td>${j + 1}</td>`;
+      for(let k = 0; k <= finalK; k++){
+        if(I[j][k] !== null){
+          const isResult = (j === 0 && k === finalK);
+          cells += `<td style="color:${isResult ? 'var(--coral)' : 'inherit'};font-weight:${isResult ? '700' : 'normal'}">${fmtNum(I[j][k])}</td>`;
+        }else{
+          cells += '<td style="color:var(--text-ghost);">—</td>';
+        }
+      }
+      rowsHtml += `<tr>${cells}</tr>`;
+    }
+    for(let j = usedRows; j < maxN; j++){
+      let cells = `<td style="color:var(--text-ghost);">${j + 1}</td>`;
+      cells += `<td>${fmtNum(I[j][0])}</td>`;
+      for(let k = 1; k <= finalK; k++){
+        cells += '<td style="color:var(--text-ghost);">—</td>';
+      }
+      rowsHtml += `<tr style="opacity:0.45;">${cells}</tr>`;
+    }
+    tbody.innerHTML = rowsHtml || '<tr><td colspan="99">Sin datos</td></tr>';
+
+    document.getElementById('rb-result').textContent = fmtNum(integral);
+    document.getElementById('rb-iters').textContent = finalK + 1;
+    document.getElementById('rb-err').textContent = fmtNum(estimErr);
+    document.getElementById('rb-summary').style.display = 'grid';
+    status.textContent = 'COMPLETADO';
+    status.className = 'results-badge rb-ok';
+
+    ggbPlotFunction(fx, [], [`region=Integral(f,${a},${b})`]);
+    withGGB(()=>{
+      try{
+        ggbApplet.setColor('region',45,212,191);
+        ggbApplet.setFilling('region',0.25);
+      }catch(e){}
+    });
+
+    historyAutoRecord('romberg', {
+      summary: `f(x) = ${fx} | intervalo [${fmtNum(a)}, ${fmtNum(b)}] | tol = ${tol}`,
+      result: `I[1,${finalK + 1}] ≈ ${fmtNum(integral)} | cols = ${finalK + 1} | error = ${fmtNum(estimErr)}`,
+    });
+    toast('Cálculo completado','success');
+  }catch(err){
+    const status = document.getElementById('rb-status');
+    if(status){
+      status.textContent = 'ERROR';
+      status.className = 'results-badge rb-err';
+    }
+    toast('Error: ' + err.message, 'error');
+    console.error(err);
+  }
 }
 </script>
 
